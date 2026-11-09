@@ -1,7 +1,7 @@
 /**
  * Project: OCPB IT Service Desk
  * File: Server.gs
- * Version: V1.1.44
+ * Version: V1.1.45
  * Stage: beta
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -29,7 +29,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.44';
+const APP_VERSION = 'V1.1.45';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID = PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID');
