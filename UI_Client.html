@@ -704,7 +704,7 @@ function uiAssetSide(id) {
     ['IP Address', x.ip],
   ];
   $('inventorySide').innerHTML =
-    `<div class="ui-side-head"><div><h2><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ${esc(x.id)}</h2><small>${esc(x.type)} · ${esc(x.brand)} ${esc(x.model)}</small></div><button class="ghost" onclick="ui.asset='';inventory()"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div><div class="ui-side-tabs">${[
+    `<div class="ui-side-head"><div><h2><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ${esc(x.id)}</h2><small>${esc(x.type)} · ${esc(x.brand)} ${esc(x.model)}</small></div></div><div class="ui-side-tabs">${[
       ['details', 'ข้อมูลทั่วไป'],
       ['specs', 'คุณลักษณะ'],
       ['history', 'ประวัติแจ้งซ่อม'],
