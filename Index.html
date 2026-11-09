@@ -1,0 +1,347 @@
+<!--
+  Project: OCPB IT Service Desk
+  File: index.html
+  Version: V1.1.43
+  Stage: beta
+  Purpose: Web application shell and generated asset includes
+  Notes:
+  - No secrets in source code
+  - Preserve existing data and backward compatibility
+  Modified: 2026-11-04
+  Change History:
+  - V1.1.43: Add accessible live-region semantics to save-result messages.
+  - V1.0.96: แสดงสถานะครุภัณฑ์เป็นภาษาไทยบน Web Application โดยคงค่าฐานข้อมูลเป็นรหัสภาษาอังกฤษ.
+  - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
+  - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
+  - V1.0.77: Inventory dropdowns and automatic asset-number formats.
+  - V1.0.74: Use a palette-cycle button for twelve built-in palettes.
+-->
+<!doctype html>
+<html lang="th">
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      (function () {
+        var mode = 'light';
+        var palette = 'palette-01';
+        try {
+          var legacy = localStorage.getItem('ocpb_theme');
+          var savedMode = localStorage.getItem('ocpb_mode');
+          var savedPalette = localStorage.getItem('ocpb_palette');
+          mode = savedMode === 'dark' || (!savedMode && legacy === 'dark') ? 'dark' : 'light';
+          palette = /^palette-(0[1-9]|1[0-2])$/.test(savedPalette || '')
+            ? savedPalette
+            : legacy === 'indigo'
+              ? 'palette-09'
+              : 'palette-01';
+        } catch (_) {}
+        var root = document.documentElement;
+        root.dataset.theme = mode;
+        root.dataset.palette = palette;
+        root.classList.toggle('dark', mode === 'dark');
+        root.style.colorScheme = mode;
+      })();
+    </script>
+    <script id="publicSystemBranding" type="application/json">
+      <?!= publicBrandingJson ?>
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block"
+      rel="stylesheet"
+    />
+    <?!= include('UI_Styles'); ?>
+  </head>
+  <body>
+    <div id="login" class="login-wrap login48-wrap">
+      <form
+        id="loginForm"
+        class="login-card login48-card"
+        onsubmit="
+          event.preventDefault();
+          signIn();
+        "
+        aria-busy="false"
+      >
+        <div class="login48-brand">
+          <div class="logo big login48-logo">
+            <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+          </div>
+          <div class="login48-brand-copy">
+            <span class="login48-eyebrow">IT SERVICE DESK</span>
+            <h1 id="loginBrandTitle">IT Service Desk</h1>
+            <p id="loginBrandDescription">ระบบบริหารจัดการงานบริการไอที</p>
+          </div>
+        </div>
+
+        <div class="login48-heading">
+          <h2>เข้าสู่ระบบ</h2>
+          <p>กรอกข้อมูลบัญชีของคุณเพื่อเข้าใช้งานระบบ</p>
+        </div>
+
+        <label class="login48-field" for="username"
+          >ชื่อผู้ใช้
+          <span class="login48-input">
+            <span class="material-symbols-rounded" aria-hidden="true">person</span>
+            <input
+              id="username"
+              autocomplete="username"
+              autocapitalize="none"
+              spellcheck="false"
+              required
+              placeholder="กรุณากรอกชื่อผู้ใช้"
+            />
+          </span>
+        </label>
+
+        <label class="login48-field" for="password"
+          >รหัสผ่าน
+          <span class="login48-input">
+            <span class="material-symbols-rounded" aria-hidden="true">lock</span>
+            <input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              placeholder="กรุณากรอกรหัสผ่าน"
+            />
+            <button
+              id="loginPasswordToggle"
+              class="login48-password-toggle"
+              type="button"
+              onclick="toggleLoginPassword()"
+              aria-label="แสดงรหัสผ่าน"
+              aria-pressed="false"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">visibility_off</span>
+            </button>
+          </span>
+        </label>
+
+        <div class="login48-help-row">
+          <button
+            type="button"
+            class="login48-text-link"
+            onclick="showLoginFutureNotice('ลืมรหัสผ่าน')"
+          >
+            ลืมรหัสผ่าน?
+          </button>
+        </div>
+
+        <button id="loginSubmit" class="primary wide login-submit login48-submit" type="submit">
+          <span id="loginSubmitIcon" class="material-symbols-rounded" aria-hidden="true"
+            >login</span
+          >
+          <span id="loginSubmitText">เข้าสู่ระบบ</span>
+        </button>
+
+        <div class="login48-divider"><span>หรือ</span></div>
+        <div class="login48-social" aria-label="ช่องทางเข้าสู่ระบบเพิ่มเติมที่เตรียมไว้สำหรับอนาคต">
+          <button
+            type="button"
+            class="login48-provider"
+            onclick="showLoginFutureNotice('Google Sign In')"
+          >
+            <span class="login48-provider-mark" aria-hidden="true">G</span><span>Google</span>
+          </button>
+          <button
+            type="button"
+            class="login48-provider"
+            onclick="showLoginFutureNotice('Apple Sign In')"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">phone_iphone</span
+            ><span>Apple</span>
+          </button>
+        </div>
+        <div class="login48-create">
+          ยังไม่มีบัญชี?
+          <button
+            type="button"
+            class="login48-text-link"
+            onclick="showLoginFutureNotice('Create Account')"
+          >
+            สร้างบัญชี
+          </button>
+        </div>
+
+        <small id="loginError" class="error login48-error" role="alert"></small>
+        <div class="login-build-meta" aria-label="ข้อมูลเวอร์ชันและผู้สร้าง">
+          <span id="itsdBuildVersion"
+            >ITSD
+            <?= appVersion ?></span
+          >
+          <span>Create by : Longze Design</span>
+        </div>
+
+        <div id="loginProgress" class="login-progress hidden" aria-live="polite" aria-hidden="true">
+          <div id="loginProgressGraphic" class="login-progress-graphic" data-state="loading">
+            <span class="login-spinner" aria-hidden="true"></span>
+            <span class="login-success-icon material-symbols-rounded" aria-hidden="true"
+              >check_circle</span
+            >
+            <span class="login-progress-logo material-symbols-rounded" aria-hidden="true"
+              >account_circle</span
+            >
+          </div>
+          <strong id="loginProgressTitle">กำลังเข้าสู่ระบบ...</strong>
+          <span id="loginProgressMessage">กำลังตรวจสอบบัญชีผู้ใช้งาน</span>
+          <small id="loginProgressHint">กรุณารอสักครู่</small>
+        </div>
+      </form>
+    </div>
+
+    <div id="app" class="shell hidden">
+      <aside id="appSidebar" class="sidebar" aria-label="หน้าหลัก">
+        <div class="brand">
+          <div class="logo">
+            <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
+          </div>
+          <div class="brand-copy">
+            <strong id="sideTitle">IT Service Desk</strong
+            ><small id="sideDescription">ระบบบริหารจัดการงานบริการไอที</small>
+          </div>
+        </div>
+        <div class="section-name">หน้าหลัก</div>
+        <nav id="nav"></nav>
+        <div class="sidebar-bottom">
+          <div class="profile" id="sideProfile">
+            <span class="avatar" id="sideAvatar">A</span>
+            <div class="profile-copy">
+              <strong id="sideName"></strong><small id="sideRole"></small>
+            </div>
+          </div>
+        </div>
+        <button
+          id="sidebarCollapseBtn"
+          class="sidebar-collapse"
+          type="button"
+          aria-label="ย่อแถบเมนู"
+          title="ย่อ/ขยายแถบเมนู"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">chevron_left</span>
+        </button>
+      </aside>
+      <button
+        id="sidebarBackdrop"
+        class="sidebar-backdrop"
+        type="button"
+        aria-label="ปิดเมนู"
+        onclick="ux5CloseMobileSidebar()"
+      ></button>
+
+      <main class="main">
+        <header class="topbar">
+          <button
+            id="mobileMenuButton"
+            aria-controls="appSidebar"
+            aria-expanded="false"
+            class="mobile-menu"
+            type="button"
+            onclick="ux5ToggleMobileSidebar()"
+            aria-label="เปิดเมนู"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">menu</span>
+          </button>
+          <div class="crumb">
+            <span id="crumbBrand">IT Service Desk</span> <span>/</span><b id="crumb"></b>
+          </div>
+          <div class="top-search">
+            <span class="material-symbols-rounded top-search-icon" aria-hidden="true">search</span>
+            <input
+              id="globalSearch"
+              type="search"
+              enterkeyhint="search"
+              aria-label="ค้นหาเมนู เลขที่แจ้ง หรือเลขครุภัณฑ์"
+              placeholder="ค้นหาเมนู / เลขที่แจ้ง / เลขครุภัณฑ์"
+              onkeydown="if (event.key === 'Enter') globalFind();"
+            />
+            <span id="searchShortcut" class="search-shortcut">Ctrl K</span>
+            <button type="button" onclick="globalFind()" aria-label="ค้นหา">ค้นหา</button>
+          </div>
+          <div class="top-actions">
+            <span id="uxSystemStatus" class="pill ux-system-pill" data-mode="checking"
+              ><span class="material-symbols-rounded ux-status-icon" aria-hidden="true"
+                >schedule</span
+              ><span>กำลังตรวจสอบ</span></span
+            >
+            <div class="ux-notification-wrap">
+              <button
+                id="uxNotificationButton"
+                type="button"
+                class="top-icon-button"
+                onclick="ux5ToggleNotifications(event)"
+                aria-label="การแจ้งเตือน"
+                aria-expanded="false"
+              >
+                <span class="material-symbols-rounded" aria-hidden="true">notifications</span>
+                <span id="uxNotificationCount" class="ux-notification-count hidden">0</span>
+              </button>
+              <div id="uxNotificationMenu" class="ux-notification-menu hidden"></div>
+            </div>
+            <button
+              id="paletteToggle"
+              type="button"
+              class="top-icon-button palette-toggle"
+              onclick="changePalette()"
+              aria-label="เปลี่ยนชุดสี"
+              title="เปลี่ยนชุดสี"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">palette</span>
+            </button>
+            <button
+              id="themeToggle"
+              type="button"
+              class="top-icon-button mode-toggle"
+              onclick="toggleTheme()"
+              aria-label="เปิด Dark Mode"
+              aria-pressed="false"
+              title="Light / Dark Mode"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
+            </button>
+            <div class="top-divider" aria-hidden="true"></div>
+            <div id="uxTopUserMeta" class="ux-top-user-meta"></div>
+            <span
+              class="avatar ux-avatar-button"
+              id="topAvatar"
+              role="button"
+              tabindex="0"
+              aria-label="ข้อมูลบัญชีผู้ใช้"
+              >A</span
+            >
+          </div>
+        </header>
+        <div id="content" class="content"></div>
+      </main>
+    </div>
+
+    <div
+      id="uxDrawerBackdrop"
+      class="ux-drawer-backdrop hidden"
+      onclick="ux5CloseAllDrawers()"
+    ></div>
+    <div id="modal" class="modal hidden">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h2 id="modalTitle"></h2>
+          <button type="button" onclick="closeModal()" aria-label="ปิดหน้าต่าง">
+            <span class="material-symbols-rounded" aria-hidden="true">close</span>
+          </button>
+        </div>
+        <div id="modalBody"></div>
+      </div>
+    </div>
+    <div id="toast" class="toast hidden" role="status" aria-live="polite" aria-atomic="true"></div>
+
+    <?!= include('UI_Templates'); ?>
+    <?!= include('UI_Client'); ?>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+.clasp.json
+.claspignore
+.DS_Store
+.vscode/
+.playwright-cli/
+.impeccable/
+.pull-backups/
+.patch-backups/
+.patch-reports/
+COLOR_TEMPLATE.md
+PATCH_NOTES.md
