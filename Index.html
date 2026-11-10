@@ -1,14 +1,18 @@
 <!--
   Project: OCPB IT Service Desk
   File: index.html
-  Version: V1.1.48
+  Version: V1.1.52
   Stage: beta
   Purpose: Web application shell and generated asset includes
   Notes:
   - No secrets in source code
   - Preserve existing data and backward compatibility
-  Modified: 2026-11-04
+  Modified: 2026-11-10
   Change History:
+  - V1.1.52: Apply approved Master Data KPI card colors.
+  - V1.1.51: Retain Clay and Sea as the single Web App palette.
+  - V1.1.50: Keep all close controls equal to the Dark mode button.
+  - V1.1.49: Group inventory editing into General, Specifications, Survey and Repair History tabs.
   - V1.1.48: Match close-control dimensions with theme-mode controls.
   - V1.1.47: Use the shared close-button component for modal windows.
   - V1.1.43: Add accessible live-region semantics to save-result messages.
@@ -28,21 +32,13 @@
     <script>
       (function () {
         var mode = 'light';
-        var palette = 'palette-01';
         try {
           var legacy = localStorage.getItem('ocpb_theme');
           var savedMode = localStorage.getItem('ocpb_mode');
-          var savedPalette = localStorage.getItem('ocpb_palette');
           mode = savedMode === 'dark' || (!savedMode && legacy === 'dark') ? 'dark' : 'light';
-          palette = /^palette-(0[1-9]|1[0-2])$/.test(savedPalette || '')
-            ? savedPalette
-            : legacy === 'indigo'
-              ? 'palette-09'
-              : 'palette-01';
         } catch (_) {}
         var root = document.documentElement;
         root.dataset.theme = mode;
-        root.dataset.palette = palette;
         root.classList.toggle('dark', mode === 'dark');
         root.style.colorScheme = mode;
       })();
@@ -288,16 +284,6 @@
               </button>
               <div id="uxNotificationMenu" class="ux-notification-menu hidden"></div>
             </div>
-            <button
-              id="paletteToggle"
-              type="button"
-              class="top-icon-button palette-toggle"
-              onclick="changePalette()"
-              aria-label="เปลี่ยนชุดสี"
-              title="เปลี่ยนชุดสี"
-            >
-              <span class="material-symbols-rounded" aria-hidden="true">palette</span>
-            </button>
             <button
               id="themeToggle"
               type="button"
