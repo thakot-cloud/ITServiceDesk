@@ -1,15 +1,18 @@
 <!--
-  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
-  File: index.html
-  Version: V1.1.59
-  Stage: beta
+  Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+  File: Index.html
+  Version: V1.1.64
+  Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
   - No secrets in source code
   - Preserve existing data and backward compatibility
+  - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-11
   Change History:
-  - V1.1.59: Align the Web App identity and default branding with the confirmed production project.
+  - V1.1.64: Bump to V1.1.64 for Inventory search/pick & editable device details across Status Update and CM Service Report dialogs.
+  - V1.1.60: Bump to V1.1.60 for compact single-screen equipment edit dialog.
+  - V1.1.59: Rewrite project header & default branding to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที), editable by ADMIN via Settings.
   - V1.1.58: Synchronized deployment across both Script IDs, modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
   - V1.1.54: Modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
   - V1.1.53: Complete Clay and Sea theme overhaul across entire ITSD Web App.
@@ -81,9 +84,9 @@
             <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
           </div>
           <div class="login48-brand-copy">
-            <span class="login48-eyebrow">IT SERVICE DESK</span>
-            <h1 id="loginBrandTitle">IT Service Desk</h1>
-            <p id="loginBrandDescription">ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์</p>
+            <span class="login48-eyebrow">ITSD : ITServiceDesk</span>
+            <h1 id="loginBrandTitle">ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)</h1>
+            <p id="loginBrandDescription">ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที</p>
           </div>
         </div>
 
@@ -210,8 +213,8 @@
             <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
           </div>
           <div class="brand-copy">
-            <strong id="sideTitle">IT Service Desk</strong
-            ><small id="sideDescription">ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์</small>
+            <strong id="sideTitle">ITSD : ITServiceDesk</strong
+            ><small id="sideDescription">ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที</small>
           </div>
         </div>
         <div class="section-name">หน้าหลัก</div>
@@ -256,7 +259,7 @@
             <span class="material-symbols-rounded" aria-hidden="true">menu</span>
           </button>
           <div class="crumb">
-            <span id="crumbBrand">IT Service Desk</span> <span>/</span><b id="crumb"></b>
+            <span id="crumbBrand">ITSD : ITServiceDesk</span> <span>/</span><b id="crumb"></b>
           </div>
           <div class="top-search">
             <span class="material-symbols-rounded top-search-icon" aria-hidden="true">search</span>
