@@ -1,5 +1,5 @@
 /**
- * Project: OCPB IT Service Desk
+ * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Entrypoints.gs
  * Version: V1.1.35
  * Stage: beta
