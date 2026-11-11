@@ -1,7 +1,7 @@
 <!--
-  Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.64
+ * Version: V1.1.68
  * Stage: production
  * Purpose: Ordered feature styles and shared Light/Dark tokens
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-11
  * Change History:
+ * - V1.1.68: Finalize Clay & Sea as the single palette, the 980px compact editor and CM-Form_69 release styling.
  * - V1.1.64: Add inventory picker & status device grid styles, plus .asset-grid-2 for side-by-side CM service report rows.
   - V1.1.60: Add compact .asset-compact-form single-screen modal grid & tight vertical spacing.
   - V1.1.59: Rewrite project header to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที).
@@ -12776,7 +12777,7 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 /* Compact single-screen layout for equipment general edit & create dialogs. */
 @media (min-width: 769px) {
   .modal-box:has(.asset-compact-form) {
-    width: min(960px, 100%);
+    width: min(980px, 100%);
     padding: 16px 22px;
     max-height: calc(100dvh - 24px);
     overscroll-behavior: contain;

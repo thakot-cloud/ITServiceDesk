@@ -1,7 +1,7 @@
 <!--
-  Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.64
+  Version: V1.1.68
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-11
   Change History:
+  - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
   - V1.1.64: Add shared Inventory picker (by asset number or serial) in both อัปเดตสถานะ (statusForm) and สร้าง/แก้ไขข้อมูลใบงาน CM (service70Edit for job asset, sent equipment & replacement equipment) + fix horizontal grid columns in service70Edit.
   - V1.1.60: Compact single-screen layout for Equipment General Edit, Specs Edit & Create dialogs via shared helpers.
   - V1.1.59: Rewrite project header & client branding defaults to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที); retain ADMIN branding settings controls.
@@ -256,7 +257,7 @@ function render() {
   if (!document.getElementById('themeToggle')) {
     $('topAvatar').insertAdjacentHTML(
       'beforebegin',
-      '<button id="paletteToggle" type="button" class="top-icon-button palette-toggle" onclick="changePalette()" aria-label="เปลี่ยนชุดสี" title="เปลี่ยนชุดสี"><span class="material-symbols-rounded" aria-hidden="true">palette</span></button><button id="themeToggle" type="button" class="top-icon-button mode-toggle" onclick="toggleTheme()" aria-label="เปิด Dark Mode" aria-pressed="false" title="Light / Dark Mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>',
+      '<button id="themeToggle" type="button" class="top-icon-button mode-toggle" onclick="toggleTheme()" aria-label="เปิด Dark Mode" aria-pressed="false" title="Light / Dark Mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>',
     );
   }
   setTheme();
@@ -1324,9 +1325,8 @@ function uiWritePreference(key, value) {
 
 function setTheme() {
   ui.theme = ui.theme === 'dark' ? 'dark' : 'light';
-  ui.palette = normalizePalette(ui.palette);
   document.documentElement.dataset.theme = ui.theme;
-  document.documentElement.dataset.palette = ui.palette;
+  document.documentElement.dataset.palette = 'palette-05';
   document.documentElement.classList.toggle('dark', ui.theme === 'dark');
   document.documentElement.style.colorScheme = ui.theme;
   document.body.classList.toggle('ui-theme-dark', ui.theme === 'dark');
@@ -1338,34 +1338,11 @@ function setTheme() {
     button.setAttribute('aria-pressed', String(dark));
     button.title = dark ? 'Light Mode' : 'Dark Mode';
   }
-  const paletteButton = $('paletteToggle');
-  if (paletteButton) {
-    const paletteNumber = uiPaletteIds().indexOf(ui.palette) + 1;
-    paletteButton.setAttribute('aria-label', `Change color palette (${paletteNumber} of 12)`);
-    paletteButton.title = `Color palette ${paletteNumber} of 12`;
-  }
 }
 
 function toggleTheme() {
   ui.theme = ui.theme === 'dark' ? 'light' : 'dark';
   uiWritePreference('ocpb_mode', ui.theme);
-  setTheme();
-}
-
-function uiPaletteIds() {
-  return Array.from({ length: 12 }, (_, index) => `palette-${String(index + 1).padStart(2, '0')}`);
-}
-
-function normalizePalette(value) {
-  if (uiPaletteIds().includes(value)) return value;
-  if (value === 'indigo') return 'palette-09';
-  return 'palette-01';
-}
-
-function changePalette() {
-  const current = uiPaletteIds().indexOf(normalizePalette(ui.palette));
-  ui.palette = uiPaletteIds()[(current + 1) % 12];
-  uiWritePreference('ocpb_palette', ui.palette);
   setTheme();
 }
 
@@ -3062,6 +3039,38 @@ function bindAssetEditorDirty_(formId, prefix) {
   form.addEventListener('change', dirty);
 }
 
+function inventoryNextIdPreview_() {
+  const ids = (state.inventory || []).map((asset) => String(asset.id || '').trim()).filter(Boolean);
+  const uuidPattern = /^INV-[0-9A-F]{8}$/i;
+  let sequence = null;
+  for (let index = ids.length - 1; index >= 0; index--) {
+    if (uuidPattern.test(ids[index])) continue;
+    const match = ids[index].match(/^(.+-)(\d+)$/);
+    if (match) {
+      sequence = { prefix: match[1], width: match[2].length };
+      break;
+    }
+  }
+  const prefix = sequence ? sequence.prefix : 'INV-TOR70-';
+  let width = sequence ? sequence.width : 4;
+  let max = 0;
+  const used = new Set(ids);
+  ids.forEach((id) => {
+    if (uuidPattern.test(id)) return;
+    const match = id.match(/^(.+-)(\d+)$/);
+    if (!match || match[1] !== prefix) return;
+    max = Math.max(max, Number(match[2]));
+    width = Math.max(width, match[2].length);
+  });
+  let next = max + 1;
+  let candidate = prefix + String(next).padStart(width, '0');
+  while (used.has(candidate)) {
+    next += 1;
+    candidate = prefix + String(next).padStart(width, '0');
+  }
+  return candidate;
+}
+
 function assetGeneralForm(id) {
   if (!inventoryCanEdit()) return toast('ไม่มีสิทธิ์แก้ไขข้อมูลอุปกรณ์');
   const x = state.inventory.find(a => a.id === id) || {};
@@ -3182,8 +3191,9 @@ function assetForm(id) {
     return assetGeneralForm(id);
   }
   if (!inventoryCanCreate()) return toast('ไม่มีสิทธิ์เพิ่มอุปกรณ์');
+  const nextIdPreview = inventoryNextIdPreview_();
   openModal(
-    'เพิ่มอุปกรณ์',
+    'เพิ่มอุปกรณ์ · รหัสใหม่ ' + nextIdPreview,
     `<form id="assetEditorForm" class="asset-compact-form" onsubmit="event.preventDefault();submitAsset('')">
       ${assetGeneralSectionsHtml_({})}
       ${assetSpecsSectionHtml_('a', {})}
@@ -3294,12 +3304,13 @@ async function submitAsset(id) {
       ],
       d = { id };
     keys.forEach((k) => (d[k] = uiValue('a_' + k)));
-    await call('saveInventory', token, d);
+    const savedId = await call('saveInventory', token, d);
     form.dataset.saving = 'false'; form.dataset.dirty = 'false';
     closeModal();
-    ui.asset = id || '';
+    ui.asset = savedId || id || '';
     await refresh();
-    toast('บันทึกอุปกรณ์สำเร็จ', 'success');
+    inventory();
+    toast('บันทึกอุปกรณ์ ' + (savedId || id || '') + ' สำเร็จ', 'success');
   } catch (e) {
     const text = normalizeUiError(e);
     if (message) {
@@ -6568,7 +6579,7 @@ function project70ReportSampleData() {
   return {
     version: state?.version || 'V1.1.62',
     generated_at: '2026-11-11 10:30:00',
-    branding: state?.branding || { project_name: 'ITSD : ITServiceDesk' },
+    branding: state?.branding || { project_name: 'IT Service Desk' },
     template: {
       provider: uiValue('project70Provider', true) || SERVICE_REPORT_DEFAULTS.report_provider,
       address:
@@ -6764,6 +6775,13 @@ function service70Html(data, logo = '') {
   const project = b.project || SERVICE_REPORT_DEFAULTS.report_project_description;
   const field = (label, value, cls = '') =>
     `<div class="field ${cls}"><span class="lbl">${label}</span><b class="dots">${e(value || '')}</b></div>`;
+  const baseLen = (value) =>
+    Array.from(String(value || '').normalize('NFC').replace(/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g, '')).length;
+  const orgField = (label, value) => {
+    const length = baseLen(value);
+    const size = length > 68 ? 6.3 : length > 56 ? 6.9 : length > 44 ? 7.6 : length > 34 ? 8.4 : 9.4;
+    return `<div class="field org-field"><span class="lbl">${label}</span><b class="dots" style="font-size:${size}pt">${e(value || '')}</b></div>`;
+  };
   const checkMark = (checked, label) =>
     `<span class="check"><i class="box">${checked ? '✓' : ''}</i><span>${label}</span></span>`;
   const types = [
@@ -6775,28 +6793,33 @@ function service70Html(data, logo = '') {
   ];
   const reportDate = service70DateOnly(t.reported_at);
   const outcomeDate = service70DateOnly(d.outcome_date);
+  const jobLength = baseLen(t.id);
+  const jobFontSize = jobLength > 24 ? 6.8 : jobLength > 20 ? 7.4 : jobLength > 16 ? 8.2 : 9.2;
   return `<!doctype html><html lang="th"><head><meta charset="utf-8"><title>Service_${e(t.id)}</title><link rel="stylesheet" href="https:\/\/fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap"><style>
-  @page{size:A4 portrait;margin:11mm 14mm 10mm}
+  @page{size:A4 portrait;margin:10mm}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0;background:#fff;color:#111;font:10.5pt/1.45 'Sarabun','Noto Sans Thai',Tahoma,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .sheet{width:100%;max-width:182mm;margin:0 auto}
+  @media screen{body{padding:10mm}}
+  @media print{body{padding:0}}
+  .sheet{width:100%;max-width:190mm;margin:0 auto}
   .head-wrap{display:grid;grid-template-columns:${logoSrc ? '22mm 1fr' : '1fr'};gap:.5mm 3mm;align-items:start;border-bottom:.35mm solid #222;padding-bottom:2.2mm;margin-bottom:2.8mm}
   .logo{grid-row:1/span 2;width:22mm;height:11mm;object-fit:contain;align-self:center}
   .head-top{display:flex;align-items:flex-end;justify-content:space-between;gap:2.5mm}
   .co-name{color:#1f4e8c;font-weight:700;font-size:10.2pt;line-height:1.15;white-space:nowrap}
   .sr-box{border:.4mm solid #111;padding:.8mm 5.5mm;font-weight:700;font-size:13pt;line-height:1.1;letter-spacing:.35px;white-space:nowrap;background:#fff;margin:0 auto}
-  .job-no{display:flex;align-items:baseline;gap:1.5mm;font-size:9.5pt;white-space:nowrap;min-width:41mm}
-  .job-no .dots{flex:1;border-bottom:.25mm dotted #333;min-height:4.2mm;padding:0 1.2mm;text-align:center;font-weight:600;font-size:9.5pt}
+  .job-no{display:flex;flex:0 0 auto;align-items:baseline;gap:1.5mm;font-size:9.5pt;white-space:nowrap;min-width:41mm}
+  .job-no .dots{flex:1 0 auto;border-bottom:.25mm dotted #333;min-height:4.2mm;padding:0 1.2mm;text-align:center;font-weight:600;overflow-wrap:normal;white-space:nowrap}
   .co-addr{color:#1f4e8c;font-size:8.2pt;line-height:1.25}
   .title{text-align:center;font-size:11.5pt;font-weight:700;margin:2.5mm 0 .8mm;line-height:1.3}
   .project{text-align:center;font-size:9.6pt;font-weight:400;margin:0 0 6mm;line-height:1.35}
   .row{display:grid;gap:3mm;margin-bottom:2.6mm;align-items:baseline}
   .r2{grid-template-columns:1fr 1fr}
-  .r4{grid-template-columns:1.45fr 1fr .62fr .95fr}
+  .r4{grid-template-columns:1.71fr 1.05fr .31fr .95fr}
   .field{display:flex;align-items:baseline;gap:1.8mm;min-width:0}
   .field .lbl{white-space:nowrap;flex-shrink:0}
   .dots{flex:1;min-width:0;min-height:4.8mm;border-bottom:.25mm dotted #444;padding:0 1.5mm;font-weight:400;line-height:1.25;overflow-wrap:anywhere}
   .dots.center{text-align:center}
+  .org-row .org-field .dots{white-space:nowrap;overflow-wrap:normal;line-height:1.2;letter-spacing:-.08mm}
   .types-row{display:flex;align-items:center;gap:4.5mm;margin:3.5mm 0 4.5mm;flex-wrap:wrap}
   .types-row .lbl{white-space:nowrap;margin-right:1mm}
   .types-list{flex:1;display:flex;align-items:center;justify-content:space-between;gap:3mm;flex-wrap:wrap}
@@ -6827,14 +6850,14 @@ function service70Html(data, logo = '') {
     <div class="head-top">
       <div class="co-name">${e(provider)}</div>
       <div class="sr-box">SERVICE REPORT</div>
-      <div class="job-no"><span>JOB NO.</span><span class="dots">${e(t.id)}</span></div>
+      <div class="job-no"><span>JOB NO.</span><span class="dots" style="font-size:${jobFontSize}pt">${e(t.id)}</span></div>
     </div>
     <div class="co-addr">${e(address)}</div>
   </header>
   <h1 class="title">${e(title)}</h1>
   <div class="project">${e(project)}</div>
-  <div class="row r2">${field('สำนัก/กอง', t.org)}${field('กลุ่ม/ศูนย์', t.suborg)}</div>
-  <div class="row r4">${field('ชื่อผู้ใช้งาน', t.reporter)}${field('โทรศัพท์ภายใน', t.phone)}${field('ชั้น', t.floor)}${field('วันที่', reportDate)}</div>
+  <div class="row r2 org-row">${orgField('สำนัก/กอง', t.org)}${orgField('กลุ่ม/ศูนย์', t.suborg)}</div>
+  <div class="row r4">${field('ชื่อผู้ใช้งาน', t.reporter)}${field('โทร.', t.phone)}${field('ชั้น', t.floor)}${field('วันที่', reportDate)}</div>
   <div class="row r2">${field('หมายเลขครุภัณฑ์', t.asset_no)}${field('หมายเลขเครื่อง', t.serial)}</div>
   <div class="row r2">${field('ยี่ห้อ', t.brand)}${field('รุ่น', t.model)}</div>
   <div class="types-row"><span class="lbl">ประเภทอุปกรณ์</span><div class="types-list">${types.map(([name, rx]) => checkMark(rx.test(t.device || ''), name)).join('')}</div></div>
@@ -7013,8 +7036,8 @@ async function service70Edit(id) {
           <label>หมายเหตุ<input id="service70Note" maxlength="500" value="${escAttr(t.note)}" placeholder="ระบุหมายเหตุเพิ่มเติมในใบงาน (ถ้ามี)" ${disabled}></label>
         </div>
         <div class="asset-action-bar">
+          ${data.can_edit ? '<button class="primary" type="submit">บันทึก</button>' : ''}
           <button type="button" class="outline" id="service70Print">พิมพ์ใบงาน (PDF)</button>
-          ${data.can_edit ? '<button class="outline" type="submit">บันทึกข้อมูลใบงาน</button><button class="primary" type="button" id="service70SaveAndPrint">บันทึก &amp; พิมพ์ใบงาน (PDF)</button>' : ''}
         </div>
       </form>`,
       'asset-compact-dialog',
@@ -7125,27 +7148,11 @@ async function service70Edit(id) {
       return result;
     };
     $('service70Print').onclick = (event) => service70Print(id, event.currentTarget);
-    if ($('service70SaveAndPrint')) {
-      $('service70SaveAndPrint').onclick = async (event) => {
-        const btn = event.currentTarget;
-        if (btn.disabled) return;
-        btn.disabled = true;
-        try {
-          await saveReport();
-          await refresh();
-          await service70Print(id, btn);
-        } catch (e) {
-          fail(e);
-        } finally {
-          if (btn.isConnected) btn.disabled = false;
-        }
-      };
-    }
     $('service70Form').onsubmit = async (event) => {
       event.preventDefault();
       const form = event.currentTarget,
         button = form.querySelector('[type=submit]');
-      if (button.disabled) return;
+      if (!button || button.disabled) return;
       button.disabled = true;
       try {
         await saveReport();
@@ -7179,9 +7186,9 @@ const call = (name, ...args) =>
   );
 
 const CLIENT_BRANDING_DEFAULTS = Object.freeze({
-  project_name: 'ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)',
-  short_name: 'ITSD : ITServiceDesk',
-  description: 'ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที',
+  project_name: 'IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์',
+  short_name: 'IT Service Desk',
+  description: 'ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์',
 });
 
 if (document.readyState === 'loading')
@@ -7321,12 +7328,6 @@ const ui = {
     const saved = uiReadPreference('ocpb_mode');
     const legacy = uiReadPreference('ocpb_theme');
     return saved === 'dark' || (!saved && legacy === 'dark') ? 'dark' : 'light';
-  })(),
-  palette: (() => {
-    const saved = uiReadPreference('ocpb_palette');
-    const legacy = uiReadPreference('ocpb_theme');
-    if (/^palette-(0[1-9]|1[0-2])$/.test(saved || '')) return saved;
-    return legacy === 'indigo' ? 'palette-09' : 'palette-01';
   })(),
 };
 
@@ -8453,13 +8454,10 @@ if (!window.__OCPB_UX5_BOUND__) {
   window.addEventListener('offline', () => ux5SetConnectionStatus('offline', 'เครือข่ายขัดข้อง'));
   window.addEventListener('storage', (event) => {
     if (event.key === 'ocpb_mode') ui.theme = event.newValue === 'dark' ? 'dark' : 'light';
-    if (event.key === 'ocpb_palette') ui.palette = normalizePalette(event.newValue);
     if (event.key === 'ocpb_theme' && !uiReadPreference('ocpb_mode')) {
       ui.theme = event.newValue === 'dark' ? 'dark' : 'light';
-      if (event.newValue === 'indigo') ui.palette = 'palette-09';
-      else if (event.newValue === 'light' || event.newValue === 'dark') ui.palette = 'palette-01';
     }
-    if (event.key === null || ['ocpb_mode', 'ocpb_palette', 'ocpb_theme'].includes(event.key))
+    if (event.key === null || ['ocpb_mode', 'ocpb_theme'].includes(event.key))
       setTheme();
   });
   window.addEventListener('resize', () => {

@@ -1,7 +1,7 @@
 /**
- * Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+ * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.1.59
+ * Version: V1.1.68
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-11
  * Change History:
+ * - V1.1.68: Publish the sequential inventory and CM-Form_69 release while retaining authenticated maintenance entry points.
  * - V1.1.59: Rewrite project header to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที) and unify project/Drive/DB bindings.
  * - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
  * - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
@@ -69,14 +70,14 @@ function saveOrgUnit(token, data) { return itsdImpl_saveOrgUnit_.apply(this, arg
 function deleteOrgUnit(token, id) { return itsdImpl_deleteOrgUnit_.apply(this, arguments); }
 function getPasswordPolicy(token) { return itsdImpl_getPasswordPolicy_.apply(this, arguments); }
 function savePasswordPolicy(token, input) { return itsdImpl_savePasswordPolicy_.apply(this, arguments); }
-function itsdBackupBeforeV1064() { return itsdImpl_itsdBackupBeforeV1064_.apply(this, arguments); }
+function itsdBackupBeforeV1064(token) { return itsdImpl_itsdBackupBeforeV1064_.apply(this, arguments); }
 function ocpbImportGetBootstrap(authToken) { return itsdImpl_ocpbImportGetBootstrap_.apply(this, arguments); }
 function ocpbImportPreview(payload) { return itsdImpl_ocpbImportPreview_.apply(this, arguments); }
 function ocpbImportCommit(payload) { return itsdImpl_ocpbImportCommit_.apply(this, arguments); }
-function verifyOcpbImportV1018() { return itsdImpl_verifyOcpbImportV1018_.apply(this, arguments); }
-function verifyOcpbImportV1016() { return itsdImpl_verifyOcpbImportV1016_.apply(this, arguments); }
-function verifyOcpbImportV1015() { return itsdImpl_verifyOcpbImportV1015_.apply(this, arguments); }
-function verifyOcpbImportV1013() { return itsdImpl_verifyOcpbImportV1013_.apply(this, arguments); }
+function verifyOcpbImportV1018(token) { return itsdImpl_verifyOcpbImportV1018_.apply(this, arguments); }
+function verifyOcpbImportV1016(token) { return itsdImpl_verifyOcpbImportV1016_.apply(this, arguments); }
+function verifyOcpbImportV1015(token) { return itsdImpl_verifyOcpbImportV1015_.apply(this, arguments); }
+function verifyOcpbImportV1013(token) { return itsdImpl_verifyOcpbImportV1013_.apply(this, arguments); }
 function itsdLineClaimForReview(token, inboxId, expectedRevision) { return itsdImpl_itsdLineClaimForReview_.apply(this, arguments); }
 function itsdLineReconcileInspect(token, inboxId) { return itsdImpl_itsdLineReconcileInspect_.apply(this, arguments); }
 function itsdLineCreateTicketFromClaim() { return itsdImpl_itsdLineCreateTicketFromClaim_.apply(this, arguments); }
@@ -98,7 +99,7 @@ function pmGetPlanning(token, query) { return itsdImpl_pmGetPlanning_.apply(this
 function pmGetPlanningDetail(token, id) { return itsdImpl_pmGetPlanningDetail_.apply(this, arguments); }
 function pmGetPlanningExport(token, query, signature) { return itsdImpl_pmGetPlanningExport_.apply(this, arguments); }
 function pmSavePlanning(token, input) { return itsdImpl_pmSavePlanning_.apply(this, arguments); }
-function pmSetupCandidate() { return itsdImpl_pmSetupCandidate_.apply(this, arguments); }
+function pmSetupCandidate(token) { return itsdImpl_pmSetupCandidate_.apply(this, arguments); }
 function pmGetCalendar(token, month) { return itsdImpl_pmGetCalendar_.apply(this, arguments); }
 function getCalendarEntries(token) { return itsdImpl_getCalendarEntries_.apply(this, arguments); }
 function saveCalendarEntry(token, input) { return itsdImpl_saveCalendarEntry_.apply(this, arguments); }

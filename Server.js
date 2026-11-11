@@ -1,7 +1,7 @@
 /**
- * Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+ * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.64
+ * Version: V1.1.68
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-11
  * Change History:
+ * - V1.1.68: Add sequential inventory IDs with collision protection, finalize CM-Form_69 layout/actions, and retain the confirmed production binding.
  * - V1.1.64: Add shared ticketApplyDevicePatch_ helper so both changeStatus and saveServiceReportDetails can update asset_id, asset_no, brand, model, serial, and device cleanly from Inventory lookups or edits.
  * - V1.1.60: Compact single-screen modal layout for Equipment General Edit & Create dialogs (multi-column groups, tightened spacing, zero vertical scroll on desktop).
  * - V1.1.59: Rewrite project header & branding defaults to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที); keep ADMIN project-name customization via System Settings.
@@ -43,12 +44,12 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.64';
+const APP_VERSION = 'V1.1.68';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
   PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') ||
-  '1JtOd13gEJpwqPlaBJy87hGrUa1hO_MnVmmKRAaoAyEs';
+  '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c';
 
 // apps/webapp/src/server/platform/environment.js
 const TZ = PropertiesService.getScriptProperties().getProperty('ITSD_TIMEZONE') || 'Asia/Bangkok';
@@ -280,13 +281,14 @@ const SECURITY_LIMITS = Object.freeze({
   INVENTORY_TEXT: 200,
   SETTING_VALUE: 220,
   REPORT_DATE: 10,
+  IMPORT_ROWS: 500,
 });
 
 // apps/webapp/src/server/features/branding/branding-service.js
 const SYSTEM_BRANDING_DEFAULTS = Object.freeze({
-  project_name: 'ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)',
-  short_name: 'ITSD : ITServiceDesk',
-  description: 'ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที',
+  project_name: 'IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์',
+  short_name: 'IT Service Desk',
+  description: 'ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์',
 });
 
 // apps/webapp/src/server/platform/drive/folder-service.js
@@ -1074,7 +1076,7 @@ const OCPB_IMPORT_CONFIG = Object.freeze({
   MAX_ROWS: 500,
   PREVIEW_ROWS: 20,
   PREVIEW_TTL_SECONDS: 600,
-  SPREADSHEET_ID_FALLBACK: '1JtOd13gEJpwqPlaBJy87hGrUa1hO_MnVmmKRAaoAyEs',
+  SPREADSHEET_ID_FALLBACK: '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c',
   SHEETS: Object.freeze({
     TICKET: 'INCIDENT',
     INVENTORY: 'INVENTORY',
@@ -1305,12 +1307,10 @@ const PM_STATES_ = ['รอดำเนินการ', 'กำลังดำ�
 const PM_SOFT_DELETED_ = 'ลบแล้ว';
 
 // apps/webapp/src/server/features/projects/project-binding.js
-const PROJECT70_LEGACY_DB_ = '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c';
-const PROJECT70_TARGET_DB_ = '1JtOd13gEJpwqPlaBJy87hGrUa1hO_MnVmmKRAaoAyEs';
+const PROJECT70_CONFIRMED_DB_ = '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c';
 
 // apps/webapp/src/server/features/projects/project-binding.js
-const PROJECT70_LEGACY_SCRIPT_ = '1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7';
-const PROJECT70_TARGET_SCRIPT_ = '1G24xkTApOioEWGknDyVxqQ-sNzICsG8HQoP-5IkfJK98sfGsir_0QWcg';
+const PROJECT70_CONFIRMED_SCRIPT_ = '1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7';
 
 // apps/webapp/src/server/features/projects/project-binding.js
 const PROJECT70_TIMEZONES_ = ['Asia/Bangkok', 'Asia/Ho_Chi_Minh', 'Asia/Jakarta'];
@@ -3184,6 +3184,56 @@ function inventoryValidateChoices_(patch, old) {
     throw Error('กรุณาเลือกยี่ห้อจาก MST_DEVICE_MODELS หรือให้ผู้ดูแลเพิ่มยี่ห้อและรุ่นในข้อมูลหลัก');
 }
 
+// apps/webapp/src/server/features/inventory/inventory-id-service.js
+function nextInventoryIdFromValues_(values, defaultPrefix) {
+  const ids = (Array.isArray(values) ? values : [])
+    .map((row) => String(Array.isArray(row) ? row[0] || '' : row || '').trim())
+    .filter(Boolean);
+  const uuidPattern = /^INV-[0-9A-F]{8}$/i;
+  let sequence = null;
+  for (let index = ids.length - 1; index >= 0; index--) {
+    if (uuidPattern.test(ids[index])) continue;
+    const match = ids[index].match(/^(.+-)(\d+)$/);
+    if (match) {
+      sequence = { prefix: match[1], width: match[2].length };
+      break;
+    }
+  }
+  const prefix = sequence ? sequence.prefix : String(defaultPrefix || 'INV-TOR70-');
+  let width = sequence ? sequence.width : 4;
+  let max = 0;
+  const used = new Set(ids);
+  ids.forEach((id) => {
+    if (uuidPattern.test(id)) return;
+    const match = id.match(/^(.+-)(\d+)$/);
+    if (!match || match[1] !== prefix) return;
+    max = Math.max(max, Number(match[2]));
+    width = Math.max(width, match[2].length);
+  });
+  let next = max + 1;
+  let candidate = prefix + String(next).padStart(width, '0');
+  while (used.has(candidate)) {
+    next += 1;
+    candidate = prefix + String(next).padStart(width, '0');
+  }
+  return candidate;
+}
+
+// apps/webapp/src/server/features/inventory/inventory-id-service.js
+function nextInventoryId_() {
+  const inventorySheet = sheet_('INVENTORY');
+  const idColumn = header_('INVENTORY').indexOf('รหัสอุปกรณ์') + 1;
+  if (idColumn < 1) throw Error('ไม่พบคอลัมน์รหัสอุปกรณ์ใน INVENTORY');
+  const lastRow = inventorySheet.getLastRow();
+  const values =
+    lastRow > 1 ? inventorySheet.getRange(2, idColumn, lastRow - 1, 1).getDisplayValues() : [];
+  const configuredPrefix = String(
+    PropertiesService.getScriptProperties().getProperty('INVENTORY_ID_PREFIX') ||
+      'INV-TOR70-',
+  ).trim();
+  return nextInventoryIdFromValues_(values, configuredPrefix || 'INV-TOR70-');
+}
+
 // apps/webapp/src/server/features/inventory/inventory-service.js
 function itsdImpl_saveInventory_(token, data) {
   if (data && data.survey_only === true) return saveInventorySurvey_(token, data);
@@ -3202,7 +3252,7 @@ function itsdImpl_saveInventory_(token, data) {
   if (!type) throw Error('กรุณาระบุประเภทอุปกรณ์');
   return lock_(() => {
     const id =
-        get('id', 'รหัสอุปกรณ์', 80) || 'INV-' + Utilities.getUuid().slice(0, 8).toUpperCase(),
+        get('id', 'รหัสอุปกรณ์', 80) || nextInventoryId_(),
       old = find_('INVENTORY', 'รหัสอุปกรณ์', id),
       patch = {
         รหัสอุปกรณ์: id,
@@ -3294,6 +3344,8 @@ function itsdImpl_canImportMasterData_(token) {
 function itsdImpl_saveImportedInventory_(token, rows) {
   const u = importPermissionGuard_(token, 'inventory');
   if (!Array.isArray(rows)) throw Error('ข้อมูลนำเข้าไม่ถูกต้อง');
+  if (rows.length > SECURITY_LIMITS.IMPORT_ROWS)
+    throw Error('นำเข้าได้สูงสุด ' + SECURITY_LIMITS.IMPORT_ROWS + ' รายการต่อครั้ง');
   const out = [];
   rows.forEach((r) => out.push(saveInventory(token, r)));
   if (typeof permissionAudit_log_ === 'function')
@@ -5817,7 +5869,10 @@ function itsdImpl_deleteOrgUnit_(token, id) {
 }
 
 // apps/webapp/src/server/maintenance/backup-verification.js
-function itsdImpl_itsdBackupBeforeV1064_() {
+function itsdImpl_itsdBackupBeforeV1064_(token) {
+  const actor = requirePermission_(token, 'SETTINGS', 'MANAGE');
+  if (roleKey_(actor) !== 'ADMIN')
+    throw Error('เฉพาะ ADMIN เท่านั้นที่สำรองข้อมูลเพื่อบำรุงรักษาได้');
   const source = book_(); // Existing ITSD database accessor; do not guess spreadsheet IDs.
   if (!source || !source.getId) throw new Error('Database accessor book_() unavailable');
   const required = ['PM_PLANS', 'PM_PLAN_HISTORY'];
@@ -6148,7 +6203,10 @@ function ocpbImportAssertReadyAgainstTargetValidation_(target, ready, headers) {
 }
 
 // apps/webapp/src/server/features/imports/import-service.js
-function itsdImpl_verifyOcpbImportV1018_() {
+function itsdImpl_verifyOcpbImportV1018_(token) {
+  const actor = requirePermission_(token, 'SETTINGS', 'VIEW');
+  if (roleKey_(actor) !== 'ADMIN')
+    throw Error('เฉพาะ ADMIN เท่านั้นที่ตรวจสอบโครงสร้าง Import ได้');
   const ss = ocpbImportGetSpreadsheet_();
   const ticket = ss.getSheetByName(OCPB_IMPORT_CONFIG.SHEETS.TICKET);
   const inventory = ss.getSheetByName(OCPB_IMPORT_CONFIG.SHEETS.INVENTORY);
@@ -6178,18 +6236,18 @@ function itsdImpl_verifyOcpbImportV1018_() {
 }
 
 // apps/webapp/src/server/features/imports/import-service.js
-function itsdImpl_verifyOcpbImportV1016_() {
-  return verifyOcpbImportV1018();
+function itsdImpl_verifyOcpbImportV1016_(token) {
+  return itsdImpl_verifyOcpbImportV1018_(token);
 }
 
 // apps/webapp/src/server/features/imports/import-service.js
-function itsdImpl_verifyOcpbImportV1015_() {
-  return verifyOcpbImportV1018();
+function itsdImpl_verifyOcpbImportV1015_(token) {
+  return itsdImpl_verifyOcpbImportV1018_(token);
 }
 
 // apps/webapp/src/server/features/imports/import-service.js
-function itsdImpl_verifyOcpbImportV1013_() {
-  return verifyOcpbImportV1018();
+function itsdImpl_verifyOcpbImportV1013_(token) {
+  return itsdImpl_verifyOcpbImportV1018_(token);
 }
 
 // apps/webapp/src/server/features/imports/import-service.js
@@ -6678,7 +6736,7 @@ function ocpbImportGetSpreadsheet_() {
     propertyId ||
     DB_ID ||
     OCPB_IMPORT_CONFIG.SPREADSHEET_ID_FALLBACK ||
-    '1JtOd13gEJpwqPlaBJy87hGrUa1hO_MnVmmKRAaoAyEs';
+    '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c';
   if (!id) throw new Error('ไม่พบ SPREADSHEET_ID');
   return SpreadsheetApp.openById(id);
 }
@@ -9143,7 +9201,10 @@ function pmOrgs_() {
 }
 
 // apps/webapp/src/server/features/pm/calendar-service.js
-function itsdImpl_pmSetupCandidate_() {
+function itsdImpl_pmSetupCandidate_(token) {
+  const actor = requirePermission_(token, 'SETTINGS', 'MANAGE');
+  if (roleKey_(actor) !== 'ADMIN')
+    throw Error('เฉพาะ ADMIN เท่านั้นที่ตั้งค่า PM Candidate ได้');
   const book = book_();
   return lock_(() => {
     [
@@ -9479,12 +9540,15 @@ function project70OpenBook_() {
       'PROJECT_NOT_CONFIGURED: ติดตั้งโครงการผ่าน project70Bootstrap_ ใน Apps Script editor',
     );
   const binding = project70Binding_();
-  const isAuthorizedDb = DB_ID === PROJECT70_LEGACY_DB_ || DB_ID === PROJECT70_TARGET_DB_;
-  const isAuthorizedScript =
-    ScriptApp.getScriptId() === PROJECT70_LEGACY_SCRIPT_ ||
-    ScriptApp.getScriptId() === PROJECT70_TARGET_SCRIPT_;
+  const isAuthorizedDb = DB_ID === PROJECT70_CONFIRMED_DB_;
+  const isAuthorizedScript = ScriptApp.getScriptId() === PROJECT70_CONFIRMED_SCRIPT_;
   if (!binding && (!isAuthorizedDb || !isAuthorizedScript))
     throw Error('PROJECT_NOT_BOUND: กรุณาผูกโครงการก่อนใช้งาน');
+  if (
+    binding &&
+    (binding.database_id !== DB_ID || binding.script_id !== ScriptApp.getScriptId())
+  )
+    throw Error('PROJECT_BINDING_RUNTIME_MISMATCH');
   const book = SpreadsheetApp.openById(DB_ID),
     marker = project70Identity_(book);
   if (
@@ -9498,8 +9562,7 @@ function project70OpenBook_() {
   if (
     !binding &&
     marker.itsd_binding_script_id &&
-    marker.itsd_binding_script_id !== PROJECT70_LEGACY_SCRIPT_ &&
-    marker.itsd_binding_script_id !== PROJECT70_TARGET_SCRIPT_
+    marker.itsd_binding_script_id !== PROJECT70_CONFIRMED_SCRIPT_
   )
     throw Error('PROJECT_DATABASE_IDENTITY_MISMATCH');
   return book;
@@ -9583,8 +9646,11 @@ function project70Bootstrap_() {
       !PROJECT70_TIMEZONES_.includes(timezone)
     )
       throw Error('ตั้ง ITSD_PROJECT_ID, ITSD_ENVIRONMENT และ ITSD_TIMEZONE ตามคู่มือก่อนติดตั้ง');
-    if (!DB_ID || DB_ID === PROJECT70_LEGACY_DB_)
-      throw Error('ใช้ฐานข้อมูลใหม่ที่แยกจากชุดตรวจสอบเดิม และกำหนด SPREADSHEET_ID ก่อนติดตั้ง');
+    if (
+      DB_ID !== PROJECT70_CONFIRMED_DB_ ||
+      ScriptApp.getScriptId() !== PROJECT70_CONFIRMED_SCRIPT_
+    )
+      throw Error('Apps Script หรือ SPREADSHEET_ID ไม่ตรงกับโครงการ Production ที่ยืนยันแล้ว');
     const username = normalizeUsername_(p.getProperty('ITSD_SETUP_ADMIN_USERNAME')),
       password = String(p.getProperty('ITSD_SETUP_ADMIN_PASSWORD') || ''),
       displayName = boundedText_(p.getProperty('ITSD_SETUP_ADMIN_NAME'), 'ชื่อ ADMIN', 120, true),

@@ -1,7 +1,7 @@
 <!--
-  Project: ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
+  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: Index.html
-  Version: V1.1.64
+  Version: V1.1.68
   Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-11
   Change History:
+  - V1.1.68: Finalize sequential inventory IDs and CM-Form_69, remove the 12-palette switcher and retain the confirmed project branding and binding.
   - V1.1.64: Bump to V1.1.64 for Inventory search/pick & editable device details across Status Update and CM Service Report dialogs.
   - V1.1.60: Bump to V1.1.60 for compact single-screen equipment edit dialog.
   - V1.1.59: Rewrite project header & default branding to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที), editable by ADMIN via Settings.
@@ -36,19 +37,14 @@
     <script>
       (function () {
         var mode = 'light';
-        var palette = 'palette-05';
         try {
           var legacy = localStorage.getItem('ocpb_theme');
           var savedMode = localStorage.getItem('ocpb_mode');
-          var savedPalette = localStorage.getItem('ocpb_palette');
           mode = savedMode === 'dark' || (!savedMode && legacy === 'dark') ? 'dark' : 'light';
-          palette = /^palette-(0[1-9]|1[0-2])$/.test(savedPalette || '')
-            ? savedPalette
-            : 'palette-05';
         } catch (_) {}
         var root = document.documentElement;
         root.dataset.theme = mode;
-        root.dataset.palette = palette;
+        root.dataset.palette = 'palette-05';
         root.classList.toggle('dark', mode === 'dark');
         root.style.colorScheme = mode;
       })();
@@ -84,9 +80,9 @@
             <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
           </div>
           <div class="login48-brand-copy">
-            <span class="login48-eyebrow">ITSD : ITServiceDesk</span>
-            <h1 id="loginBrandTitle">ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)</h1>
-            <p id="loginBrandDescription">ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที</p>
+            <span class="login48-eyebrow">IT Service Desk</span>
+            <h1 id="loginBrandTitle">IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์</h1>
+            <p id="loginBrandDescription">ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์</p>
           </div>
         </div>
 
@@ -213,8 +209,8 @@
             <span class="material-symbols-rounded" aria-hidden="true">account_circle</span>
           </div>
           <div class="brand-copy">
-            <strong id="sideTitle">ITSD : ITServiceDesk</strong
-            ><small id="sideDescription">ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที</small>
+            <strong id="sideTitle">IT Service Desk</strong
+            ><small id="sideDescription">ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์</small>
           </div>
         </div>
         <div class="section-name">หน้าหลัก</div>
@@ -259,7 +255,7 @@
             <span class="material-symbols-rounded" aria-hidden="true">menu</span>
           </button>
           <div class="crumb">
-            <span id="crumbBrand">ITSD : ITServiceDesk</span> <span>/</span><b id="crumb"></b>
+            <span id="crumbBrand">IT Service Desk</span> <span>/</span><b id="crumb"></b>
           </div>
           <div class="top-search">
             <span class="material-symbols-rounded top-search-icon" aria-hidden="true">search</span>
@@ -294,16 +290,6 @@
               </button>
               <div id="uxNotificationMenu" class="ux-notification-menu hidden"></div>
             </div>
-            <button
-              id="paletteToggle"
-              type="button"
-              class="top-icon-button palette-toggle"
-              onclick="changePalette()"
-              aria-label="เปลี่ยนชุดสี"
-              title="เปลี่ยนชุดสี"
-            >
-              <span class="material-symbols-rounded" aria-hidden="true">palette</span>
-            </button>
             <button
               id="themeToggle"
               type="button"
