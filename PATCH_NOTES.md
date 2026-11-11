@@ -173,3 +173,4 @@
 - Add a deterministic unit test for sequential inventory IDs, including mixed UUID data, width growth and empty-sheet cases. Tests and local pull backups are excluded from `clasp push`.
 - Source boundary: this checkout is the deployable root Apps Script bundle configured by `.clasp.json`; no duplicate `src/` tree is introduced.
 - Validation: server/client syntax, manifest parsing, four inventory-ID unit cases and Chrome headless CM-Form_69 rendering passed; the generated PDF is one A4 page (595 x 842 preview) with 10 mm side margins and complete long JOB NO./organization values.
+- Released as Apps Script version 119 by updating the existing production deployment; HTTP returned 200 and a read-back comparison matched all 8 deployable files.
