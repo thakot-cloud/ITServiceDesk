@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.76
+ * Version: V1.1.77
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -13681,15 +13681,39 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 }
 
 #content .itsd65-help-trigger {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  max-width: 36px !important;
+  max-height: 36px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-grid !important;
+  place-items: center !important;
   background: var(--theme-info-bg) !important;
   color: var(--theme-accent) !important;
   border: 1px solid var(--theme-border) !important;
-  border-radius: var(--dark-radius-xs) !important;
+  transition:
+    background-color var(--motion-instant) ease,
+    border-color var(--motion-instant) ease,
+    color var(--motion-instant) ease,
+    box-shadow var(--motion-instant) ease,
+    transform var(--motion-instant) ease !important;
 }
 
-#content .itsd65-help-trigger:hover {
+#content .itsd65-help-trigger .material-symbols-rounded {
+  font-size: 20px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+#content .itsd65-help-trigger:is(:hover, :focus-visible, [aria-expanded='true']) {
   background: var(--dark-surface-hover) !important;
   border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: var(--dark-shadow-1), 0 0 0 3px var(--dark-focus-ring) !important;
+  transform: translateY(-1px) scale(1.04) !important;
 }
 
 .itsd65-help-popover {
@@ -13701,9 +13725,40 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 }
 
 .itsd65-help-popover .itsd65-help-close {
+  width: 32px !important;
+  height: 32px !important;
+  min-width: 32px !important;
+  min-height: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
   background: var(--theme-raised) !important;
   color: var(--theme-text) !important;
   border: 1px solid var(--theme-border) !important;
+  transition:
+    background-color var(--motion-instant) ease,
+    border-color var(--motion-instant) ease,
+    color var(--motion-instant) ease,
+    box-shadow var(--motion-instant) ease,
+    transform var(--motion-instant) ease !important;
+}
+
+.itsd65-help-popover .itsd65-help-close .material-symbols-rounded {
+  font-size: 18px !important;
+  line-height: 1 !important;
+  margin: 0 !important;
+}
+
+.itsd65-help-popover .itsd65-help-close:is(:hover, :focus-visible) {
+  background: var(--dark-surface-hover) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-accent) !important;
+  box-shadow: var(--dark-shadow-1), 0 0 0 3px var(--dark-focus-ring) !important;
+  transform: scale(1.04) !important;
 }
 
 .itsd65-help-popover li {

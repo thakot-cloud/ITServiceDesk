@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.76
+ * Version: V1.1.77
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -45,7 +45,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.76';
+const APP_VERSION = 'V1.1.77';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =

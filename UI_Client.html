@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.76
+  Version: V1.1.77
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.77: Replace bell icon on .itsd65-help-trigger with info icon and make both help trigger and popover close buttons circular.
   - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
   - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
   - V1.1.74: Make ticket reporter phone (#fPhone) optional (remove required/minlength and asterisk).
@@ -9487,7 +9488,7 @@ const PMPL_EXPORT_HEADS = [
     button.setAttribute('aria-label', 'ดูขั้นตอนหลังส่งคำขอ');
     button.setAttribute('aria-haspopup', 'dialog');
     button.setAttribute('aria-expanded', 'false');
-    var icon = el('span', 'material-symbols-rounded', 'notifications');
+    var icon = el('span', 'material-symbols-rounded', 'info');
     icon.setAttribute('aria-hidden', 'true');
     button.appendChild(icon);
     var popup = el('div', 'itsd65-help-popover');
@@ -9498,9 +9499,12 @@ const PMPL_EXPORT_HEADS = [
     button.setAttribute('aria-controls', popup.id);
     var header = el('div', 'itsd65-help-title');
     header.appendChild(el('span', '', 'ขั้นตอนหลังส่งคำขอ'));
-    var close = el('button', 'itsd65-help-close', '×');
+    var close = el('button', 'itsd65-help-close');
     close.type = 'button';
     close.setAttribute('aria-label', 'ปิดขั้นตอน');
+    var closeIcon = el('span', 'material-symbols-rounded', 'close');
+    closeIcon.setAttribute('aria-hidden', 'true');
+    close.appendChild(closeIcon);
     header.appendChild(close);
     popup.appendChild(header);
     popup.appendChild(list.cloneNode(true));
