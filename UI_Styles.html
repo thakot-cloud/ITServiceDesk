@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.68
+ * Version: V1.1.69
  * Stage: production
  * Purpose: Ordered feature styles and shared Light/Dark tokens
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-11
+ * Modified: 2026-11-12
  * Change History:
+ * - V1.1.69: Add responsive, accessible License cards and horizontal drawer tabs for the secured license workflow.
  * - V1.1.68: Finalize Clay & Sea as the single palette, the 980px compact editor and CM-Form_69 release styling.
  * - V1.1.64: Add inventory picker & status device grid styles, plus .asset-grid-2 for side-by-side CM service report rows.
   - V1.1.60: Add compact .asset-compact-form single-screen modal grid & tight vertical spacing.
@@ -1870,15 +1871,20 @@ textarea {
 .ui-side-tabs {
   display: flex;
   gap: 4px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
   border-bottom: 1px solid #e4ebf3;
   margin-top: 12px;
   margin-bottom: 14px;
 }
 .ui-side-tabs button {
+  flex: 0 0 auto;
   border: 0;
   background: none;
   padding: 10px 8px;
   color: #647b95;
+  white-space: nowrap;
 }
 html[data-theme] .ui-side-tabs button.active,
 .ui-side-tabs button.active {
@@ -1901,6 +1907,122 @@ html[data-theme] .ui-side-tabs button.active,
 }
 .ui-detail span {
   overflow-wrap: anywhere;
+}
+.license-state,
+.license-match-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(0, 133, 133, 0.26);
+  border-radius: 12px;
+  background: rgba(116, 168, 146, 0.16);
+  color: #0b4f50;
+}
+.license-state p,
+.license-match-note p {
+  margin: 4px 0;
+}
+.license-state-warning {
+  border-color: rgba(199, 82, 42, 0.34);
+  background: rgba(251, 242, 196, 0.72);
+  color: #6f2d18;
+}
+.license-state-error {
+  border-color: rgba(199, 82, 42, 0.42);
+  background: rgba(199, 82, 42, 0.1);
+  color: #8a2f18;
+}
+.license-match-note > span:last-child {
+  display: grid;
+  gap: 2px;
+}
+.license-match-note small {
+  color: #526b72;
+}
+.license-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+.license-card {
+  padding: 12px;
+  border: 1px solid #dce7e2;
+  border-radius: 12px;
+  background: #fffdfa;
+}
+.license-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: #173f43;
+}
+.license-meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+.license-tag {
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(0, 133, 133, 0.12);
+  color: #0b4f50;
+  font-size: 11px;
+  font-weight: 600;
+}
+.license-note {
+  margin: 8px 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #526b72;
+}
+.license-note.is-warning {
+  color: #8a2f18;
+}
+.license-card-head .material-symbols-rounded {
+  color: #008585;
+}
+.license-value {
+  display: block;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #fbf2c4;
+  color: #4c3a22;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  user-select: none;
+}
+.license-value.is-revealed {
+  background: rgba(229, 193, 133, 0.44);
+  color: #482b15;
+  user-select: text;
+}
+.license-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 9px;
+}
+.license-actions button {
+  min-height: 36px;
+  padding: 7px 10px;
+}
+.license-security-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 12px 0 20px;
+  color: #60768f;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.license-security-note .material-symbols-rounded {
+  font-size: 18px;
+  color: #008585;
 }
 .ui-history {
   border-left: 2px solid #b8d7f6;
@@ -2353,6 +2475,47 @@ body.ui-theme-dark {
 .ui-theme-dark .ux-profile-identity h3,
 .ui-theme-dark .ux-password-box h3 {
   color: #eef4fb;
+}
+.ui-theme-dark .license-card {
+  background: #172439;
+  border-color: #35465c;
+}
+.ui-theme-dark .license-card-head {
+  color: #eef4fb;
+}
+.ui-theme-dark .license-tag {
+  background: rgba(116, 168, 146, 0.22);
+  color: #b8e4db;
+}
+.ui-theme-dark .license-note {
+  color: #9fb0c4;
+}
+.ui-theme-dark .license-note.is-warning {
+  color: #f4c6ac;
+}
+.ui-theme-dark .license-value {
+  background: rgba(251, 242, 196, 0.14);
+  color: #f8e8bf;
+}
+.ui-theme-dark .license-value.is-revealed {
+  background: rgba(229, 193, 133, 0.22);
+  color: #fff0cd;
+}
+.ui-theme-dark .license-match-note {
+  background: rgba(0, 133, 133, 0.18);
+  color: #b8e4db;
+}
+.ui-theme-dark .license-match-note small,
+.ui-theme-dark .license-security-note {
+  color: #9fb0c4;
+}
+.ui-theme-dark .license-state-warning {
+  background: rgba(199, 82, 42, 0.16);
+  color: #f4c6ac;
+}
+.ui-theme-dark .license-state-error {
+  background: rgba(199, 82, 42, 0.2);
+  color: #ffc1ad;
 }
 .ui-theme-dark .ui-note {
   background: #173451;

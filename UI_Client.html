@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.68
+  Version: V1.1.69
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
   - No secrets in source code
   - Preserve existing data and backward compatibility
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
-  Modified: 2026-11-11
+  Modified: 2026-11-12
   Change History:
+  - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
   - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
   - V1.1.64: Add shared Inventory picker (by asset number or serial) in both อัปเดตสถานะ (statusForm) and สร้าง/แก้ไขข้อมูลใบงาน CM (service70Edit for job asset, sent equipment & replacement equipment) + fix horizontal grid columns in service70Edit.
   - V1.1.60: Compact single-screen layout for Equipment General Edit, Specs Edit & Create dialogs via shared helpers.
@@ -665,9 +666,154 @@ function inventoryExportPdf() {
   }
 }
 
+const assetLicenseUi = {
+  request: 0,
+  summaries: new Map(),
+  revealed: new Map(),
+  timers: new Map(),
+};
+
+function assetLicenseCanView() {
+  const role = String(state?.user?.role || '').toUpperCase();
+  return ['ADMIN', 'MANAGER'].includes(role) && hasAction('license.view');
+}
+
+function assetLicenseCanReveal() {
+  const role = String(state?.user?.role || '').toUpperCase();
+  return ['ADMIN', 'MANAGER'].includes(role) && hasAction('license.reveal_secret');
+}
+
+function assetLicenseInvalidate(id) {
+  if (!id) return;
+  assetLicenseUi.summaries.delete(id);
+  const prefix = `${id}|`;
+  Array.from(assetLicenseUi.revealed.keys()).forEach((key) => {
+    if (key.startsWith(prefix)) assetLicenseUi.revealed.delete(key);
+  });
+  Array.from(assetLicenseUi.timers.entries()).forEach(([key, timer]) => {
+    if (key.startsWith(prefix)) {
+      clearTimeout(timer);
+      assetLicenseUi.timers.delete(key);
+    }
+  });
+}
+
+function assetLicenseRender(id) {
+  const host = $('assetLicenseBody');
+  if (!host || ui.asset !== id || ui.assetTab !== 'license') return;
+  const data = assetLicenseUi.summaries.get(id);
+  if (!data) {
+    host.innerHTML = '<div class="license-state" role="status"><span class="spinner"></span> กำลังตรวจสอบ License...</div>';
+    return;
+  }
+  const isMatched = data.status === 'matched';
+  const isMaskedOnly = data.status === 'masked_only';
+  if (!isMatched && !isMaskedOnly) {
+    host.innerHTML = `<div class="license-state license-state-warning" role="status"><span class="material-symbols-rounded" aria-hidden="true">warning</span><div><strong>ยังไม่สามารถแสดง License</strong><p>${esc(data.message)}</p>${data.serial ? `<small>Serial: ${esc(data.serial)}</small>` : ''}</div></div>`;
+    return;
+  }
+  const headerBanner = isMatched
+    ? `<div class="license-match-note" role="status"><span class="material-symbols-rounded" aria-hidden="true">verified</span><span>${esc(data.message)}<small>Serial: ${esc(data.serial)}</small></span></div>`
+    : `<div class="license-state license-state-warning" role="status"><span class="material-symbols-rounded" aria-hidden="true">info</span><div><strong>แสดงเฉพาะข้อมูลปกปิด (DBS)</strong><p>${esc(data.message)}</p>${data.serial ? `<small>Serial: ${esc(data.serial)}</small>` : ''}</div></div>`;
+  host.innerHTML = `${headerBanner}<div class="license-list">${(data.items || [])
+    .map((item) => {
+      const cacheKey = `${id}|${item.key}`;
+      const revealed = isMatched ? assetLicenseUi.revealed.get(cacheKey) : '';
+      const value = revealed || item.masked || '—';
+      const metaBadges = [item.license_status, item.activation_status]
+        .filter(Boolean)
+        .map((label) => `<span class="license-tag">${esc(label)}</span>`)
+        .join('');
+      return `<section class="license-card"><div class="license-card-head"><span class="material-symbols-rounded" aria-hidden="true">${item.key.includes('password') ? 'password' : item.key.includes('account') ? 'account_circle' : 'key'}</span><strong>${esc(item.label)}</strong>${metaBadges ? `<span class="license-meta">${metaBadges}</span>` : ''}</div><code class="license-value ${revealed ? 'is-revealed' : ''}">${esc(value)}</code>${item.note ? `<p class="license-note ${item.has_warning ? 'is-warning' : ''}">${esc(item.note)}</p>` : ''}<div class="license-actions">${
+        isMatched && item.available && assetLicenseCanReveal()
+          ? revealed
+            ? `<button type="button" class="outline" onclick="assetLicenseCopy('${escAttr(id)}','${escAttr(item.key)}')"><span class="material-symbols-rounded" aria-hidden="true">content_copy</span> คัดลอก</button>`
+            : `<button type="button" class="outline" onclick="assetLicenseOpenReveal('${escAttr(id)}','${escAttr(item.key)}')"><span class="material-symbols-rounded" aria-hidden="true">visibility</span> แสดงข้อมูล</button>`
+          : ''
+      }</div></section>`;
+    })
+    .join('')}</div><p class="license-security-note"><span class="material-symbols-rounded" aria-hidden="true">shield_lock</span> ${isMatched ? 'ข้อมูลจริงจะแสดง 60 วินาทีหลังยืนยันรหัสผ่าน และทุกครั้งถูกบันทึกใน Audit Log' : 'โหมดปกปิดจากแท็บ SOFTWARE_LICENSES: ปิดการเปิดดูค่าจริงจนกว่า Serial ในฐานต้นทางจะตรงกัน'}</p>`;
+}
+
+async function assetLicenseLoad(id) {
+  if (!assetLicenseCanView() || assetLicenseUi.summaries.has(id)) {
+    assetLicenseRender(id);
+    return;
+  }
+  const request = ++assetLicenseUi.request;
+  try {
+    const result = await call('getAssetLicenses', token, id);
+    if (request !== assetLicenseUi.request || ui.asset !== id) return;
+    assetLicenseUi.summaries.set(id, result);
+    assetLicenseRender(id);
+  } catch (error) {
+    if (request !== assetLicenseUi.request || ui.asset !== id) return;
+    const host = $('assetLicenseBody');
+    if (host)
+      host.innerHTML = `<div class="license-state license-state-error" role="alert"><span class="material-symbols-rounded" aria-hidden="true">error</span><div><strong>โหลดข้อมูล License ไม่สำเร็จ</strong><p>${esc(error.message)}</p></div></div>`;
+  }
+}
+
+function assetLicenseOpenReveal(id, fieldKey) {
+  const item = assetLicenseUi.summaries
+    .get(id)
+    ?.items?.find((entry) => entry.key === fieldKey);
+  if (!item || !assetLicenseCanReveal()) return;
+  openModal(
+    'ยืนยันก่อนเปิดดู License',
+    `<form onsubmit="event.preventDefault();assetLicenseReveal('${escAttr(id)}','${escAttr(fieldKey)}')"><p class="ui-note">กำลังขอเปิดดู <strong>${esc(item.label)}</strong> ของอุปกรณ์ <strong>${esc(id)}</strong></p><label>รหัสผ่านบัญชีปัจจุบัน<input id="assetLicensePassword" type="password" autocomplete="current-password" maxlength="128" required autofocus></label><p class="hint">ระบบจะแสดงข้อมูล 60 วินาทีและบันทึกเหตุการณ์ใน Audit Log โดยไม่บันทึกค่าจริงลง Log</p><div class="form-actions"><button type="button" class="outline" onclick="closeModal()">ยกเลิก</button><button id="assetLicenseRevealButton" type="submit" class="primary"><span class="material-symbols-rounded" aria-hidden="true">visibility</span> ยืนยันและแสดง</button></div></form>`,
+  );
+}
+
+async function assetLicenseReveal(id, fieldKey) {
+  const button = $('assetLicenseRevealButton');
+  if (button) button.disabled = true;
+  try {
+    const result = await call(
+      'revealAssetLicenseSecret',
+      token,
+      id,
+      fieldKey,
+      uiValue('assetLicensePassword'),
+    );
+    closeModal();
+    const cacheKey = `${id}|${fieldKey}`;
+    assetLicenseUi.revealed.set(cacheKey, result.value);
+    clearTimeout(assetLicenseUi.timers.get(cacheKey));
+    assetLicenseUi.timers.set(
+      cacheKey,
+      setTimeout(() => {
+        assetLicenseUi.revealed.delete(cacheKey);
+        assetLicenseUi.timers.delete(cacheKey);
+        assetLicenseRender(id);
+      }, Math.max(1, Number(result.expires_in_seconds) || 60) * 1000),
+    );
+    assetLicenseRender(id);
+  } catch (error) {
+    fail(error);
+    if (button && button.isConnected) button.disabled = false;
+  }
+}
+
+async function assetLicenseCopy(id, fieldKey) {
+  const value = assetLicenseUi.revealed.get(`${id}|${fieldKey}`);
+  if (!value) return;
+  try {
+    await navigator.clipboard.writeText(value);
+    toast('คัดลอกข้อมูลแล้ว');
+  } catch (_) {
+    toast('เบราว์เซอร์ไม่อนุญาตให้คัดลอกอัตโนมัติ');
+  }
+}
+
 function uiAssetSide(id) {
   const x = state.inventory.find((a) => a.id === id);
   if (!x) return;
+  if (ui.asset && ui.asset !== id) {
+    assetLicenseUi.revealed.clear();
+    assetLicenseUi.timers.forEach((timer) => clearTimeout(timer));
+    assetLicenseUi.timers.clear();
+  }
   ui.asset = id;
   uiDrawInventory();
   const linked = state.inventory.filter(
@@ -690,6 +836,7 @@ function uiAssetSide(id) {
     ['ยี่ห้อ / รุ่น', [x.brand, x.model].filter(Boolean).join(' ')],
     ['หมายเลขซีเรียล', x.serial],
     ['เลขครุภัณฑ์', x.asset_no],
+    ['หมายเลขสินทรัพย์', x.asset_code],
     ['สถานะ', (typeof ASSET_STATUS_LABELS !== 'undefined' && ASSET_STATUS_LABELS[x.status]) || x.status],
     ['ผู้รับผิดชอบ', x.owner],
     ['หน่วยงานหลัก', x.org],
@@ -708,15 +855,16 @@ function uiAssetSide(id) {
     ['IP Address', x.ip],
   ];
   $('inventorySide').innerHTML =
-    `<div class="ui-side-head"><div><h2><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ${esc(x.id)}</h2><small>${esc(x.type)} · ${esc(x.brand)} ${esc(x.model)}</small></div><button type="button" class="ux-drawer-close" title="ปิดรายละเอียด" aria-label="ปิดรายละเอียด" onclick="ux5CloseDrawer('inventorySide')"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div><div class="ui-side-tabs">${[
+    `<div class="ui-side-head"><div><h2><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ${esc(x.id)}</h2><small>${esc(x.type)} · ${esc(x.brand)} ${esc(x.model)}</small></div><button type="button" class="ux-drawer-close" title="ปิดรายละเอียด" aria-label="ปิดรายละเอียด" onclick="ux5CloseDrawer('inventorySide')"><span class="material-symbols-rounded" aria-hidden="true">close</span></button></div><div class="ui-side-tabs" role="tablist" aria-label="รายละเอียดอุปกรณ์">${[
       ['details', 'ข้อมูลทั่วไป'],
       ['specs', 'คุณลักษณะ'],
+      ...(assetLicenseCanView() ? [['license', 'License']] : []),
       ['survey', 'การสำรวจ'],
       ['history', 'ประวัติแจ้งซ่อม'],
     ]
       .map(
         ([k, n]) =>
-          `<button class="${ui.assetTab === k ? 'active' : ''}" onclick="ui.assetTab='${k}';uiAssetSide('${escAttr(id)}')">${n}</button>`,
+          `<button type="button" role="tab" aria-selected="${ui.assetTab === k}" class="${ui.assetTab === k ? 'active' : ''}" onclick="ui.assetTab='${k}';uiAssetSide('${escAttr(id)}')">${n}</button>`,
       )
       .join(
         '',
@@ -725,10 +873,13 @@ function uiAssetSide(id) {
           ? `<div class="ui-panel-title">ข้อมูลอุปกรณ์</div><div class="ui-detail">${fields.map(([k, v]) => `<b>${k}</b><span>${esc(v) || '—'}</span>`).join('')}</div>${linked.length ? `<h3 style="margin:15px 0 5px">อุปกรณ์ร่วมเลขครุภัณฑ์</h3><div class="ui-note">${linked.map((a) => `<button class="link" onclick="uiAssetSide('${escAttr(a.id)}')">${esc(a.id)} · ${esc(a.type)} · ${esc(a.brand)} ${esc(a.model)}</button>`).join('<br>')}</div>` : ''}${inventoryCanEdit() ? `<div class="form-actions"><button class="primary" onclick="assetGeneralForm('${escAttr(id)}')"><span class="material-symbols-rounded" aria-hidden="true">edit</span> แก้ไขข้อมูลทั่วไป</button></div>` : ''}`
           : ui.assetTab === 'specs'
           ? `<div class="ui-panel-title">คุณลักษณะทางเทคนิค</div><div class="ui-detail">${specs.map(([k, v]) => `<b>${k}</b><span>${esc(v) || '—'}</span>`).join('')}</div>${inventoryCanEdit() ? `<div class="form-actions"><button class="primary" onclick="assetSpecsForm('${escAttr(id)}')"><span class="material-symbols-rounded" aria-hidden="true">edit</span> แก้ไขคุณลักษณะ</button></div>` : ''}`
+          : ui.assetTab === 'license'
+          ? `<div class="ui-panel-title">License สำหรับติดตั้งซอฟต์แวร์</div><div id="assetLicenseBody" role="tabpanel"><div class="license-state" role="status"><span class="spinner"></span> กำลังตรวจสอบ License...</div></div>`
           : ui.assetTab === 'survey'
           ? `<div class="ui-panel-title">ข้อมูลการสำรวจ</div><div class="ui-detail"><b>วันที่สำรวจ</b><span>${esc(x.survey_at || '—')}</span><b>ผู้ตรวจสอบ</b><span>${esc(x.inspector || '—')}</span><b>สถานะตรวจสอบ</b><span>${esc(inspectionStatusLabel)}</span></div>${inventoryCanSurvey() ? `<div class="form-actions"><button class="primary" onclick="assetSurveyForm('${escAttr(id)}')"><span class="material-symbols-rounded" aria-hidden="true">edit</span> แก้ไขข้อมูลการสำรวจ</button></div>` : ''}`
           : `<div class="ui-panel-title">ประวัติแจ้งซ่อม</div>${history.length ? history.map((t) => `<p><button class="link" onclick="ui.ticket='${escAttr(t.id)}';nav('tickets')">${esc(t.id)}</button> · ${shortDate(t.reported_at)} ${badge(t.status)}</p>`).join('') : '<p class="empty">ยังไม่มีประวัติแจ้งซ่อม</p>'}`
       }`;
+  if (ui.assetTab === 'license') setTimeout(() => assetLicenseLoad(id), 0);
 }
 
 // apps/webapp/src/client/features/tickets/ticket-detail-controller.js
@@ -3001,6 +3152,7 @@ function assetGeneralSectionsHtml_(x = {}) {
         `<label>รุ่น<select id="a_model"></select></label>` +
         input('serial', 'หมายเลขซีเรียล') +
         input('asset_no', 'เลขครุภัณฑ์', 'asset-span2') +
+        input('asset_code', 'หมายเลขสินทรัพย์') +
         select('status', 'สถานะครุภัณฑ์ *', assetOptions(Object.keys(ASSET_STATUS_LABELS), x.status, 'เลือกสถานะครุภัณฑ์', ASSET_STATUS_LABELS), true) +
         select('year', 'ปีงบประมาณที่จัดซื้อ (พ.ศ.)', assetOptions(ASSET_PURCHASE_YEARS, String(x.year ?? ''), 'ยังไม่ระบุ')),
       4,
@@ -3103,6 +3255,7 @@ async function submitAssetGeneral(id) {
       'model',
       'serial',
       'asset_no',
+      'asset_code',
       'owner',
       'org',
       'suborg',
@@ -3115,6 +3268,7 @@ async function submitAssetGeneral(id) {
     const d = { id, details_only: true };
     keys.forEach((k) => (d[k] = uiValue('a_' + k)));
     await call('saveInventory', token, d);
+    assetLicenseInvalidate(id);
     form.dataset.saving = 'false'; form.dataset.dirty = 'false';
     closeModal();
     ui.asset = id || '';
@@ -3287,6 +3441,7 @@ async function submitAsset(id) {
         'model',
         'serial',
         'asset_no',
+        'asset_code',
         'owner',
         'org',
         'suborg',
@@ -3305,6 +3460,7 @@ async function submitAsset(id) {
       d = { id };
     keys.forEach((k) => (d[k] = uiValue('a_' + k)));
     const savedId = await call('saveInventory', token, d);
+    assetLicenseInvalidate(savedId || id);
     form.dataset.saving = 'false'; form.dataset.dirty = 'false';
     closeModal();
     ui.asset = savedId || id || '';

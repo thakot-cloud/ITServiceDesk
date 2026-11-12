@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.1.68
+ * Version: V1.1.69
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-11
+ * Modified: 2026-11-12
  * Change History:
+ * - V1.1.69: Add authenticated, on-demand Inventory License summary and secret-reveal endpoints.
  * - V1.1.68: Publish the sequential inventory and CM-Form_69 release while retaining authenticated maintenance entry points.
  * - V1.1.59: Rewrite project header to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที) and unify project/Drive/DB bindings.
  * - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
@@ -39,6 +40,8 @@ function saveAsset(token, data) { return itsdImpl_saveAsset_.apply(this, argumen
 function updateAsset(token, data) { return itsdImpl_updateAsset_.apply(this, arguments); }
 function editInventoryItem(token, data) { return itsdImpl_editInventoryItem_.apply(this, arguments); }
 function updateInventory(token, data) { return itsdImpl_updateInventory_.apply(this, arguments); }
+function getAssetLicenses(token, assetId) { return itsdImpl_getAssetLicenses_.apply(this, arguments); }
+function revealAssetLicenseSecret(token, assetId, fieldKey, currentPassword) { return itsdImpl_revealAssetLicenseSecret_.apply(this, arguments); }
 function canImportMasterData(token) { return itsdImpl_canImportMasterData_.apply(this, arguments); }
 function saveImportedInventory(token, rows) { return itsdImpl_saveImportedInventory_.apply(this, arguments); }
 function importInventoryRows(token, rows) { return itsdImpl_importInventoryRows_.apply(this, arguments); }

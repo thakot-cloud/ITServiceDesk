@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.68
+ * Version: V1.1.69
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-11
+ * Modified: 2026-11-12
  * Change History:
+ * - V1.1.69: Add ADMIN/MANAGER-only, on-demand SOFTWARE_LICENSES lookup matched to Inventory by exact normalized serial number.
  * - V1.1.68: Add sequential inventory IDs with collision protection, finalize CM-Form_69 layout/actions, and retain the confirmed production binding.
  * - V1.1.64: Add shared ticketApplyDevicePatch_ helper so both changeStatus and saveServiceReportDetails can update asset_id, asset_no, brand, model, serial, and device cleanly from Inventory lookups or edits.
  * - V1.1.60: Compact single-screen modal layout for Equipment General Edit & Create dialogs (multi-column groups, tightened spacing, zero vertical scroll on desktop).
@@ -44,12 +45,30 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.68';
+const APP_VERSION = 'V1.1.69';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
   PropertiesService.getScriptProperties().getProperty('SPREADSHEET_ID') ||
   '1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c';
+
+// License data stays in its dedicated workbook (Full_Data tab). Configure the Script
+// Property in production; the confirmed workbook ID is only a non-secret compatibility fallback.
+const SOFTWARE_LICENSE_SPREADSHEET_ID_ =
+  PropertiesService.getScriptProperties().getProperty('SOFTWARE_LICENSE_SPREADSHEET_ID') ||
+  '1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4';
+const SOFTWARE_LICENSE_SHEET_NAME_ =
+  PropertiesService.getScriptProperties().getProperty('SOFTWARE_LICENSE_SHEET_NAME') ||
+  'Full_Data';
+const SOFTWARE_LICENSE_HEADERS_ = Object.freeze([
+  'ลำดับ',
+  'Serial Number Notebook',
+  'Product Key Windows',
+  'Product Key Microsoft Office',
+  'E-mail Account Microsoft',
+  'Password',
+  'Product Key Antivirus',
+]);
 
 // apps/webapp/src/server/platform/environment.js
 const TZ = PropertiesService.getScriptProperties().getProperty('ITSD_TIMEZONE') || 'Asia/Bangkok';
@@ -224,6 +243,30 @@ const COL = {
     'detail',
     'client_info',
     'session_ref',
+  ],
+  SOFTWARE_LICENSES: [
+    'รหัส License',
+    'รหัสอุปกรณ์',
+    'หมายเลขซีเรียล',
+    'หมายเลขสินทรัพย์',
+    'ประเภท License',
+    'ชื่อซอฟต์แวร์',
+    'รุ่น/Edition',
+    'เวอร์ชัน',
+    'Product Key_Masked',
+    'Product Key_SecretRef',
+    'Account_Email_Masked',
+    'Account_SecretRef',
+    'สถานะ License',
+    'สถานะ Activation',
+    'วันที่ซื้อ/เริ่มใช้',
+    'วันหมดอายุ',
+    'แหล่งข้อมูล',
+    'หลักฐานรูปภาพ1_URL',
+    'หลักฐานรูปภาพ2_URL',
+    'หมายเหตุ',
+    'วันที่อัปเดต',
+    'ผู้บันทึก/ผู้แก้ไข',
   ],
 };
 
@@ -493,6 +536,58 @@ const PERMISSION_LINE_ACTION_DEFAULTS_ = Object.freeze([
     'FALSE',
     'ADMIN',
     'LINE review queue access',
+  ],
+]);
+
+// apps/webapp/src/server/features/permissions/license-permissions.js
+const PERMISSION_LICENSE_ACTION_DEFAULTS_ = Object.freeze([
+  [
+    'PERM-ACT-055',
+    'ADMIN',
+    'license',
+    'license.view',
+    'ดูข้อมูล License แบบปกปิด',
+    'TRUE',
+    'exact_serial_only',
+    'FALSE',
+    'ADMIN',
+    'แสดงเฉพาะข้อมูลที่ปกปิดแล้ว',
+  ],
+  [
+    'PERM-ACT-056',
+    'ADMIN',
+    'license',
+    'license.reveal_secret',
+    'เปิดดู License Key',
+    'TRUE',
+    'reauth_exact_serial_only',
+    'FALSE',
+    'ADMIN',
+    'ต้องยืนยันรหัสผ่านและบันทึก Audit Log',
+  ],
+  [
+    'PERM-ACT-057',
+    'MANAGER',
+    'license',
+    'license.view',
+    'ดูข้อมูล License แบบปกปิด',
+    'TRUE',
+    'exact_serial_only',
+    'FALSE',
+    'ADMIN',
+    'เฉพาะ ADMIN และ MANAGER สำหรับอุปกรณ์ที่จับคู่ได้เท่านั้น',
+  ],
+  [
+    'PERM-ACT-058',
+    'MANAGER',
+    'license',
+    'license.reveal_secret',
+    'เปิดดู License Key',
+    'TRUE',
+    'reauth_exact_serial_only',
+    'FALSE',
+    'ADMIN',
+    'ต้องยืนยันรหัสผ่านและบันทึก Audit Log',
   ],
 ]);
 
@@ -1419,6 +1514,337 @@ function boundedText_(value, label, max, trim) {
   if (trim) text = text.trim();
   if (text.length > max) throw Error((label || 'ข้อมูล') + 'ยาวเกิน ' + max + ' ตัวอักษร');
   return text;
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseNormalizeSerial_(value) {
+  return String(value == null ? '' : value)
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseMaskSecret_(value) {
+  const text = String(value == null ? '' : value).trim();
+  if (!text) return '';
+  let remaining = Math.min(5, text.replace(/[^A-Za-z0-9]/g, '').length);
+  const chars = text.split('');
+  for (let i = chars.length - 1; i >= 0; i--) {
+    if (!/[A-Za-z0-9]/.test(chars[i])) continue;
+    if (remaining > 0) {
+      remaining--;
+      continue;
+    }
+    chars[i] = '•';
+  }
+  return chars.join('');
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseFindMatch_(inventoryRows, licenseRows, assetId) {
+  const asset = (inventoryRows || []).find(
+    (row) => String(row['รหัสอุปกรณ์'] || '').trim() === String(assetId || '').trim(),
+  );
+  if (!asset) return { status: 'asset_not_found' };
+  const serial = licenseNormalizeSerial_(asset['หมายเลขซีเรียล']);
+  if (!serial) return { status: 'missing_serial', asset };
+  const inventoryMatches = (inventoryRows || []).filter(
+    (row) => licenseNormalizeSerial_(row['หมายเลขซีเรียล']) === serial,
+  );
+  if (inventoryMatches.length !== 1)
+    return { status: 'duplicate_inventory_serial', asset, serial };
+  const licenseMatches = (licenseRows || []).filter(
+    (row) => licenseNormalizeSerial_(row['Serial Number Notebook']) === serial,
+  );
+  if (!licenseMatches.length) return { status: 'not_found', asset, serial };
+  if (licenseMatches.length !== 1)
+    return { status: 'duplicate_license_serial', asset, serial };
+  return { status: 'matched', asset, serial, license: licenseMatches[0] };
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseMaskAccount_(value) {
+  const text = String(value == null ? '' : value).trim();
+  const at = text.indexOf('@');
+  if (at <= 0) return licenseMaskSecret_(text);
+  return text.slice(0, 1) + '•••' + text.slice(at);
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseReadRows_() {
+  try {
+    const licenseBook = SpreadsheetApp.openById(SOFTWARE_LICENSE_SPREADSHEET_ID_);
+    const sheet =
+      licenseBook.getSheetByName(SOFTWARE_LICENSE_SHEET_NAME_) ||
+      licenseBook.getSheetByName('Full_Data') ||
+      licenseBook.getSheetByName('SOFTWARE_LICENSES');
+    if (!sheet) throw Error('SHEET_NOT_FOUND');
+    const lastRow = sheet.getLastRow();
+    if (lastRow < 1) throw Error('EMPTY_SHEET');
+    const values = sheet
+      .getRange(1, 1, Math.max(1, lastRow), SOFTWARE_LICENSE_HEADERS_.length)
+      .getDisplayValues();
+    const headers = values.shift() || [];
+    if (headers.join('|') !== SOFTWARE_LICENSE_HEADERS_.join('|')) throw Error('HEADER_MISMATCH');
+    return values
+      .map((row) =>
+        Object.fromEntries(SOFTWARE_LICENSE_HEADERS_.map((header, index) => [header, row[index] || ''])),
+      )
+      .filter((row) => String(row['Serial Number Notebook'] || '').trim());
+  } catch (error) {
+    console.error('[LICENSE_SOURCE_UNAVAILABLE]', error && error.message ? error.message : error);
+    throw Error('ระบบข้อมูล License ไม่พร้อมใช้งาน กรุณาติดต่อผู้ดูแลระบบ');
+  }
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function dbsLicenseReadRows_() {
+  try {
+    const sheet = book_().getSheetByName('SOFTWARE_LICENSES');
+    if (!sheet) return [];
+    return rows_('SOFTWARE_LICENSES');
+  } catch (error) {
+    console.warn('[DBS_LICENSE_READ_SKIPPED]', error && error.message ? error.message : error);
+    return [];
+  }
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function dbsLicenseRowsForAsset_(dbsRows, assetId, serial) {
+  const cleanId = String(assetId || '').trim();
+  const cleanSerial = licenseNormalizeSerial_(serial);
+  return (dbsRows || []).filter((row) => {
+    const rowId = String(row['รหัสอุปกรณ์'] || '').trim();
+    const rowSerial = licenseNormalizeSerial_(row['หมายเลขซีเรียล']);
+    if (cleanId && rowId) return rowId === cleanId;
+    return Boolean(cleanSerial && rowSerial && rowSerial === cleanSerial);
+  });
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function dbsLicenseHasQcWarning_(note) {
+  const text = String(note || '');
+  return (
+    text.includes('ไม่ครบมาตรฐาน') ||
+    text.includes('ซ้ำทั้ง 95 เครื่อง') ||
+    text.includes('QC ต้นทาง') ||
+    text.includes('แก้ SN')
+  );
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function dbsLicenseByFieldKey_(dbsRecords) {
+  const byType = {};
+  (dbsRecords || []).forEach((row) => {
+    const type = String(row['ประเภท License'] || '').trim().toLowerCase();
+    const meta = {
+      license_id: String(row['รหัส License'] || '').trim(),
+      masked_key: String(row['Product Key_Masked'] || '').trim(),
+      masked_account: String(row['Account_Email_Masked'] || '').trim(),
+      license_status: String(row['สถานะ License'] || '').trim(),
+      activation_status: String(row['สถานะ Activation'] || '').trim(),
+      note: String(row['หมายเหตุ'] || '').trim(),
+      has_warning: dbsLicenseHasQcWarning_(row['หมายเหตุ']),
+    };
+    if (type === 'windows') byType.windows_key = meta;
+    else if (type === 'microsoft office') byType.office_key = meta;
+    else if (type === 'antivirus') byType.antivirus_key = meta;
+  });
+  return byType;
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseMergeDbsMetadata_(result, dbsRecords, asset) {
+  const byType = dbsLicenseByFieldKey_(dbsRecords);
+  const accountMeta = byType.windows_key || byType.office_key || null;
+  if (result && result.status === 'matched') {
+    const items = (result.items || []).map((item) => {
+      const meta =
+        item.key === 'microsoft_account' || item.key === 'microsoft_password'
+          ? accountMeta
+          : byType[item.key];
+      if (!meta) return item;
+      const note = item.key === 'microsoft_account' || item.key === 'microsoft_password' ? '' : meta.note;
+      return {
+        ...item,
+        license_status: meta.license_status,
+        activation_status: meta.activation_status,
+        note,
+        has_warning: Boolean(note && dbsLicenseHasQcWarning_(note)),
+      };
+    });
+    return { ...result, items, reveal_enabled: true };
+  }
+  if (
+    (!result || result.status === 'not_found' || result.status === 'source_unavailable') &&
+    Array.isArray(dbsRecords) &&
+    dbsRecords.length
+  ) {
+    const items = licenseFieldDefinitions_()
+      .filter((def) => def.key !== 'microsoft_password')
+      .map((def) => {
+        const meta = def.key === 'microsoft_account' ? accountMeta : byType[def.key];
+        const masked = def.key === 'microsoft_account' ? meta?.masked_account || '' : meta?.masked_key || '';
+        const note = def.key === 'microsoft_account' ? '' : meta?.note || '';
+        return {
+          key: def.key,
+          label: def.label,
+          available: false,
+          masked,
+          license_status: meta?.license_status || '',
+          activation_status: meta?.activation_status || '',
+          note,
+          has_warning: Boolean(note && dbsLicenseHasQcWarning_(note)),
+        };
+      });
+    return {
+      status: 'masked_only',
+      message:
+        result && result.status === 'source_unavailable'
+          ? 'ฐาน License ต้นทางไม่พร้อมใช้งาน แสดงเฉพาะข้อมูลปกปิดใน DBS (ไม่สามารถเปิดดูค่าจริงได้)'
+          : 'พบข้อมูลปกปิดในแท็บ SOFTWARE_LICENSES (DBS) แต่ยังไม่พบ Serial ตรงกันในฐาน License ต้นทาง จึงยังไม่สามารถเปิดดูค่าจริงได้',
+      serial: (asset && asset['หมายเลขซีเรียล']) || (result && result.serial) || '',
+      reveal_enabled: false,
+      items,
+    };
+  }
+  return result;
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseFieldDefinitions_() {
+  return [
+    { key: 'windows_key', label: 'Windows Product Key', header: 'Product Key Windows' },
+    {
+      key: 'office_key',
+      label: 'Microsoft Office Product Key',
+      header: 'Product Key Microsoft Office',
+    },
+    {
+      key: 'microsoft_account',
+      label: 'Microsoft Account',
+      header: 'E-mail Account Microsoft',
+      account: true,
+    },
+    { key: 'microsoft_password', label: 'Microsoft Account Password', header: 'Password' },
+    { key: 'antivirus_key', label: 'Antivirus Product Key', header: 'Product Key Antivirus' },
+  ];
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licensePublicMatch_(match) {
+  const statusMessages = {
+    asset_not_found: 'ไม่พบอุปกรณ์ในทะเบียน',
+    missing_serial: 'อุปกรณ์นี้ไม่มีหมายเลขซีเรียล จึงยังจับคู่ License ไม่ได้',
+    duplicate_inventory_serial: 'พบหมายเลขซีเรียลซ้ำในทะเบียน กรุณาตรวจสอบข้อมูลก่อนเปิดดู License',
+    not_found: 'ยังไม่พบ License ที่ตรงกับหมายเลขซีเรียลของอุปกรณ์นี้',
+    duplicate_license_serial: 'พบ License ซ้ำมากกว่าหนึ่งรายการ กรุณาตรวจสอบฐานข้อมูลต้นทาง',
+  };
+  if (!match || match.status !== 'matched')
+    return {
+      status: (match && match.status) || 'not_found',
+      message: statusMessages[(match && match.status) || 'not_found'],
+      serial: (match && match.asset && match.asset['หมายเลขซีเรียล']) || '',
+      items: [],
+    };
+  return {
+    status: 'matched',
+    message: 'จับคู่ License ด้วยหมายเลขซีเรียลเรียบร้อย',
+    serial: match.asset['หมายเลขซีเรียล'] || '',
+    items: licenseFieldDefinitions_().map((definition) => {
+      const value = String(match.license[definition.header] || '').trim();
+      return {
+        key: definition.key,
+        label: definition.label,
+        available: Boolean(value),
+        masked: value
+          ? definition.account
+            ? licenseMaskAccount_(value)
+            : licenseMaskSecret_(value)
+          : '',
+      };
+    }),
+  };
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function licenseRequireAuthorizedRole_(actor) {
+  const role = roleKey_(actor);
+  if (!['ADMIN', 'MANAGER'].includes(role))
+    throw Error('ข้อมูล License จำกัดเฉพาะ ADMIN และ MANAGER');
+  return role;
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function itsdImpl_getAssetLicenses_(token, assetId) {
+  const actor = require_(token);
+  licenseRequireAuthorizedRole_(actor);
+  if (!permission_hasAction_(actor, 'license.view')) throw Error('ไม่มีสิทธิ์ดูข้อมูล License');
+  assetId = boundedText_(assetId, 'รหัสอุปกรณ์', 80, true);
+  const inventoryRows = rows_('INVENTORY');
+  const asset = inventoryRows.find(
+    (row) => String(row['รหัสอุปกรณ์'] || '').trim() === String(assetId || '').trim(),
+  );
+  const dbsRecords = dbsLicenseRowsForAsset_(
+    dbsLicenseReadRows_(),
+    assetId,
+    asset ? asset['หมายเลขซีเรียล'] : '',
+  );
+  let licenseRows = null;
+  try {
+    licenseRows = licenseReadRows_();
+  } catch (error) {
+    if (dbsRecords.length) {
+      return licenseMergeDbsMetadata_(
+        { status: 'source_unavailable', serial: asset ? asset['หมายเลขซีเรียล'] : '' },
+        dbsRecords,
+        asset,
+      );
+    }
+    throw error;
+  }
+  const match = licenseFindMatch_(inventoryRows, licenseRows, assetId);
+  return licenseMergeDbsMetadata_(licensePublicMatch_(match), dbsRecords, asset);
+}
+
+// apps/webapp/src/server/features/licenses/license-service.js
+function itsdImpl_revealAssetLicenseSecret_(token, assetId, fieldKey, currentPassword) {
+  const actor = require_(token);
+  licenseRequireAuthorizedRole_(actor);
+  if (!permission_hasAction_(actor, 'license.reveal_secret'))
+    throw Error('ไม่มีสิทธิ์เปิดดูข้อมูล License');
+  assetId = boundedText_(assetId, 'รหัสอุปกรณ์', 80, true);
+  fieldKey = boundedText_(fieldKey, 'ชนิดข้อมูล License', 60, true);
+  const definition = licenseFieldDefinitions_().find((item) => item.key === fieldKey);
+  if (!definition) throw Error('ชนิดข้อมูล License ไม่ถูกต้อง');
+  project70Reauthenticate_(actor, currentPassword);
+  const match = licenseFindMatch_(rows_('INVENTORY'), licenseReadRows_(), assetId);
+  if (match.status !== 'matched') {
+    writeAudit_(
+      actor,
+      'LICENSE_SECRET_VIEW',
+      'LICENSE',
+      'INVENTORY',
+      assetId,
+      'BLOCKED',
+      'ไม่อนุญาตให้เปิดข้อมูล: ' + match.status,
+    );
+    throw Error(licensePublicMatch_(match).message);
+  }
+  const value = String(match.license[definition.header] || '').trim();
+  if (!value) throw Error('ไม่พบข้อมูล ' + definition.label + ' สำหรับอุปกรณ์นี้');
+  const auditSaved = writeAudit_(
+    actor,
+    'LICENSE_SECRET_VIEW',
+    'LICENSE',
+    'INVENTORY',
+    assetId,
+    'SUCCESS',
+    'เปิดดู ' + definition.key + ' หลังยืนยันรหัสผ่าน',
+  );
+  if (!auditSaved) throw Error('ไม่สามารถบันทึก Audit Log จึงยังไม่เปิดเผยข้อมูล License');
+  return { field: definition.key, value, expires_in_seconds: 60 };
 }
 
 // apps/webapp/src/server/shared/validation.js
@@ -2375,6 +2801,7 @@ function itsdImpl_getBootstrap_(token) {
       model: x['รุ่น'],
       serial: x['หมายเลขซีเรียล'],
       asset_no: x['เลขครุภัณฑ์'],
+      asset_code: x['หมายเลขสินทรัพย์'],
       owner: x['ชื่อผู้รับผิดชอบ'],
       org: x['หน่วยงานหลัก'],
       suborg: x['หน่วยงานย่อย'],
@@ -2967,6 +3394,8 @@ function actionKeysForRole_(roleOrUser) {
     'inventory.view',
     'inventory.edit',
     'inventory.update_after_inspection',
+    'license.view',
+    'license.reveal_secret',
     'master_data.import',
     'ticket.manage_all',
     'role.manage',
@@ -2976,6 +3405,10 @@ function actionKeysForRole_(roleOrUser) {
   ].forEach((k) => {
     if (keys[k] === undefined) keys[k] = permission_defaultAllowed_(role, k);
   });
+  if (!['ADMIN', 'MANAGER'].includes(role)) {
+    keys['license.view'] = false;
+    keys['license.reveal_secret'] = false;
+  }
   if (role === 'ADMIN') {
     keys['role.manage'] = true;
     keys['permission.update'] = true;
@@ -3261,6 +3694,12 @@ function itsdImpl_saveInventory_(token, data) {
         รุ่น: get('model', 'รุ่น', 120),
         หมายเลขซีเรียล: get('serial', 'หมายเลขซีเรียล', 160),
         เลขครุภัณฑ์: get('asset_no', 'เลขครุภัณฑ์', 160),
+        หมายเลขสินทรัพย์:
+          data.asset_code !== undefined
+            ? get('asset_code', 'หมายเลขสินทรัพย์', 120)
+            : old
+              ? old['หมายเลขสินทรัพย์'] || ''
+              : '',
         ชื่อผู้รับผิดชอบ: get('owner', 'ผู้รับผิดชอบ', 160),
         หน่วยงานหลัก: get('org', 'หน่วยงานหลัก', 180),
         หน่วยงานย่อย: get('suborg', 'หน่วยงานย่อย', 180),
@@ -4721,8 +5160,10 @@ function writeAudit_(actor, action, moduleCode, entityType, entityId, result, de
       client_info: '',
       session_ref: String(sessionRef || '').slice(0, 160),
     });
+    return true;
   } catch (e) {
     console.warn('[AUDIT_WRITE_FAILED]', e && e.message ? e.message : e);
+    return false;
   }
 }
 
@@ -5036,24 +5477,26 @@ function permission_seedActionPermissions_() {
     current.map((x) => String(x.role_key || '').toUpperCase() + '|' + String(x.action_key || '')),
   );
   const date = now_();
-  PERMISSION_ACTION_DEFAULTS_.concat(PERMISSION_LINE_ACTION_DEFAULTS_).forEach((x) => {
-    const key = x[1] + '|' + x[3];
-    if (used.has(key)) return;
-    append_('APP_ROLE_ACTION_PERMISSIONS', {
-      permission_id: x[0],
-      role_key: x[1],
-      module_key: x[2],
-      action_key: x[3],
-      action_name: x[4],
-      is_allowed: x[5],
-      scope_rule: x[6],
-      is_system_required: x[7],
-      updated_at: date,
-      updated_by: x[8],
-      note: x[9],
+  PERMISSION_ACTION_DEFAULTS_
+    .concat(PERMISSION_LINE_ACTION_DEFAULTS_, PERMISSION_LICENSE_ACTION_DEFAULTS_)
+    .forEach((x) => {
+      const key = x[1] + '|' + x[3];
+      if (used.has(key)) return;
+      append_('APP_ROLE_ACTION_PERMISSIONS', {
+        permission_id: x[0],
+        role_key: x[1],
+        module_key: x[2],
+        action_key: x[3],
+        action_name: x[4],
+        is_allowed: x[5],
+        scope_rule: x[6],
+        is_system_required: x[7],
+        updated_at: date,
+        updated_by: x[8],
+        note: x[9],
+      });
+      used.add(key);
     });
-    used.add(key);
-  });
   PERMISSION_ACTION_SEEDED_ = true;
   return true;
 }
@@ -5117,6 +5560,8 @@ function permission_defaultAllowed_(role, actionKey) {
       'ticket.create_for_user',
       'master_data.import',
       'inventory.edit',
+      'license.view',
+      'license.reveal_secret',
     ].includes(actionKey);
   const tech = [
     'ticket.view_unassigned',
