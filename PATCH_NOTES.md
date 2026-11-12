@@ -3,6 +3,12 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.70 — 2026-11-12
+- ปรับระบบสีและตัวอักษรทั้ง Web App เป็นชุดออกแบบ **`# Dark`** (`design-system-dark`) แบบ Single Theme (`#000000` Base, `#04060f` Raised, `#080d1d` Elevated, `#02040a` Input, `#4d49fc` CTA/Active, `#00d4ff` Cyan Border & Aura Glow `shadow.1/2`, `#ef4444` Danger/Validation, `oklab(0.804241 -0.112554 -0.0928449 / 0.5)` Focus Ring, และ `150ms` Motion พร้อมรองรับ `prefers-reduced-motion`)
+- เปลี่ยนชุดฟอนต์หลักเป็น `JetBrains Mono` คู่กับ `Noto Sans Thai` (`tabular-nums`) และกำหนดคู่สีตามมาตรฐาน **WCAG 2.2 AA** (`#e2e8f0` เนื้อหาหลัก, `#94a3b8` ข้อความรอง, `#64748b` ไอคอน/ข้อมูลรอง)
+- ตัดฟังก์ชันสลับธีมเดิมทั้งหมดออก (`#themeToggle`, `setTheme()`, `toggleTheme()`, `ocpb_mode`/`ocpb_theme` localStorage listener, `palette-01..12`, `.ui-theme-dark`, และ Clay & Sea / Orange Energy overrides) ลดขนาด `UI_Styles.html` จาก `338,129` bytes เหลือ `301,969` bytes (ลดลง **36,160 bytes** หรือ ~10.7%) และแก้ไข CSS rule ที่ยังไม่ปิดปีกกาจากเวอร์ชันก่อนหน้า
+- ปรับสีกราฟ SVG และ `DASHBOARD_STATUS_COLORS` (`#00d4ff`, `#4d49fc`, `#22c55e`, `#f59e0b`, `#ef4444`, `#a855f7`, `#94a3b8`) โดยยังคงรูปแบบฟอร์มพิมพ์ `CM-Form_69` และ `@media print` พื้นขาวหมึกดำตามเดิม
+
 ## V1.1.69 — 2026-11-12
 - เพิ่มแท็บ `License` ต่อจาก `คุณลักษณะ` ในหน้ารายละเอียดอุปกรณ์ โดยอ่านข้อมูลต้นฉบับจากแท็บ `Full_Data` ของไฟล์ `License` (รองรับ fallback ชื่อแท็บ `SOFTWARE_LICENSES`) และจับคู่กับ `INVENTORY` ด้วย Serial Number แบบ normalized exact match เท่านั้น
 - ผสานสถานะ `สถานะ License`, `สถานะ Activation`, และหมายเหตุ QC จากแท็บ `SOFTWARE_LICENSES` ใน `ITServiceDesk — DBS` พร้อมโหมดแสดงผล `masked_only` (ปิดปุ่มเปิดดูค่าจริง) สำหรับกรณี Serial ในต้นทางยังไม่ตรงหรือเข้าถึงไฟล์ต้นทางไม่ได้

@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Entrypoints.js
- * Version: V1.1.69
+ * Version: V1.1.70
  * Stage: production
  * Purpose: Web application and LINE HTTP entrypoints
  * Notes:

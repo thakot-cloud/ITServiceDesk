@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: Index.html
-  Version: V1.1.69
+  Version: V1.1.70
   Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.70: Adopt single Dark design system (JetBrains Mono + #000000/#04060f/#4d49fc/#00d4ff) and remove legacy theme/palette switcher to reduce asset load.
   - V1.1.69: Publish the secured Inventory License tab assets and client workflow.
   - V1.1.68: Finalize sequential inventory IDs and CM-Form_69, remove the 12-palette switcher and retain the confirmed project branding and binding.
   - V1.1.64: Bump to V1.1.64 for Inventory search/pick & editable device details across Status Update and CM Service Report dialogs.
@@ -29,34 +30,19 @@
   - V1.0.74: Use a palette-cycle button for twelve built-in palettes.
 -->
 <!doctype html>
-<html lang="th">
+<html lang="th" data-theme="dark" class="dark">
   <head>
     <base target="_top" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="light dark" />
-    <script>
-      (function () {
-        var mode = 'light';
-        try {
-          var legacy = localStorage.getItem('ocpb_theme');
-          var savedMode = localStorage.getItem('ocpb_mode');
-          mode = savedMode === 'dark' || (!savedMode && legacy === 'dark') ? 'dark' : 'light';
-        } catch (_) {}
-        var root = document.documentElement;
-        root.dataset.theme = mode;
-        root.dataset.palette = 'palette-05';
-        root.classList.toggle('dark', mode === 'dark');
-        root.style.colorScheme = mode;
-      })();
-    </script>
+    <meta name="color-scheme" content="dark" />
     <script id="publicSystemBranding" type="application/json">
       <?!= publicBrandingJson ?>
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -291,17 +277,6 @@
               </button>
               <div id="uxNotificationMenu" class="ux-notification-menu hidden"></div>
             </div>
-            <button
-              id="themeToggle"
-              type="button"
-              class="top-icon-button mode-toggle"
-              onclick="toggleTheme()"
-              aria-label="เปิด Dark Mode"
-              aria-pressed="false"
-              title="Light / Dark Mode"
-            >
-              <span class="material-symbols-rounded" aria-hidden="true">dark_mode</span>
-            </button>
             <div class="top-divider" aria-hidden="true"></div>
             <div id="uxTopUserMeta" class="ux-top-user-meta"></div>
             <span

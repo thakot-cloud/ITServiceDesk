@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.69
+  Version: V1.1.70
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.70: Migrate Web App to the unified # Dark design system, update chart/status palettes, and remove the theme switcher.
   - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
   - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
   - V1.1.64: Add shared Inventory picker (by asset number or serial) in both อัปเดตสถานะ (statusForm) and สร้าง/แก้ไขข้อมูลใบงาน CM (service70Edit for job asset, sent equipment & replacement equipment) + fix horizontal grid columns in service70Edit.
@@ -255,13 +256,6 @@ function render() {
   applySystemBranding(state.branding || state.settings);
   const top = $('topAvatar');
   top.title = state.user.display_name;
-  if (!document.getElementById('themeToggle')) {
-    $('topAvatar').insertAdjacentHTML(
-      'beforebegin',
-      '<button id="themeToggle" type="button" class="top-icon-button mode-toggle" onclick="toggleTheme()" aria-label="เปิด Dark Mode" aria-pressed="false" title="Light / Dark Mode"><span class="material-symbols-rounded" aria-hidden="true">dark_mode</span></button>',
-    );
-  }
-  setTheme();
   const coreRoute =
     ({ overview, new: newTicket, tickets, inventory, reports, surveyReports, manage })[page];
   if (coreRoute) coreRoute();
@@ -1371,7 +1365,7 @@ function uiBarChart(rows) {
     }
   });
   const max = Math.max(1, ...counts.map((x) => x.all));
-  return `<div class="report100-bars" style="display:flex;align-items:end;gap:17px;height:190px;justify-content:space-around;border-bottom:1px solid #bfd4e9">${counts.map((x) => `<div style="display:flex;align-items:end;gap:3px;height:100%"><i title="แจ้งทั้งหมด ${x.all}" style="display:block;background:#2480eb;width:19px;height:${Math.max(2, Math.round((x.all / max) * 150))}px"></i><i title="ปิดงาน ${x.closed}" style="display:block;background:#1bbd92;width:19px;height:${Math.max(2, Math.round((x.closed / max) * 150))}px"></i><i title="ค้าง ${x.pending}" style="display:block;background:#f5bd3a;width:19px;height:${Math.max(2, Math.round((x.pending / max) * 150))}px"></i></div>`).join('')}</div><div style="display:flex;justify-content:space-around;font-size:11px;margin-top:8px">${counts.map((x) => `<span>${x.label}</span>`).join('')}</div><div class="report32-legend report32-weekly-legend"><span class="report32-legend-item"><i class="report32-dot received" aria-hidden="true"></i>แจ้งทั้งหมด</span><span class="report32-legend-item"><i class="report32-dot closed" aria-hidden="true"></i>ปิดงาน</span><span class="report32-legend-item"><i class="report32-dot pending" aria-hidden="true"></i>ค้างดำเนินการ</span></div>`;
+  return `<div class="report100-bars" style="display:flex;align-items:end;gap:17px;height:190px;justify-content:space-around;border-bottom:1px solid rgba(0,212,255,.25)">${counts.map((x) => `<div style="display:flex;align-items:end;gap:3px;height:100%"><i title="แจ้งทั้งหมด ${x.all}" style="display:block;background:#00d4ff;width:19px;height:${Math.max(2, Math.round((x.all / max) * 150))}px"></i><i title="ปิดงาน ${x.closed}" style="display:block;background:#22c55e;width:19px;height:${Math.max(2, Math.round((x.closed / max) * 150))}px"></i><i title="ค้าง ${x.pending}" style="display:block;background:#f59e0b;width:19px;height:${Math.max(2, Math.round((x.pending / max) * 150))}px"></i></div>`).join('')}</div><div style="display:flex;justify-content:space-around;font-size:11px;margin-top:8px">${counts.map((x) => `<span>${x.label}</span>`).join('')}</div><div class="report32-legend report32-weekly-legend"><span class="report32-legend-item"><i class="report32-dot received" aria-hidden="true"></i>แจ้งทั้งหมด</span><span class="report32-legend-item"><i class="report32-dot closed" aria-hidden="true"></i>ปิดงาน</span><span class="report32-legend-item"><i class="report32-dot pending" aria-hidden="true"></i>ค้างดำเนินการ</span></div>`;
 }
 
 async function runReport() {
@@ -1430,7 +1424,7 @@ async function runReport() {
     const a = pct(closed),
       b = pct(pending),
       c = pct(confirm);
-    const donut = `conic-gradient(#1bbd92 0 ${a}%,#f5bd3a ${a}% ${a + b}%,#2480eb ${a + b}% ${a + b + c}%,#e6edf5 ${a + b + c}% 100%)`;
+    const donut = `conic-gradient(#22c55e 0 ${a}%,#f59e0b ${a}% ${a + b}%,#00d4ff ${a + b}% ${a + b + c}%,rgba(148,163,184,.22) ${a + b + c}% 100%)`;
     const reportBody = $('reportBody');
     if (!reportBody || page !== 'reports') return;
     reportBody.innerHTML = `<div class="grid stats">${stats.map(([name, value, icon, key]) => `<div class="card stat report33-kpi report33-kpi-${key}"><div><small>${name}</small><strong>${value}</strong><span class="muted">จากทั้งหมด ${n} รายการ</span></div><span class="stat-icon">${icon}</span></div>`).join('')}</div><div class="ui-grid-2"><section class="ui-panel ui-report-chart"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span> จำนวนการแจ้งเรื่องรายสัปดาห์</div>${uiBarChart(reportRows)}</section><section class="ui-panel ui-report-chart"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">donut_small</span> สัดส่วนสถานะงานบริการ</div><div class="report100-status" style="display:flex;align-items:center;gap:15px"><div class="ui-donut" style="background:${donut}"><div>${n}<small style="display:block;font-size:12px">ครั้ง</small></div></div><div class="report32-status-legend"><p><i class="report32-dot closed" aria-hidden="true"></i><span>ปิดงาน ${closed} (${a}%)</span></p><p><i class="report32-dot pending" aria-hidden="true"></i><span>ค้าง ${pending} (${b}%)</span></p><p><i class="report32-dot confirm" aria-hidden="true"></i><span>รอยืนยัน ${confirm} (${c}%)</span></p></div></div></section></div><section class="ui-panel" style="margin-top:14px"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">assignment</span> รายการสำหรับรายงานประจำเดือน (CM)<div class="actions" style="margin-left:auto"><button class="outline cm-export pdf" onclick="exportPdf()"><span class="material-symbols-rounded" aria-hidden="true">picture_as_pdf</span> PDF</button><button class="outline cm-export csv" onclick="exportCsv()"><span class="material-symbols-rounded" aria-hidden="true">table_view</span> CSV</button><button class="outline cm-export xls" onclick="exportXls()"><span class="material-symbols-rounded" aria-hidden="true">grid_on</span> XLS</button></div></div>${rowsTable(
@@ -1472,29 +1466,6 @@ function uiWritePreference(key, value) {
   } catch (_) {
     /* Keep the current UI usable without persistent browser storage. */
   }
-}
-
-function setTheme() {
-  ui.theme = ui.theme === 'dark' ? 'dark' : 'light';
-  document.documentElement.dataset.theme = ui.theme;
-  document.documentElement.dataset.palette = 'palette-05';
-  document.documentElement.classList.toggle('dark', ui.theme === 'dark');
-  document.documentElement.style.colorScheme = ui.theme;
-  document.body.classList.toggle('ui-theme-dark', ui.theme === 'dark');
-  const button = $('themeToggle');
-  if (button) {
-    const dark = ui.theme === 'dark';
-    button.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${dark ? 'light_mode' : 'dark_mode'}</span>`;
-    button.setAttribute('aria-label', dark ? 'Switch to Light Mode' : 'Switch to Dark Mode');
-    button.setAttribute('aria-pressed', String(dark));
-    button.title = dark ? 'Light Mode' : 'Dark Mode';
-  }
-}
-
-function toggleTheme() {
-  ui.theme = ui.theme === 'dark' ? 'light' : 'dark';
-  uiWritePreference('ocpb_mode', ui.theme);
-  setTheme();
 }
 
 // apps/webapp/src/client/features/dashboard/dashboard-controller.js
@@ -1655,7 +1626,7 @@ function dashboardLineChartShapes(series, W, H) {
   const calloutWidth = Math.min(plotW, Math.max(128, 96 + String(maxPoint.all).length * 7));
   const calloutX = Math.max(L, Math.min(W - R - calloutWidth, x(maxIndex) - calloutWidth / 2)),
     calloutY = Math.max(4, y(maxPoint.all) - 57);
-  return `<defs><linearGradient id="dashArea23" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2f80ed" stop-opacity=".24"/><stop offset="100%" stop-color="#2f80ed" stop-opacity=".02"/></linearGradient></defs>${ticks.map((v) => `<line x1="${L}" y1="${y(v)}" x2="${W - R}" y2="${y(v)}"/><text x="${L - 10}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('')}<polygon points="${area}" fill="url(#dashArea23)"/><polyline class="dash-trend-line" points="${points}"/>${series.map((p, i) => `<circle class="dash-trend-point" cx="${x(i)}" cy="${y(p.all)}" r="${series.length <= 31 ? 3.6 : 2.5}"><title>${dashboardThaiDate(p.key, true)} • ${p.all} รายการ</title></circle>`).join('')}${series.map((p, i) => (labels.has(i) ? `<text class="dash-x-label" text-anchor="${series.length === 1 ? 'middle' : i === 0 ? 'start' : i === series.length - 1 ? 'end' : 'middle'}" x="${x(i)}" y="${H - 9}">${dashboardThaiDate(p.key)}</text>` : '')).join('')}${maxPoint.all > 0 ? `<g class="dash-callout"><line x1="${x(maxIndex)}" y1="${y(maxPoint.all)}" x2="${x(maxIndex)}" y2="${calloutY + 27}"/><rect x="${calloutX}" y="${calloutY}" rx="7" width="${calloutWidth}" height="27"/><text x="${calloutX + calloutWidth / 2}" y="${calloutY + 18}" text-anchor="middle">${dashboardThaiDate(maxPoint.key)} • ${maxPoint.all} รายการ</text></g>` : ''}`;
+  return `<defs><linearGradient id="dashArea23" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#00d4ff" stop-opacity=".24"/><stop offset="100%" stop-color="#00d4ff" stop-opacity=".02"/></linearGradient></defs>${ticks.map((v) => `<line x1="${L}" y1="${y(v)}" x2="${W - R}" y2="${y(v)}"/><text x="${L - 10}" y="${y(v) + 4}" text-anchor="end">${v}</text>`).join('')}<polygon points="${area}" fill="url(#dashArea23)"/><polyline class="dash-trend-line" points="${points}"/>${series.map((p, i) => `<circle class="dash-trend-point" cx="${x(i)}" cy="${y(p.all)}" r="${series.length <= 31 ? 3.6 : 2.5}"><title>${dashboardThaiDate(p.key, true)} • ${p.all} รายการ</title></circle>`).join('')}${series.map((p, i) => (labels.has(i) ? `<text class="dash-x-label" text-anchor="${series.length === 1 ? 'middle' : i === 0 ? 'start' : i === series.length - 1 ? 'end' : 'middle'}" x="${x(i)}" y="${H - 9}">${dashboardThaiDate(p.key)}</text>` : '')).join('')}${maxPoint.all > 0 ? `<g class="dash-callout"><line x1="${x(maxIndex)}" y1="${y(maxPoint.all)}" x2="${x(maxIndex)}" y2="${calloutY + 27}"/><rect x="${calloutX}" y="${calloutY}" rx="7" width="${calloutWidth}" height="27"/><text x="${calloutX + calloutWidth / 2}" y="${calloutY + 18}" text-anchor="middle">${dashboardThaiDate(maxPoint.key)} • ${maxPoint.all} รายการ</text></g>` : ''}`;
 }
 
 function dashboardLineChart(series) {
@@ -1713,7 +1684,7 @@ function dashboardHorizontalBars(groups, total) {
   if (!groups.length)
     return dashboardEmptyState('ยังไม่มีข้อมูลประเภทอุปกรณ์', 'ข้อมูลจะแสดงเมื่อมีรายการแจ้งปัญหา');
   const max = Math.max(...groups.map((x) => x[1]), 1),
-    colors = ['#5b9cf6', '#f4a621', '#3cc394', '#8357e8', '#ef5350', '#38a8cb', '#788596'];
+    colors = ['#00d4ff', '#4d49fc', '#22c55e', '#f59e0b', '#ef4444', '#a855f7', '#94a3b8'];
   return `<div class="dash-hbars">${groups
     .slice(0, 7)
     .map(
@@ -1724,7 +1695,7 @@ function dashboardHorizontalBars(groups, total) {
 }
 
 function dashboardStatusColor(name) {
-  return DASHBOARD_STATUS_COLORS[String(name || '').trim()] || '#9aa4b2';
+  return DASHBOARD_STATUS_COLORS[String(name || '').trim()] || '#94a3b8';
 }
 
 function dashboardDonut(statusGroups, total) {
@@ -1752,7 +1723,7 @@ function dashboardProblemBars(groups) {
     return dashboardEmptyState('ยังไม่มีข้อมูลประเภทปัญหา', 'ข้อมูลจะแสดงเมื่อมีรายการแจ้งปัญหา');
   const top = groups.slice(0, 6),
     max = Math.max(...top.map((x) => x[1]), 1),
-    colors = ['#5b9cf6', '#42c69a', '#f8b43d', '#8c5de9', '#f26363', '#7b8796'];
+    colors = ['#00d4ff', '#4d49fc', '#22c55e', '#f59e0b', '#ef4444', '#94a3b8'];
   return `<div class="dash-vbars">${top.map(([name, value], i) => `<div class="dash-vbar"><b>${value}</b><span class="dash-vbar-column" style="height:${Math.max(12, (value / max) * 150)}px;background:${colors[i % colors.length]}"></span><em title="${escAttr(name)}">${esc(name)}</em></div>`).join('')}</div>`;
 }
 
@@ -3998,12 +3969,12 @@ function lineChart(series) {
   const x = (i) => p.l + i * (cw / Math.max(1, series.length - 1));
   const y = (v) => p.t + ch - (Math.min(v, max) / max) * ch;
   const colors = {
-    pc: '#3b82f6',
-    nb: '#10b981',
+    pc: '#00d4ff',
+    nb: '#22c55e',
     pr: '#f59e0b',
-    sc: '#8b5cf6',
+    sc: '#a855f7',
     up: '#ef4444',
-    ot: '#6b7280',
+    ot: '#94a3b8',
   };
   const labels = {
     pc: 'Computer PC',
@@ -4033,7 +4004,7 @@ function lineChart(series) {
     )
     .join(
       '',
-    )}<span class="ui-chart-key"><i class="ui-chart-swatch" style="background:#8B0000;opacity:.35"></i>ยอดรวม</span></div></div>`;
+    )}<span class="ui-chart-key"><i class="ui-chart-swatch" style="background:rgba(0,212,255,.32)"></i>ยอดรวม</span></div></div>`;
 }
 
 function ux5SyncChrome() {
@@ -4045,7 +4016,6 @@ function ux5SyncChrome() {
     navigator.onLine ? 'ready' : 'offline',
     navigator.onLine ? 'ระบบพร้อมใช้งาน' : 'เครือข่ายขัดข้อง',
   );
-  setTheme();
   if (page !== 'tickets' && ux5.drawer === 'ticketSide') ux5CloseDrawer('ticketSide');
   if (page !== 'inventory' && ux5.drawer === 'inventorySide') ux5CloseDrawer('inventorySide');
 }
@@ -5284,7 +5254,6 @@ async function admin35SaveSettings() {
     }
     admin35.settings = await call('getAdminSettings', token);
     if (state) state.settings = Object.assign({}, state.settings || {}, admin35.settings);
-    setTheme();
     admin35SettingsRender();
     toast('บันทึกการตั้งค่าแล้ว');
   } catch (e) {
@@ -7480,11 +7449,6 @@ const ui = {
   page: 1,
   pageSize: 10,
   dashboardRange: 'month',
-  theme: (() => {
-    const saved = uiReadPreference('ocpb_mode');
-    const legacy = uiReadPreference('ocpb_theme');
-    return saved === 'dark' || (!saved && legacy === 'dark') ? 'dark' : 'light';
-  })(),
 };
 
 const bkkDate = () => {
@@ -7513,12 +7477,12 @@ const uiHeader = (icon, title, description, extra = '') =>
 let dashboardLineChartCleanup = null;
 
 const DASHBOARD_STATUS_COLORS = Object.freeze({
-  แจ้งเรื่อง: '#3b82f6',
-  รับแจ้ง: '#60a5fa',
-  มอบหมาย: '#7c83fd',
-  กำลังดำเนินการ: '#f6a61d',
-  รอยืนยันผล: '#8257e5',
-  ปิดงาน: '#1bbd92',
+  แจ้งเรื่อง: '#00d4ff',
+  รับแจ้ง: '#38bdf8',
+  มอบหมาย: '#4d49fc',
+  กำลังดำเนินการ: '#f59e0b',
+  รอยืนยันผล: '#a855f7',
+  ปิดงาน: '#22c55e',
 });
 
 const DEVICE_FALLBACK = [
@@ -8608,22 +8572,12 @@ if (!window.__OCPB_UX5_BOUND__) {
   });
   window.addEventListener('online', () => ux5SetConnectionStatus('ready', 'ระบบพร้อมใช้งาน'));
   window.addEventListener('offline', () => ux5SetConnectionStatus('offline', 'เครือข่ายขัดข้อง'));
-  window.addEventListener('storage', (event) => {
-    if (event.key === 'ocpb_mode') ui.theme = event.newValue === 'dark' ? 'dark' : 'light';
-    if (event.key === 'ocpb_theme' && !uiReadPreference('ocpb_mode')) {
-      ui.theme = event.newValue === 'dark' ? 'dark' : 'light';
-    }
-    if (event.key === null || ['ocpb_mode', 'ocpb_theme'].includes(event.key))
-      setTheme();
-  });
   window.addEventListener('resize', () => {
     if (window.innerWidth < 1200) ux5.sidebarHover = false;
     ux5ApplySidebarState();
     if (window.innerWidth >= 768) ux5CloseMobileSidebar();
   });
 }
-
-setTheme();
 
 ux5SyncShortcutLabel();
 
