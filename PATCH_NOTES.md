@@ -3,6 +3,11 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.81 — 2026-11-12
+- หน้าจอเข้าสู่ระบบ (`.login48-card`):
+  - ปรับความโค้งมนของช่องกรอก **Username** และ **Password** (`.login48-card .login48-input input`) เป็น `border-radius: 11px` ให้โค้งมนแนวเดียวกันกับปุ่ม **เข้าสู่ระบบ** (`.login48-submit`)
+  - ล็อกตำแหน่งปุ่มสลับแสดงรหัสผ่าน (`.login48-password-toggle`: `visibility` / `visibility_off`) ให้อยู่กึ่งกลางในกรอบ Password เดิมตลอด (`top: 50%; transform: translateY(-50%)`) ไม่ขยับออกนอกกรอบ และให้สว่างขึ้นตาม Theme (`var(--theme-accent)` + `filter: brightness(1.18)`) เมื่อชี้หรือกดสลับโหมด
+
 ## V1.1.80 — 2026-11-12
 - **Backend GAS & Data Loading (`Server.js`)**:
   - เพิ่มชั้น Cache ข้ามคำขอด้วย `CacheService.getScriptCache()` แบบบีบอัด Gzip + แบ่ง Chunk (`sheetCacheGetJson_`, `sheetCachePutJson_`, `sheetCacheInvalidate_`) สำหรับชีตอ่านบ่อย (`INVENTORY`, `INCIDENT`, `INCIDENT_META`, `MST_ORG_UNITS`, `APP_SETTINGS`, `APP_ROLES`, `APP_ROLE_PERMISSIONS`, `APP_ROLE_ACTION_PERMISSIONS`, `MST_LOOKUP`, `MST_DEVICE_MODELS`) พร้อม Cache คอลัมน์วันที่ดิบของ `INCIDENT` ใน `rawColumnByRow_`

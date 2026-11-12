@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.80
+ * Version: V1.1.81
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14155,6 +14155,37 @@ summary,
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* V1.1.81: Match login input radius with submit button, and keep password toggle centered in place */
+.login48-card .login48-input input {
+  border-radius: 11px !important;
+}
+
+.login48-card .login48-password-toggle,
+.login48-card .login48-password-toggle:is(:hover, :focus-visible, :active, [aria-expanded='true'], .is-active) {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 34px !important;
+  height: 34px !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: var(--theme-muted) !important;
+  transition:
+    color 0.16s ease,
+    filter 0.16s ease,
+    background-color 0.16s ease !important;
+}
+
+.login48-card .login48-password-toggle:is(:hover, :focus-visible, :active, [aria-pressed='true']) {
+  background: var(--dark-surface-strong) !important;
+  color: var(--theme-accent) !important;
+  filter: brightness(1.18) !important;
 }
 
 </style>
