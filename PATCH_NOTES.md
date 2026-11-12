@@ -3,6 +3,10 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.84 — 2026-11-12
+- ลบเส้นสีส้ม `rgba(250, 119, 55, 0.35)` ใต้โลโก้ Sidebar เมื่อพับเมนู (`.sidebar.is-collapsed .brand`) ออก และเปลี่ยนเป็นเส้นแบ่งตาม Theme (`var(--dark-border-subtle)`) ให้สอดคล้องกับโหมดปกติและแถบ `.topbar`
+- ขยับแผงโปรไฟล์ผู้ดูแลระบบด้านล่างของ Sidebar (`.sidebar .sidebar-bottom` และ `.sidebar .profile`) ขึ้นด้านบนด้วย `margin-bottom: 64px` เพื่อไม่ให้ทับซ้อนกับปุ่มย่อ/ขยาย Sidebar (`.sidebar-collapse`) ทั้งในโหมดเปิดและโหมดพับเมนู
+
 ## V1.1.83 — 2026-11-12
 - ปรับช่องค้นหาส่วนหัว (`.top-search input`, `.top-search button`, `.search-shortcut`) และป้ายสถานะ **ระบบพร้อมใช้งาน** (`#uxSystemStatus.ux-system-pill`) ให้เป็นทรงแคปซูลโค้งมน (`border-radius: 999px`) เข้ากับ Theme
 - ปรับปุ่มเมนูใน Sidebar (`.sidebar nav` และ `.sidebar nav button`) ให้เป็นปุ่มทรงแคปซูลโค้งมน (`border-radius: 999px`) พร้อมระยะขอบ `padding: 6px 10px` และ `box-sizing: border-box` เพื่อให้ปุ่มพอดีอยู่ภายในกรอบ Sidebar ไม่ล้นขอบด้านขวา ทั้งในโหมดปกติและโหมดพับ (`.sidebar.is-collapsed`)

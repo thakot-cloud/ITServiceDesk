@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.83
+ * Version: V1.1.84
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14281,6 +14281,34 @@ summary,
   margin: 0 auto !important;
   justify-content: center !important;
   border-radius: 50% !important;
+}
+
+/* V1.1.84: Remove legacy orange bottom line on collapsed sidebar brand */
+.sidebar .brand,
+.sidebar.is-collapsed .brand {
+  border-bottom: 1px solid var(--dark-border-subtle) !important;
+}
+
+/* V1.1.84: Lift sidebar bottom profile pill above sidebar collapse button */
+.sidebar .sidebar-bottom {
+  margin-top: auto !important;
+  margin-bottom: 64px !important;
+  padding: 8px 10px !important;
+  border-top: 1px solid var(--dark-border-subtle) !important;
+  background: transparent !important;
+}
+
+.sidebar .profile {
+  margin-bottom: 0 !important;
+  padding: 8px 10px !important;
+  border-radius: var(--dark-radius-sm, 12px) !important;
+  border: 1px solid var(--dark-border-subtle) !important;
+  background: var(--dark-surface-input) !important;
+}
+
+.sidebar.is-collapsed .sidebar-bottom {
+  margin-bottom: 64px !important;
+  padding: 8px !important;
 }
 
 </style>
