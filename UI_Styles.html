@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.77
+ * Version: V1.1.78
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -13963,6 +13963,92 @@ html[data-theme='light'] :is(.primary, .login48-submit, .itsd65-action.primary, 
 
 .ui-hint-panel li b {
   color: var(--theme-accent) !important;
+}
+
+@media (min-width: 1281px) {
+  .admin36-perm-shell {
+    grid-template-columns: calc((100% - 40px) / 5) minmax(0, 1fr) !important;
+    gap: 10px !important;
+  }
+}
+
+.admin36-role-panel {
+  padding: 14px 12px !important;
+}
+
+.admin36-role-panel-head {
+  flex-wrap: wrap !important;
+  gap: 6px 8px !important;
+}
+
+.admin36-role-panel-head h3 {
+  font-size: 13.5px !important;
+  white-space: nowrap !important;
+}
+
+.admin36-add-role {
+  padding: 5px 8px !important;
+  font-size: 10.5px !important;
+  white-space: nowrap !important;
+}
+
+.admin36-role-list-item {
+  position: relative !important;
+  min-height: 62px !important;
+  padding: 8px 10px !important;
+  grid-template-columns: 36px minmax(0, 1fr) auto auto !important;
+  gap: 7px !important;
+  align-items: center !important;
+}
+
+.admin36-role-list-item > span:nth-child(2) {
+  min-width: 0 !important;
+}
+
+.admin36-role-list-item b,
+.admin36-role-list-item small {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.admin36-role-mini-icon {
+  width: 36px !important;
+  height: 36px !important;
+}
+
+.admin36-role-mini-icon .material-symbols-rounded {
+  font-size: 20px !important;
+}
+
+.admin36-role-list-item em {
+  padding: 3px 8px !important;
+  font-size: 10px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.admin36-role-list-item:not(:has(.admin36-role-more)) em {
+  margin-right: 35px !important;
+}
+
+.admin36-role-more {
+  position: static !important;
+  top: auto !important;
+  right: auto !important;
+  transform: none !important;
+  width: 28px !important;
+  height: 28px !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  max-width: 28px !important;
+  max-height: 28px !important;
+  font-size: 18px !important;
+  justify-self: end !important;
+}
+
+.admin36-role-more:is(:hover, :focus-visible) {
+  transform: scale(1.04) !important;
 }
 
 </style>
