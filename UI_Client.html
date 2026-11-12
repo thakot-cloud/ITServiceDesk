@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.79
+  Version: V1.1.80
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -193,24 +193,43 @@ function canOpenMenu(key) {
   return !!(access && access.view);
 }
 
+function applyBootstrapState_(fresh) {
+  state = fresh;
+  if (state.password_change?.required) {
+    clearBootCache_();
+    nist118ForcePage();
+    return false;
+  }
+  document.getElementById('nist118Required')?.remove();
+  $('login').classList.add('hidden');
+  $('app').classList.remove('hidden');
+  applySystemBranding(state.branding || state.settings);
+  $('sideName').textContent = state.user.display_name;
+  $('sideRole').textContent = state.user.role;
+  $('sideAvatar').textContent = $('topAvatar').textContent = state.user.display_name.slice(0, 1);
+  return true;
+}
+
 async function refresh() {
-  loading(true);
+  const cached = readBootCache_();
+  let renderedFromCache = false;
+  if (cached && cached.user && !cached.password_change?.required) {
+    renderedFromCache = applyBootstrapState_(cached);
+    if (renderedFromCache) render();
+  }
+  if (!renderedFromCache) loading(true);
   try {
-    state = await call('getBootstrap', token);
-    if (state.password_change?.required) { nist118ForcePage(); return; }
-    document.getElementById('nist118Required')?.remove();
-    $('login').classList.add('hidden');
-    $('app').classList.remove('hidden');
-    applySystemBranding(state.branding || state.settings);
-    $('sideName').textContent = state.user.display_name;
-    $('sideRole').textContent = state.user.role;
-    $('sideAvatar').textContent = $('topAvatar').textContent = state.user.display_name.slice(0, 1);
-    render();
+    const fresh = await call('getBootstrap', token);
+    writeBootCache_(fresh);
+    const shouldRender = applyBootstrapState_(fresh);
+    if (shouldRender && (!renderedFromCache || JSON.stringify(cached) !== JSON.stringify(fresh))) {
+      render();
+    }
   } catch (e) {
     if (/เซสชัน|เข้าสู่ระบบ/.test(e.message)) signOut();
-    else fail(e);
+    else if (!renderedFromCache) fail(e);
   } finally {
-    loading(false);
+    if (!renderedFromCache) loading(false);
   }
 }
 
@@ -1073,7 +1092,8 @@ async function signIn() {
     );
     await refresh();
   } catch (e) {
-    sessionStorage.removeItem('ocpb_token');
+    clearBootCache_();
+  sessionStorage.removeItem('ocpb_token');
     token = '';
     requireEl('loginError').textContent = normalizeUiError(e);
     setLoginUiState('error', '', '', '');
@@ -1089,6 +1109,7 @@ async function signOut() {
   try {
     await call('logout', token);
   } catch (e) {}
+  clearBootCache_();
   sessionStorage.removeItem('ocpb_token');
   token = '';
   state = null;
@@ -2251,7 +2272,7 @@ function newTicket() {
       'แจ้งซ่อมใหม่',
       'กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข',
     ) +
-    `<div class="ui-steps-form"><form id="ticketForm" onsubmit="event.preventDefault();submitTicket()"><div id="linePrefillNotice" class="ui-note line78-prefill-notice" hidden></div><input id="fLineInboxId" type="hidden"><input id="fLineRevision" type="hidden"><section class="ui-panel ui-form-section"><h3><span>1</span> ข้อมูลผู้แจ้ง</h3><div class="form-grid"><label>ผู้แจ้งปัญหา *<input id="fReporter" required value="${esc(!hasAction('ticket.create_for_user') ? state.user.display_name : '')}" ${!hasAction('ticket.create_for_user') ? 'readonly' : ''}></label><label>เบอร์โทร<input id="fPhone" inputmode="tel" maxlength="40"></label><label>หน่วยงานหลัก *<select id="fOrg" required onchange="uiSubOptions()"><option value="">เลือกหน่วยงานหลัก</option>${master.map((x) => `<option value="${esc(x.name)}" data-code="${esc(x.first)}">${esc(x.name)}</option>`).join('')}</select></label><label>หน่วยงานย่อย<select id="fSuborg"><option value="">เลือกหน่วยงานย่อย</option></select></label></div></section><section class="ui-panel ui-form-section"><h3><span>2</span> ข้อมูลอุปกรณ์</h3><label>เลขครุภัณฑ์ / รหัสอุปกรณ์<input id="assetSearch" placeholder="ค้นหาเลขครุภัณฑ์ หรือ INV-TOR70-0001" oninput="uiFindAssets()"></label><div id="assetResults"></div><div id="chosenAsset" class="ui-note" style="margin-top:10px">ยังไม่เลือกอุปกรณ์ สามารถแจ้งปัญหาระบบหรือซอฟต์แวร์ได้</div><input id="fAsset" type="hidden"><label style="margin-top:11px"><input id="fNoAsset" type="checkbox" style="width:auto" onchange="uiNoAsset()"> ไม่มีเลขครุภัณฑ์ / แจ้งปัญหาซอฟต์แวร์</label><label>ประเภทอุปกรณ์ / ระบบ<select id="fDevice"><option value="">เลือกประเภท</option>${(state.devices || DEVICE_FALLBACK).map((x) => `<option>${esc(x)}</option>`).join('')}</select></label></section><section class="ui-panel ui-form-section"><h3><span>3</span> รายละเอียดการแจ้งซ่อม</h3><div class="form-grid"><label>ประเภทปัญหาการแจ้งซ่อม *<select id="fType" required><option value="">เลือกประเภทปัญหา</option>${state.types.map((x) => `<option>${esc(x)}</option>`).join('')}</select></label><label>ระดับความเร่งด่วน *<select id="fPriority" required onchange="uiPriorityHint()"><option value="ปกติ (Normal)" selected>ปกติ (Normal)</option><option value="ต่ำ (Low)">ต่ำ (Low)</option><option value="ปานกลาง (Medium)">ปานกลาง (Medium)</option><option value="สูง (High)">สูง (High)</option><option value="วิกฤต (Critical)">วิกฤต (Critical)</option></select><div id="priorityHint" class="ui-note" style="margin-top:8px"></div></label><label class="span2">รายละเอียดคำขอ / อาการเสีย *<textarea id="fDescription" maxlength="1000" rows="4" required placeholder="ระบุอาการที่พบ ข้อความแจ้งเตือน และขั้นตอนที่เกิดปัญหา"></textarea><small class="hint">สูงสุด 1,000 ตัวอักษร</small></label><label class="span2">เอกสารประกอบ (ถ้ามี)<div class="ui-drop"><span><span class="material-symbols-rounded" aria-hidden="true">cloud</span>️ ลากไฟล์หรือเลือกไฟล์</span><input id="fFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"><small class="hint">PDF, PNG, JPG, DOC, DOCX ไม่เกิน 10 MB</small></div></label></div><div class="form-actions"><button type="reset" class="outline" onclick="uiResetTicketState()">ล้างข้อมูล</button><button class="primary"><span class="material-symbols-rounded" aria-hidden="true">save</span> บันทึกคำขอ</button></div></section></form><aside class="ui-panel ui-hint-panel"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">info</span> ขั้นตอนหลังส่งคำขอ</div><ol style="padding:0">${[
+    `<div class="ui-steps-form"><form id="ticketForm" onsubmit="event.preventDefault();submitTicket()"><div id="linePrefillNotice" class="ui-note line78-prefill-notice" hidden></div><input id="fLineInboxId" type="hidden"><input id="fLineRevision" type="hidden"><section class="ui-panel ui-form-section"><h3><span>1</span> ข้อมูลผู้แจ้ง</h3><div class="form-grid"><label>ผู้แจ้งปัญหา *<input id="fReporter" required value="${esc(!hasAction('ticket.create_for_user') ? state.user.display_name : '')}" ${!hasAction('ticket.create_for_user') ? 'readonly' : ''}></label><label>เบอร์โทร<input id="fPhone" inputmode="tel" maxlength="40"></label><label>หน่วยงานหลัก *<select id="fOrg" required onchange="uiSubOptions()"><option value="">เลือกหน่วยงานหลัก</option>${master.map((x) => `<option value="${esc(x.name)}" data-code="${esc(x.first)}">${esc(x.name)}</option>`).join('')}</select></label><label>หน่วยงานย่อย<select id="fSuborg"><option value="">เลือกหน่วยงานย่อย</option></select></label></div></section><section class="ui-panel ui-form-section"><h3><span>2</span> ข้อมูลอุปกรณ์</h3><label>เลขครุภัณฑ์ / รหัสอุปกรณ์<input id="assetSearch" placeholder="ค้นหาเลขครุภัณฑ์ หรือ INV-TOR70-0001" oninput="debounceCall_('assetFind', uiFindAssets)"></label><div id="assetResults"></div><div id="chosenAsset" class="ui-note" style="margin-top:10px">ยังไม่เลือกอุปกรณ์ สามารถแจ้งปัญหาระบบหรือซอฟต์แวร์ได้</div><input id="fAsset" type="hidden"><label style="margin-top:11px"><input id="fNoAsset" type="checkbox" style="width:auto" onchange="uiNoAsset()"> ไม่มีเลขครุภัณฑ์ / แจ้งปัญหาซอฟต์แวร์</label><label>ประเภทอุปกรณ์ / ระบบ<select id="fDevice"><option value="">เลือกประเภท</option>${(state.devices || DEVICE_FALLBACK).map((x) => `<option>${esc(x)}</option>`).join('')}</select></label></section><section class="ui-panel ui-form-section"><h3><span>3</span> รายละเอียดการแจ้งซ่อม</h3><div class="form-grid"><label>ประเภทปัญหาการแจ้งซ่อม *<select id="fType" required><option value="">เลือกประเภทปัญหา</option>${state.types.map((x) => `<option>${esc(x)}</option>`).join('')}</select></label><label>ระดับความเร่งด่วน *<select id="fPriority" required onchange="uiPriorityHint()"><option value="ปกติ (Normal)" selected>ปกติ (Normal)</option><option value="ต่ำ (Low)">ต่ำ (Low)</option><option value="ปานกลาง (Medium)">ปานกลาง (Medium)</option><option value="สูง (High)">สูง (High)</option><option value="วิกฤต (Critical)">วิกฤต (Critical)</option></select><div id="priorityHint" class="ui-note" style="margin-top:8px"></div></label><label class="span2">รายละเอียดคำขอ / อาการเสีย *<textarea id="fDescription" maxlength="1000" rows="4" required placeholder="ระบุอาการที่พบ ข้อความแจ้งเตือน และขั้นตอนที่เกิดปัญหา"></textarea><small class="hint">สูงสุด 1,000 ตัวอักษร</small></label><label class="span2">เอกสารประกอบ (ถ้ามี)<div class="ui-drop"><span><span class="material-symbols-rounded" aria-hidden="true">cloud</span>️ ลากไฟล์หรือเลือกไฟล์</span><input id="fFile" type="file" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"><small class="hint">PDF, PNG, JPG, DOC, DOCX ไม่เกิน 10 MB</small></div></label></div><div class="form-actions"><button type="reset" class="outline" onclick="uiResetTicketState()">ล้างข้อมูล</button><button class="primary"><span class="material-symbols-rounded" aria-hidden="true">save</span> บันทึกคำขอ</button></div></section></form><aside class="ui-panel ui-hint-panel"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">info</span> ขั้นตอนหลังส่งคำขอ</div><ol style="padding:0">${[
       ['แจ้งเรื่อง', 'ระบบออกเลขที่แจ้งปัญหา'],
       ['รับแจ้ง', 'เจ้าหน้าที่รับเรื่องแล้ว'],
       ['มอบหมาย', 'กำหนดผู้รับผิดชอบ'],
@@ -2883,7 +2904,7 @@ function uiManageDraw() {
   const type = ui.manageTab;
   if (type === 'ORG') {
     const rows = ui.master.org;
-    list.innerHTML = `<div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ข้อมูลหน่วยงาน <span class="ui-toast-tag">${rows.length} รายการ</span><button class="primary" style="margin-left:auto" onclick="uiOrgEditor()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มหน่วยงาน</button></div><div class="filters"><input id="mSearch" placeholder="ค้นหาชื่อหรือรหัสหน่วยงาน" oninput="uiOrgFilter()"><select id="mLevel" onchange="uiOrgFilter()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="mOrgRows"></div>`;
+    list.innerHTML = `<div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">inventory_2</span> ข้อมูลหน่วยงาน <span class="ui-toast-tag">${rows.length} รายการ</span><button class="primary" style="margin-left:auto" onclick="uiOrgEditor()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มหน่วยงาน</button></div><div class="filters"><input id="mSearch" placeholder="ค้นหาชื่อหรือรหัสหน่วยงาน" oninput="debounceCall_('orgFilter', uiOrgFilter)"><select id="mLevel" onchange="uiOrgFilter()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="mOrgRows"></div>`;
     uiOrgFilter();
     uiOrgEditor();
   } else if (type === 'USER') {
@@ -4271,7 +4292,7 @@ function admin35RenderMasterBody() {
     const addAction = access.create
       ? '<button class="primary" onclick="admin35OrgForm()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มหน่วยงาน</button>'
       : '';
-    host.innerHTML = `<div class="admin35-card-head"><div><h2>โครงสร้างหน่วยงาน</h2><p>ข้อมูลจาก MST_ORG_UNITS</p></div>${addAction || importActions ? `<div class="admin35-card-actions">${addAction}${importActions}</div>` : ''}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35MasterQ" placeholder="ค้นหารหัส ชื่อ หรือชื่อย่อ" oninput="admin35FilterOrg()"></div><select id="admin35MasterLevel" onchange="admin35FilterOrg()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="admin35MasterRows"></div>`;
+    host.innerHTML = `<div class="admin35-card-head"><div><h2>โครงสร้างหน่วยงาน</h2><p>ข้อมูลจาก MST_ORG_UNITS</p></div>${addAction || importActions ? `<div class="admin35-card-actions">${addAction}${importActions}</div>` : ''}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35MasterQ" placeholder="ค้นหารหัส ชื่อ หรือชื่อย่อ" oninput="debounceCall_('adminOrg', admin35FilterOrg)"></div><select id="admin35MasterLevel" onchange="admin35FilterOrg()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="admin35MasterRows"></div>`;
     admin35FilterOrg();
     return;
   }
@@ -4282,13 +4303,13 @@ function admin35RenderMasterBody() {
   const addAction = access.create
     ? `<button class="primary" onclick="admin35LookupForm('${type}')"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่ม${title}</button>`
     : '';
-  host.innerHTML = `<div class="admin35-card-head"><div><h2>${title}</h2><p>รายการอ้างอิงสำหรับแบบฟอร์มและการค้นหา</p></div>${addAction || importActions ? `<div class="admin35-card-actions">${addAction}${importActions}</div>` : ''}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35MasterQ" placeholder="ค้นหา${title}" oninput="admin35FilterLookup()"></div><select id="admin35MasterStatus" onchange="admin35FilterLookup()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ปิดใช้งาน</option></select></div><div id="admin35MasterRows"></div>`;
+  host.innerHTML = `<div class="admin35-card-head"><div><h2>${title}</h2><p>รายการอ้างอิงสำหรับแบบฟอร์มและการค้นหา</p></div>${addAction || importActions ? `<div class="admin35-card-actions">${addAction}${importActions}</div>` : ''}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35MasterQ" placeholder="ค้นหา${title}" oninput="debounceCall_('adminLookup', admin35FilterLookup)"></div><select id="admin35MasterStatus" onchange="admin35FilterLookup()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ปิดใช้งาน</option></select></div><div id="admin35MasterRows"></div>`;
   admin35FilterLookup();
 }
 
 function deviceBrandAdminRender(host, access) {
   const add = access.create ? '<button type="button" class="primary" onclick="deviceBrandCreate()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มยี่ห้อและรุ่น</button>' : '';
-  host.innerHTML = `<div class="admin35-card-head"><div><h2>ยี่ห้ออุปกรณ์</h2><p>ชื่อมาตรฐานจาก Branding และสถานะใช้งานจาก MST_DEVICE_MODELS โดยรวมชื่อที่ต่างกันเฉพาะตัวพิมพ์เป็นรายการเดียว</p></div>${add}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35BrandQ" placeholder="ค้นหายี่ห้อหรือแหล่งข้อมูล" oninput="deviceBrandFilter()"></div><select id="admin35BrandStatus" onchange="deviceBrandFilter()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ยังไม่มีรุ่นที่ใช้งาน</option></select></div><p class="admin35-form-note">เพิ่มยี่ห้อโดยเพิ่มรุ่นแรก แก้ไขชื่อผ่านรุ่นที่เกี่ยวข้อง และลดรายการโดยปิดใช้งานรุ่นทั้งหมดของยี่ห้อนั้น ข้อมูลครุภัณฑ์เดิมจะยังคงอยู่</p><div id="admin35BrandRows"></div>`;
+  host.innerHTML = `<div class="admin35-card-head"><div><h2>ยี่ห้ออุปกรณ์</h2><p>ชื่อมาตรฐานจาก Branding และสถานะใช้งานจาก MST_DEVICE_MODELS โดยรวมชื่อที่ต่างกันเฉพาะตัวพิมพ์เป็นรายการเดียว</p></div>${add}</div><div class="admin35-toolbar"><div class="admin35-search"><span class="material-symbols-rounded">search</span><input id="admin35BrandQ" placeholder="ค้นหายี่ห้อหรือแหล่งข้อมูล" oninput="debounceCall_('brandFilter', deviceBrandFilter)"></div><select id="admin35BrandStatus" onchange="deviceBrandFilter()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ยังไม่มีรุ่นที่ใช้งาน</option></select></div><p class="admin35-form-note">เพิ่มยี่ห้อโดยเพิ่มรุ่นแรก แก้ไขชื่อผ่านรุ่นที่เกี่ยวข้อง และลดรายการโดยปิดใช้งานรุ่นทั้งหมดของยี่ห้อนั้น ข้อมูลครุภัณฑ์เดิมจะยังคงอยู่</p><div id="admin35BrandRows"></div>`;
   deviceBrandFilter();
 }
 
@@ -4316,7 +4337,7 @@ function deviceBrandManage(brand) {
 
 function deviceModelAdminRender(host, access) {
   const add = access.create ? '<button type="button" class="primary" onclick="deviceModelForm()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มรุ่นอุปกรณ์</button>' : '';
-  host.innerHTML = `<div class="admin35-card-head"><div><h2>รุ่นอุปกรณ์</h2><p>จัดการรุ่นตามประเภทอุปกรณ์และยี่ห้อ โดยเก็บข้อมูลการใช้งานเดิมไว้</p></div>${add}</div><div class="admin35-toolbar model102-toolbar"><label>ค้นหารุ่น<input id="model102Query" type="search" placeholder="ชื่อรุ่นหรือยี่ห้อ" oninput="deviceModelFilter()"></label><label>ประเภทอุปกรณ์<select id="model102Type" onchange="deviceModelFilter()">${assetOptions(admin35.master.modelTypes || [], '', 'ทุกประเภท')}</select></label><label>ยี่ห้อ<select id="model102Brand" onchange="deviceModelFilter()">${assetOptions(admin35.master.modelBrands || [], '', 'ทุกยี่ห้อ')}</select></label><label>สถานะ<select id="model102Status" onchange="deviceModelFilter()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ปิดใช้งาน</option></select></label></div><p id="model102Count" class="hint" role="status"></p><div id="model102Rows"></div>`;
+  host.innerHTML = `<div class="admin35-card-head"><div><h2>รุ่นอุปกรณ์</h2><p>จัดการรุ่นตามประเภทอุปกรณ์และยี่ห้อ โดยเก็บข้อมูลการใช้งานเดิมไว้</p></div>${add}</div><div class="admin35-toolbar model102-toolbar"><label>ค้นหารุ่น<input id="model102Query" type="search" placeholder="ชื่อรุ่นหรือยี่ห้อ" oninput="debounceCall_('modelFilter', deviceModelFilter)"></label><label>ประเภทอุปกรณ์<select id="model102Type" onchange="deviceModelFilter()">${assetOptions(admin35.master.modelTypes || [], '', 'ทุกประเภท')}</select></label><label>ยี่ห้อ<select id="model102Brand" onchange="deviceModelFilter()">${assetOptions(admin35.master.modelBrands || [], '', 'ทุกยี่ห้อ')}</select></label><label>สถานะ<select id="model102Status" onchange="deviceModelFilter()"><option value="">ทุกสถานะ</option><option value="on">ใช้งาน</option><option value="off">ปิดใช้งาน</option></select></label></div><p id="model102Count" class="hint" role="status"></p><div id="model102Rows"></div>`;
   deviceModelFilter();
 }
 
@@ -4648,7 +4669,7 @@ function admin35UsersRender() {
     ${admin36UserKpi('ใช้งานอยู่', active, 'บัญชี', 'circle', 'green')}
   </div>
   <div class="admin36-user-toolbar">
-    <div class="admin36-search"><span class="material-symbols-rounded">search</span><input id="admin35UserQ" placeholder="ค้นหาชื่อ, รหัสผู้ใช้, อีเมล..." oninput="admin36UserFilterChanged()"></div>
+    <div class="admin36-search"><span class="material-symbols-rounded">search</span><input id="admin35UserQ" placeholder="ค้นหาชื่อ, รหัสผู้ใช้, อีเมล..." oninput="debounceCall_('userFilter', admin36UserFilterChanged)"></div>
     <select id="admin35UserDept" onchange="admin36UserFilterChanged()"><option value="">ทุกแผนก</option>${departments.map((x) => `<option value="${escAttr(x)}">${esc(x)}</option>`).join('')}</select>
     <select id="admin35UserRole" onchange="admin36UserFilterChanged()"><option value="">ทุกบทบาท</option>${admin36SortRoles(d.roles || []).map((r) => `<option value="${escAttr(r.code)}">${esc(r.code)} · ${esc(r.name || r.code)}</option>`).join('')}</select>
     <select id="admin35UserStatus" onchange="admin36UserFilterChanged()"><option value="">ทุกสถานะ</option><option value="active">ใช้งานอยู่</option><option value="inactive">ระงับการใช้งาน</option><option value="locked">ถูกล็อก</option></select>
@@ -5330,7 +5351,8 @@ async function admin39LogoutAll() {
   loading(true);
   try {
     await call('logoutAllSessions', token);
-    sessionStorage.removeItem('ocpb_token');
+    clearBootCache_();
+  sessionStorage.removeItem('ocpb_token');
     token = '';
     state = null;
     $('app').classList.add('hidden');
@@ -7341,13 +7363,88 @@ const $ = (id) => document.getElementById(id),
       (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c],
     );
 
-const call = (name, ...args) =>
-  new Promise((resolve, reject) =>
+const INFLIGHT_RPC_ = Object.create(null);
+const READ_ONLY_RPCS_ = new Set([
+  'getBootstrap',
+  'lineLegacyListInbox',
+  'admin35Overview',
+  'admin35Users',
+  'admin35Permissions',
+  'admin35Master',
+  'admin35Audit',
+  'admin39SystemData',
+  'pmCalendarBootstrap_',
+]);
+const DEBOUNCE_TIMERS_ = Object.create(null);
+function debounceCall_(key, fn, wait) {
+  clearTimeout(DEBOUNCE_TIMERS_[key]);
+  DEBOUNCE_TIMERS_[key] = setTimeout(fn, wait || 140);
+}
+function bootCacheKey_() {
+  const t = String(typeof token !== 'undefined' ? token : '');
+  if (!t) return '';
+  let h = 2166136261;
+  for (let i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 16777619);
+  return 'itsd_boot_swr_' + (h >>> 0).toString(36);
+}
+function readBootCache_() {
+  try {
+    const key = bootCacheKey_();
+    if (!key) return null;
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || Date.now() - Number(parsed.ts || 0) > 300000) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+    return parsed.data;
+  } catch (_) {
+    return null;
+  }
+}
+function writeBootCache_(data) {
+  try {
+    const key = bootCacheKey_();
+    if (!key || !data || data.password_change?.required) return;
+    sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch (_) {}
+}
+function clearBootCache_() {
+  try {
+    const key = bootCacheKey_();
+    if (key) sessionStorage.removeItem(key);
+  } catch (_) {}
+}
+
+const call = (name, ...args) => {
+  const isRead = READ_ONLY_RPCS_.has(name);
+  let rpcKey = '';
+  if (isRead) {
+    try {
+      rpcKey = name + ':' + JSON.stringify(args);
+    } catch (_) {
+      rpcKey = '';
+    }
+    if (rpcKey && INFLIGHT_RPC_[rpcKey]) return INFLIGHT_RPC_[rpcKey];
+  }
+  const p = new Promise((resolve, reject) =>
     google.script.run
-      .withSuccessHandler(resolve)
+      .withSuccessHandler((res) => {
+        if (!isRead && name !== 'login' && name !== 'logout') clearBootCache_();
+        resolve(res);
+      })
       .withFailureHandler((e) => reject(Error(normalizeUiError(e))))
       [name](...args),
   );
+  if (rpcKey) {
+    INFLIGHT_RPC_[rpcKey] = p.finally(() => {
+      delete INFLIGHT_RPC_[rpcKey];
+    });
+    return INFLIGHT_RPC_[rpcKey];
+  }
+  return p;
+};
 
 const CLIENT_BRANDING_DEFAULTS = Object.freeze({
   project_name: 'IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์',
@@ -8464,7 +8561,7 @@ uiManageDraw = function () {
   const type = ui.manageTab;
   if (type === 'ORG') {
     const rows = ui.master.org;
-    list.innerHTML = `<div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">account_tree</span> ข้อมูลหน่วยงาน <span class="ui-toast-tag">${rows.length} รายการ</span><button class="primary" style="margin-left:auto" onclick="uiOrgEditor()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มหน่วยงาน</button></div><div class="filters"><input id="mSearch" placeholder="ค้นหาชื่อหรือรหัสหน่วยงาน" oninput="uiOrgFilter()"><select id="mLevel" onchange="uiOrgFilter()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="mOrgRows"></div>`;
+    list.innerHTML = `<div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">account_tree</span> ข้อมูลหน่วยงาน <span class="ui-toast-tag">${rows.length} รายการ</span><button class="primary" style="margin-left:auto" onclick="uiOrgEditor()"><span class="material-symbols-rounded" aria-hidden="true">add</span> เพิ่มหน่วยงาน</button></div><div class="filters"><input id="mSearch" placeholder="ค้นหาชื่อหรือรหัสหน่วยงาน" oninput="debounceCall_('orgFilter', uiOrgFilter)"><select id="mLevel" onchange="uiOrgFilter()"><option value="">ทุกระดับ</option><option>หน่วยงานหลัก</option><option>หน่วยงานย่อย</option></select></div><div id="mOrgRows"></div>`;
     uiOrgFilter();
     return;
   }

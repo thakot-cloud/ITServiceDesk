@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.79
+ * Version: V1.1.80
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -45,7 +45,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.79';
+const APP_VERSION = 'V1.1.80';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -354,7 +354,7 @@ const TRANSITIONS = Object.freeze({
 });
 
 // apps/webapp/src/server/platform/sheets/sheet-repository.js
-const RUNTIME_CACHE_ = { book: null, sheets: {}, headers: {}, rows: {} };
+const RUNTIME_CACHE_ = { book: null, sheets: {}, headers: {}, rows: {}, rawCols: {} };
 
 // apps/webapp/src/server/features/tickets/ticket-service.js
 const TRACKING_QUEUE_STATUSES = Object.freeze([
@@ -2078,14 +2078,31 @@ function createUser_(username, display, role, password) {
 function itsdImpl_login_(username, password) {
   username = normalizeUsername_(username);
   password = boundedText_(password, 'รหัสผ่าน', SECURITY_LIMITS.PASSWORD, false);
+  const rlKey = 'ITSD_LOGIN_RL_' + digest_(username).slice(0, 24);
+  try {
+    const attempts = Number(CacheService.getScriptCache().get(rlKey) || 0);
+    if (attempts >= 12) throw Error('ลองเข้าสู่ระบบบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่');
+  } catch (e) {
+    if (String(e && e.message || '').includes('บ่อยเกินไป')) throw e;
+  }
   return lock_(() => {
     const matches = usersByUsername_(username),
       u = matches.length === 1 ? matches[0] : null;
-    if (!u || u.active !== 'TRUE') throw Error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    if (!u || u.active !== 'TRUE') {
+      try {
+        const cache = CacheService.getScriptCache();
+        cache.put(rlKey, String(Number(cache.get(rlKey) || 0) + 1), 300);
+      } catch (_) {}
+      throw Error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+    }
     if (u.locked_until && Date.parse(u.locked_until.replace(' ', 'T') + '+07:00') > Date.now())
       throw Error('บัญชีถูกพักชั่วคราว');
     if (pwHash_(password, u.password_salt) !== u.password_hash) {
       const n = Number(u.failed_count || 0) + 1;
+      try {
+        const cache = CacheService.getScriptCache();
+        cache.put(rlKey, String(Number(cache.get(rlKey) || 0) + 1), 300);
+      } catch (_) {}
       update_('APP_USERS', u.__row, {
         failed_count: n,
         locked_until:
@@ -2097,6 +2114,9 @@ function itsdImpl_login_(username, password) {
       throw Error('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
     }
     update_('APP_USERS', u.__row, { failed_count: 0, locked_until: '' });
+    try {
+      CacheService.getScriptCache().remove(rlKey);
+    } catch (_) {}
     const token = random_(),
       expiry = Utilities.formatDate(new Date(Date.now() + 8 * 3600000), TZ, 'yyyy-MM-dd HH:mm:ss');
     append_('APP_SESSIONS', {
@@ -2297,10 +2317,98 @@ function safeSheetValue_(value) {
   return /^[\u0000-\u0020]*[=+\-@]/.test(text) || /^[\t\r\n]/.test(text) ? "'" + text : text;
 }
 
+// V1.1.80: Compressed cross-request ScriptCache for read-heavy sheets (instant invalidation on write)
+const SHEET_CACHE_TTL_SEC_ = 600;
+const SHEET_CACHE_CHUNK_CHARS_ = 80000;
+const SHEET_CACHEABLE_ = {
+  INVENTORY: true,
+  INCIDENT: true,
+  INCIDENT_META: true,
+  MST_ORG_UNITS: true,
+  APP_SETTINGS: true,
+  APP_ROLES: true,
+  APP_ROLE_PERMISSIONS: true,
+  APP_ROLE_ACTION_PERMISSIONS: true,
+  MST_LOOKUP: true,
+  MST_DEVICE_MODELS: true,
+};
+
+function sheetCacheKey_(kind, name) {
+  return 'ITSD_SC_' + APP_VERSION + '_' + kind + '_' + String(name || '');
+}
+
+function sheetCacheGetJson_(key) {
+  try {
+    const cache = CacheService.getScriptCache();
+    const rawManifest = cache.get(key);
+    if (!rawManifest) return null;
+    const manifest = JSON.parse(rawManifest);
+    if (!manifest) return null;
+    let b64 = '';
+    if (typeof manifest.d === 'string') {
+      b64 = manifest.d;
+    } else if (manifest.n > 0) {
+      const chunkKeys = [];
+      for (let i = 0; i < manifest.n; i++) chunkKeys.push(key + '_c' + i);
+      const chunks = cache.getAll(chunkKeys);
+      for (let i = 0; i < chunkKeys.length; i++) {
+        if (typeof chunks[chunkKeys[i]] !== 'string') return null;
+        b64 += chunks[chunkKeys[i]];
+      }
+    } else {
+      return null;
+    }
+    const blob = Utilities.newBlob(Utilities.base64Decode(b64), 'application/x-gzip');
+    const json = Utilities.ungzip(blob).getDataAsString('UTF-8');
+    return JSON.parse(json);
+  } catch (_) {
+    return null;
+  }
+}
+
+function sheetCachePutJson_(key, value, ttlSec) {
+  try {
+    const ttl = ttlSec || SHEET_CACHE_TTL_SEC_;
+    const json = JSON.stringify(value);
+    const gz = Utilities.gzip(Utilities.newBlob(json, 'application/json', 'cache.json'));
+    const b64 = Utilities.base64Encode(gz.getBytes());
+    const cache = CacheService.getScriptCache();
+    if (b64.length <= SHEET_CACHE_CHUNK_CHARS_) {
+      cache.put(key, JSON.stringify({ d: b64 }), ttl);
+      return;
+    }
+    const totalChunks = Math.ceil(b64.length / SHEET_CACHE_CHUNK_CHARS_);
+    if (totalChunks > 20) return;
+    const entries = {};
+    for (let i = 0; i < totalChunks; i++) {
+      entries[key + '_c' + i] = b64.slice(
+        i * SHEET_CACHE_CHUNK_CHARS_,
+        (i + 1) * SHEET_CACHE_CHUNK_CHARS_,
+      );
+    }
+    entries[key] = JSON.stringify({ n: totalChunks });
+    cache.putAll(entries, ttl);
+  } catch (_) {}
+}
+
+function sheetCacheInvalidate_(name) {
+  if (!SHEET_CACHEABLE_[name]) return;
+  try {
+    const keys = [sheetCacheKey_('ROWS', name), sheetCacheKey_('HDR', name)];
+    if (name === 'INCIDENT') {
+      keys.push(sheetCacheKey_('RAW_วันที่และเวลาที่แจ้ง', name));
+      keys.push(sheetCacheKey_('RAW_วันที่และเวลาเข้าแก้ไข', name));
+    }
+    CacheService.getScriptCache().removeAll(keys);
+  } catch (_) {}
+}
+
 // apps/webapp/src/server/platform/sheets/sheet-repository.js
 function resetRows_(name) {
   delete RUNTIME_CACHE_.headers[name];
   delete RUNTIME_CACHE_.rows[name];
+  if (RUNTIME_CACHE_.rawCols) delete RUNTIME_CACHE_.rawCols[name];
+  sheetCacheInvalidate_(name);
   if (name === 'APP_ROLE_ACTION_PERMISSIONS' && typeof permission_resetActionIndex_ === 'function')
     permission_resetActionIndex_();
   if (typeof admin35ResetPermissionCache_ === 'function') admin35ResetPermissionCache_(name);
@@ -2325,8 +2433,19 @@ function sheet_(name) {
 // apps/webapp/src/server/platform/sheets/sheet-repository.js
 function header_(name) {
   if (!RUNTIME_CACHE_.headers[name]) {
+    if (SHEET_CACHEABLE_[name]) {
+      const cachedHdr = sheetCacheGetJson_(sheetCacheKey_('HDR', name));
+      if (Array.isArray(cachedHdr) && cachedHdr.length) {
+        RUNTIME_CACHE_.headers[name] = cachedHdr;
+        return RUNTIME_CACHE_.headers[name];
+      }
+    }
     const s = sheet_(name);
-    RUNTIME_CACHE_.headers[name] = s.getRange(1, 1, 1, s.getLastColumn()).getDisplayValues()[0];
+    const hdr = s.getRange(1, 1, 1, s.getLastColumn()).getDisplayValues()[0];
+    RUNTIME_CACHE_.headers[name] = hdr;
+    if (SHEET_CACHEABLE_[name] && hdr.length) {
+      sheetCachePutJson_(sheetCacheKey_('HDR', name), hdr, SHEET_CACHE_TTL_SEC_);
+    }
   }
   return RUNTIME_CACHE_.headers[name];
 }
@@ -2334,6 +2453,13 @@ function header_(name) {
 // apps/webapp/src/server/platform/sheets/sheet-repository.js
 function rows_(name) {
   if (!RUNTIME_CACHE_.rows[name]) {
+    if (SHEET_CACHEABLE_[name]) {
+      const cachedRows = sheetCacheGetJson_(sheetCacheKey_('ROWS', name));
+      if (Array.isArray(cachedRows)) {
+        RUNTIME_CACHE_.rows[name] = cachedRows;
+        return RUNTIME_CACHE_.rows[name];
+      }
+    }
     const v = sheet_(name).getDataRange().getDisplayValues();
     if (!v.length) {
       RUNTIME_CACHE_.rows[name] = [];
@@ -2341,6 +2467,10 @@ function rows_(name) {
     }
     const h = v.shift(),
       out = [];
+    if (SHEET_CACHEABLE_[name] && h.length) {
+      RUNTIME_CACHE_.headers[name] = h;
+      sheetCachePutJson_(sheetCacheKey_('HDR', name), h, SHEET_CACHE_TTL_SEC_);
+    }
     for (let i = 0; i < v.length; i++) {
       const r = v[i],
         o = { __row: i + 2 };
@@ -2353,6 +2483,9 @@ function rows_(name) {
       if (hasValue) out.push(o);
     }
     RUNTIME_CACHE_.rows[name] = out;
+    if (SHEET_CACHEABLE_[name]) {
+      sheetCachePutJson_(sheetCacheKey_('ROWS', name), out, SHEET_CACHE_TTL_SEC_);
+    }
   }
   return RUNTIME_CACHE_.rows[name];
 }
@@ -2408,14 +2541,43 @@ function find_(name, key, value) {
 
 // apps/webapp/src/server/platform/sheets/sheet-repository.js
 function rawColumnByRow_(sheetName, headerName) {
+  if (!RUNTIME_CACHE_.rawCols) RUNTIME_CACHE_.rawCols = {};
+  if (!RUNTIME_CACHE_.rawCols[sheetName]) RUNTIME_CACHE_.rawCols[sheetName] = {};
+  if (RUNTIME_CACHE_.rawCols[sheetName][headerName]) {
+    return RUNTIME_CACHE_.rawCols[sheetName][headerName];
+  }
+  if (SHEET_CACHEABLE_[sheetName]) {
+    const cachedRaw = sheetCacheGetJson_(sheetCacheKey_('RAW_' + headerName, sheetName));
+    if (cachedRaw && typeof cachedRaw === 'object') {
+      const revived = {};
+      Object.keys(cachedRaw).forEach((k) => {
+        const v = cachedRaw[k];
+        revived[k] = v && typeof v === 'object' && typeof v.__d === 'number' ? new Date(v.__d) : v;
+      });
+      RUNTIME_CACHE_.rawCols[sheetName][headerName] = revived;
+      return revived;
+    }
+  }
   const s = sheet_(sheetName),
     h = header_(sheetName),
     col = h.indexOf(headerName);
   const lastRow = s.getLastRow();
   if (col < 0 || lastRow < 2) return {};
   const values = s.getRange(2, col + 1, lastRow - 1, 1).getValues(),
-    out = {};
-  for (let i = 0; i < values.length; i++) out[i + 2] = values[i][0];
+    out = {},
+    serializable = {};
+  for (let i = 0; i < values.length; i++) {
+    const v = values[i][0];
+    out[i + 2] = v;
+    serializable[i + 2] =
+      Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v.getTime())
+        ? { __d: v.getTime() }
+        : v;
+  }
+  RUNTIME_CACHE_.rawCols[sheetName][headerName] = out;
+  if (SHEET_CACHEABLE_[sheetName]) {
+    sheetCachePutJson_(sheetCacheKey_('RAW_' + headerName, sheetName), serializable, SHEET_CACHE_TTL_SEC_);
+  }
   return out;
 }
 
@@ -6573,6 +6735,7 @@ function itsdImpl_ocpbImportCommit_(payload) {
       target.setValues(ready);
       SpreadsheetApp.flush();
       ocpbImportVerifyCommittedKeys_(request.kind, target, ready, expectedHeaders);
+      resetRows_(sheet.getName());
     } catch (writeErr) {
       const rollback = ocpbImportRollbackWrite_(sheet, target, insertedRows);
       cache.remove(cacheKey);
@@ -9342,6 +9505,11 @@ function pmpCommit_(changes) {
       range.setValues(values);
     });
     SpreadsheetApp.flush();
+    changes.forEach((c) => {
+      try {
+        if (c && c.sheet && typeof c.sheet.getName === 'function') resetRows_(c.sheet.getName());
+      } catch (_) {}
+    });
   } catch (error) {
     let restored = true;
     attempted.reverse().forEach((c) => {
@@ -10153,6 +10321,7 @@ function project70Bootstrap_() {
     RUNTIME_CACHE_.sheets = {};
     RUNTIME_CACHE_.headers = {};
     RUNTIME_CACHE_.rows = {};
+    RUNTIME_CACHE_.rawCols = {};
     if (!rows_('APP_USERS').length) {
       const salt = random_();
       append_('APP_USERS', {

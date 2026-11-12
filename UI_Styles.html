@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.79
+ * Version: V1.1.80
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14125,6 +14125,36 @@ html:not([data-theme='light']) .admin36-permission-matrix .admin36-perm-state.no
   background: var(--theme-surface) !important;
   color: var(--theme-muted) !important;
   border-color: var(--theme-border) !important;
+}
+
+/* V1.1.80: Rendering containment, zero tap-delay, and reduced-motion friendliness */
+button,
+a,
+select,
+input,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+.card,
+.ui-panel,
+.admin36-role-summary,
+.admin36-user-kpi,
+.admin36-role-panel,
+.admin36-matrix-panel {
+  contain: layout style;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 </style>

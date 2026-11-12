@@ -3,6 +3,17 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.80 — 2026-11-12
+- **Backend GAS & Data Loading (`Server.js`)**:
+  - เพิ่มชั้น Cache ข้ามคำขอด้วย `CacheService.getScriptCache()` แบบบีบอัด Gzip + แบ่ง Chunk (`sheetCacheGetJson_`, `sheetCachePutJson_`, `sheetCacheInvalidate_`) สำหรับชีตอ่านบ่อย (`INVENTORY`, `INCIDENT`, `INCIDENT_META`, `MST_ORG_UNITS`, `APP_SETTINGS`, `APP_ROLES`, `APP_ROLE_PERMISSIONS`, `APP_ROLE_ACTION_PERMISSIONS`, `MST_LOOKUP`, `MST_DEVICE_MODELS`) พร้อม Cache คอลัมน์วันที่ดิบของ `INCIDENT` ใน `rawColumnByRow_`
+  - คงการอ่านตรงสำหรับ `APP_SESSIONS`, `APP_USERS`, `APP_AUDIT_LOGS`, `LINE_INBOX` เพื่อความปลอดภัยแบบ Real-time และล้าง Cache ทันทีผ่าน `resetRows_` ทุกจุดที่เขียนข้อมูล (รวมถึง `ocpbImport_` และ `commitSheetChanges_`)
+  - เพิ่ม Rate Limiting ผ่าน `CacheService` ใน `itsdImpl_login_` เพื่อป้องกันการเดารหัสผ่านซ้ำๆ
+- **Frontend Caching, Speed & Smoothness (`Index.html`, `UI_Styles.html`, `UI_Client.html`)**:
+  - เพิ่ม **In-Flight RPC Deduplication** ใน `call()` สำหรับคำสั่งอ่านข้อมูล เพื่อไม่ให้ยิงซ้ำเมื่อคลิกสลับหน้าเร็วๆ และล้าง SWR Cache อัตโนมัติหลังบันทึกข้อมูล
+  - เพิ่ม **Stale-While-Revalidate (SWR) `sessionStorage` Bootstrap Cache** ใน `refresh()` ให้เปิดหน้าจอได้ทันทีและอัปเดตข้อมูลพื้นหลังแบบไม่บล็อกผู้ใช้
+  - เพิ่ม **Debounce (`140ms`)** ให้ช่องค้นหา/กรองข้อมูลที่ใช้ `oninput` (`debounceCall_`) ลดการ Re-render ระหว่างพิมพ์
+  - เพิ่ม `dns-prefetch` ใน `Index.html`, `touch-action: manipulation`, `contain: layout style` และ `@media (prefers-reduced-motion: reduce)` ใน `UI_Styles.html`
+
 ## V1.1.79 — 2026-11-12
 - ปรับปรุงพื้นหลัง Card ที่ไม่เปลี่ยนสีตาม Dark Theme (`.admin36-role-summary.tone-*` ในหน้ากำหนดสิทธิ์ และ `.admin36-user-kpi.tone-*` ในหน้าจัดการผู้ใช้) ให้ใช้ `var(--theme-panel)`, ขอบ `var(--theme-border)` และไอคอนโทนโปร่งแสงเข้ากับพื้นมืดใน Dark Mode
 - ปรับขนาดปุ่มจัดการสิทธิ์ในตาราง Matrix (`.admin36-permission-matrix .admin36-perm-cell`) จาก `34×34px` เป็น **`24×24px`** เท่ากับขนาดวงกลมไอคอน `.admin36-perm-state` (`padding: 0; border: 0;`) โดยยังคงขนาดไอคอนเท่าเดิม และปรับไอคอนล็อก `.none` ใน Dark Mode ให้ใช้สีตาม Theme
