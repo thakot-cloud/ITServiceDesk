@@ -3,6 +3,10 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.83 — 2026-11-12
+- ปรับช่องค้นหาส่วนหัว (`.top-search input`, `.top-search button`, `.search-shortcut`) และป้ายสถานะ **ระบบพร้อมใช้งาน** (`#uxSystemStatus.ux-system-pill`) ให้เป็นทรงแคปซูลโค้งมน (`border-radius: 999px`) เข้ากับ Theme
+- ปรับปุ่มเมนูใน Sidebar (`.sidebar nav` และ `.sidebar nav button`) ให้เป็นปุ่มทรงแคปซูลโค้งมน (`border-radius: 999px`) พร้อมระยะขอบ `padding: 6px 10px` และ `box-sizing: border-box` เพื่อให้ปุ่มพอดีอยู่ภายในกรอบ Sidebar ไม่ล้นขอบด้านขวา ทั้งในโหมดปกติและโหมดพับ (`.sidebar.is-collapsed`)
+
 ## V1.1.82 — 2026-11-12
 - ปรับสีฟอนต์และพื้นหลังปุ่มเลือกช่วงวัน (`.dash-range-buttons button` และ `.dash-range-buttons button.active`) ให้ใช้ Token ตาม Theme (`var(--theme-surface)`, `var(--theme-text)`, `var(--dark-surface-strong)`, `var(--theme-strong-border)`, `var(--theme-strong-text)`) แทนตัวอักษรสีขาว `#ffffff` บนพื้นสว่าง ทำให้อ่านชัดเจนทั้งใน Light Mode และ Dark Mode
 

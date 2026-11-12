@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.82
+ * Version: V1.1.83
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14207,6 +14207,80 @@ summary,
   color: var(--theme-strong-text) !important;
   font-weight: 700 !important;
   box-shadow: 0 2px 8px var(--dark-surface-strong) !important;
+}
+
+/* V1.1.83: Pill-rounded top search, status pill, and contained pill sidebar nav buttons */
+.top-search input {
+  border-radius: 999px !important;
+  padding-left: 40px !important;
+}
+
+.top-search-icon {
+  left: 14px !important;
+}
+
+.top-search button {
+  border-radius: 999px !important;
+  padding: 0 16px !important;
+}
+
+.search-shortcut {
+  border-radius: 999px !important;
+  padding: 2px 8px !important;
+}
+
+#uxSystemStatus.ux-system-pill {
+  border-radius: 999px !important;
+  padding: 6px 14px !important;
+}
+
+.sidebar nav {
+  padding: 6px 10px !important;
+  box-sizing: border-box !important;
+  overflow-x: hidden !important;
+}
+
+.sidebar nav button {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  height: 44px !important;
+  padding: 0 14px !important;
+  margin: 0 !important;
+  border-radius: 999px !important;
+  border: 1px solid transparent !important;
+}
+
+.sidebar nav button.active {
+  background: var(--theme-nav-active-bg) !important;
+  border-color: var(--theme-nav-active-border) !important;
+  color: var(--theme-strong-text) !important;
+  box-shadow: 0 2px 10px var(--dark-surface-strong) !important;
+}
+
+.sidebar .report-nav-group {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.sidebar #reportNavChildren {
+  margin-left: 14px !important;
+  padding-left: 8px !important;
+  box-sizing: border-box !important;
+}
+
+.sidebar.is-collapsed nav {
+  padding: 6px 8px !important;
+}
+
+.sidebar.is-collapsed nav button {
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
 }
 
 </style>
