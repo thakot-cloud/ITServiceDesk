@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.70
+  Version: V1.1.71
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, ocpb_mode, Dark default) without the multi-palette overhead.
   - V1.1.70: Migrate Web App to the unified # Dark design system, update chart/status palettes, and remove the theme switcher.
   - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
   - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
@@ -256,6 +257,13 @@ function render() {
   applySystemBranding(state.branding || state.settings);
   const top = $('topAvatar');
   top.title = state.user.display_name;
+  if (!document.getElementById('themeToggle')) {
+    top.insertAdjacentHTML(
+      'beforebegin',
+      '<button id="themeToggle" type="button" class="top-icon-button mode-toggle" onclick="toggleTheme()" aria-label="สลับเป็น Light Mode" aria-pressed="true" title="สลับ Light / Dark Mode"><span class="material-symbols-rounded" aria-hidden="true">light_mode</span></button>',
+    );
+  }
+  setTheme();
   const coreRoute =
     ({ overview, new: newTicket, tickets, inventory, reports, surveyReports, manage })[page];
   if (coreRoute) coreRoute();
@@ -1466,6 +1474,27 @@ function uiWritePreference(key, value) {
   } catch (_) {
     /* Keep the current UI usable without persistent browser storage. */
   }
+}
+
+function setTheme() {
+  ui.theme = ui.theme === 'light' ? 'light' : 'dark';
+  const dark = ui.theme === 'dark';
+  document.documentElement.dataset.theme = ui.theme;
+  document.documentElement.classList.toggle('dark', dark);
+  document.documentElement.style.colorScheme = ui.theme;
+  const button = $('themeToggle');
+  if (button) {
+    button.innerHTML = `<span class="material-symbols-rounded" aria-hidden="true">${dark ? 'light_mode' : 'dark_mode'}</span>`;
+    button.setAttribute('aria-label', dark ? 'สลับเป็น Light Mode' : 'สลับเป็น Dark Mode');
+    button.setAttribute('aria-pressed', String(dark));
+    button.title = dark ? 'สลับเป็น Light Mode' : 'สลับเป็น Dark Mode';
+  }
+}
+
+function toggleTheme() {
+  ui.theme = ui.theme === 'dark' ? 'light' : 'dark';
+  uiWritePreference('ocpb_mode', ui.theme);
+  setTheme();
 }
 
 // apps/webapp/src/client/features/dashboard/dashboard-controller.js
@@ -4016,6 +4045,7 @@ function ux5SyncChrome() {
     navigator.onLine ? 'ready' : 'offline',
     navigator.onLine ? 'ระบบพร้อมใช้งาน' : 'เครือข่ายขัดข้อง',
   );
+  setTheme();
   if (page !== 'tickets' && ux5.drawer === 'ticketSide') ux5CloseDrawer('ticketSide');
   if (page !== 'inventory' && ux5.drawer === 'inventorySide') ux5CloseDrawer('inventorySide');
 }
@@ -5254,6 +5284,7 @@ async function admin35SaveSettings() {
     }
     admin35.settings = await call('getAdminSettings', token);
     if (state) state.settings = Object.assign({}, state.settings || {}, admin35.settings);
+    setTheme();
     admin35SettingsRender();
     toast('บันทึกการตั้งค่าแล้ว');
   } catch (e) {
@@ -7449,6 +7480,7 @@ const ui = {
   page: 1,
   pageSize: 10,
   dashboardRange: 'month',
+  theme: uiReadPreference('ocpb_mode') === 'light' ? 'light' : 'dark',
 };
 
 const bkkDate = () => {
@@ -8572,12 +8604,20 @@ if (!window.__OCPB_UX5_BOUND__) {
   });
   window.addEventListener('online', () => ux5SetConnectionStatus('ready', 'ระบบพร้อมใช้งาน'));
   window.addEventListener('offline', () => ux5SetConnectionStatus('offline', 'เครือข่ายขัดข้อง'));
+  window.addEventListener('storage', (event) => {
+    if (event.key === null || event.key === 'ocpb_mode') {
+      ui.theme = uiReadPreference('ocpb_mode') === 'light' ? 'light' : 'dark';
+      setTheme();
+    }
+  });
   window.addEventListener('resize', () => {
     if (window.innerWidth < 1200) ux5.sidebarHover = false;
     ux5ApplySidebarState();
     if (window.innerWidth >= 768) ux5CloseMobileSidebar();
   });
 }
+
+setTheme();
 
 ux5SyncShortcutLabel();
 

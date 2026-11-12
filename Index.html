@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: Index.html
-  Version: V1.1.70
+  Version: V1.1.71
   Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.71: Restore Light/Dark mode switcher (ocpb_mode, Dark default) and synchronize LINE Inbox & Import Wizard with the unified theme tokens.
   - V1.1.70: Adopt single Dark design system (JetBrains Mono + #000000/#04060f/#4d49fc/#00d4ff) and remove legacy theme/palette switcher to reduce asset load.
   - V1.1.69: Publish the secured Inventory License tab assets and client workflow.
   - V1.1.68: Finalize sequential inventory IDs and CM-Form_69, remove the 12-palette switcher and retain the confirmed project branding and binding.
@@ -35,7 +36,21 @@
     <base target="_top" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="color-scheme" content="dark" />
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      (function () {
+        var mode = 'dark';
+        try {
+          if (window.localStorage && window.localStorage.getItem('ocpb_mode') === 'light') {
+            mode = 'light';
+          }
+        } catch (e) {}
+        var root = document.documentElement;
+        root.dataset.theme = mode;
+        root.classList.toggle('dark', mode === 'dark');
+        root.style.colorScheme = mode;
+      })();
+    </script>
     <script id="publicSystemBranding" type="application/json">
       <?!= publicBrandingJson ?>
     </script>
