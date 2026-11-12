@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.75
+  Version: V1.1.76
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
   - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
   - V1.1.74: Make ticket reporter phone (#fPhone) optional (remove required/minlength and asterisk).
   - V1.1.73: Anchor #themeToggle immediately after the notification bell wrap so topbar action order stays consistent across renders.
@@ -6971,7 +6972,9 @@ function service70Html(data, logo = '') {
   .project{text-align:center;font-size:9.6pt;font-weight:400;margin:0 0 6mm;line-height:1.35}
   .row{display:grid;gap:3mm;margin-bottom:2.6mm;align-items:baseline}
   .r2{grid-template-columns:1fr 1fr}
-  .r4{grid-template-columns:1.71fr 1.05fr .31fr .95fr}
+  .r4{grid-template-columns:1fr 1fr}
+  .r4-right{display:grid;grid-template-columns:1.15fr .55fr 1fr;gap:3mm;align-items:baseline;min-width:0}
+  .r4-right .dots{white-space:nowrap;overflow-wrap:normal}
   .field{display:flex;align-items:baseline;gap:1.8mm;min-width:0}
   .field .lbl{white-space:nowrap;flex-shrink:0}
   .dots{flex:1;min-width:0;min-height:4.8mm;border-bottom:.25mm dotted #444;padding:0 1.5mm;font-weight:400;line-height:1.25;overflow-wrap:anywhere}
@@ -7017,7 +7020,7 @@ function service70Html(data, logo = '') {
   <h1 class="title">${e(title)}</h1>
   <div class="project">${e(project)}</div>
   <div class="row r2 org-row">${orgField('สำนัก/กอง', t.org)}${orgField('กลุ่ม/ศูนย์', t.suborg)}</div>
-  <div class="row r4">${field('ชื่อผู้ใช้งาน', t.reporter)}${field('โทร.', t.phone)}${field('ชั้น', t.floor)}${field('วันที่', reportDate)}</div>
+  <div class="row r4">${field('ชื่อผู้ใช้งาน', t.reporter)}<div class="r4-right">${field('โทร.', t.phone)}${field('ชั้น', t.floor)}${field('วันที่', reportDate)}</div></div>
   <div class="row r2">${field('หมายเลขครุภัณฑ์', t.asset_no)}${field('หมายเลขเครื่อง', t.serial)}</div>
   <div class="row r2">${field('ยี่ห้อ', t.brand)}${field('รุ่น', t.model)}</div>
   <div class="types-row"><span class="lbl">ประเภทอุปกรณ์</span><div class="types-list">${types.map(([name, rx]) => checkMark(rx.test(t.device || ''), name)).join('')}</div></div>
