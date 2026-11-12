@@ -16,6 +16,7 @@ erDiagram
   MST_ORG_UNITS ||--o{ INVENTORY : owns
   MST_ORG_UNITS ||--o{ INCIDENT : reports
   MST_DEVICE_MODELS ||--o{ INVENTORY : classifies
+  INVENTORY o|--o| SOFTWARE_LICENSES : normalized_serial_exact_match
   INVENTORY ||--o{ INCIDENT_META : asset_ref
   INCIDENT ||--|| INCIDENT_META : extends
   INCIDENT ||--o{ INCIDENT_EVENTS : history
@@ -44,7 +45,9 @@ erDiagram
 
 | Sheet | Key / reference | หน้าที่ |
 |---|---|---|
-| `INVENTORY` | `รหัสอุปกรณ์` | ข้อมูลทั่วไป เทคนิค สถานที่ สถานะ และผลสำรวจ |
+| `INVENTORY` | `รหัสอุปกรณ์` | ข้อมูลทั่วไป เทคนิค (`หมายเลขสินทรัพย์`) สถานที่ สถานะ และผลสำรวจ |
+| `SOFTWARE_LICENSES` (ใน DBS) | `รหัส License`, `รหัสอุปกรณ์` → `INVENTORY` | ทะเบียน License แบบปกปิด (`Product Key_Masked`, `Account_Email_Masked`), สถานะตรวจสอบ และ QC notes (ไม่เก็บคีย์/รหัสผ่านดิบ) |
+| `Full_Data` (External License Workbook) | `Serial Number Notebook` → `INVENTORY.หมายเลขซีเรียล` | Product Key และบัญชีติดตั้งต้นฉบับ; เฉพาะ ADMIN/MANAGER อ่านตามคำขอ ไม่รวมใน bootstrap และไม่เก็บค่าจริงใน Audit Log |
 | `MST_DEVICE_MODELS` | `model_id` | master ประเภทอุปกรณ์ ยี่ห้อ และรุ่น |
 | `MST_ORG_UNITS` | `org_unit_id` | โครงสร้างหน่วยงาน ชื่อย่อ ระดับ และสถานที่ |
 | `APP_LOOKUPS` | `lookup_id`, `lookup_type` | รายการเลือก เช่น ประเภทปัญหา/สถานะ/ช่องทาง |
@@ -82,6 +85,8 @@ erDiagram
 4. การ deactivate ปลอดภัยกว่าการลบ master ที่มีการอ้างอิง
 5. Bulk import ต้องตรวจ header, preview, validation และจำนวนไม่เกิน 500 แถวต่อคำขอ
 6. ห้าม renumber, fuzzy merge หรือ auto-map ข้อมูลที่มี history โดยไม่มี mapping report และการอนุมัติ
+7. การจับคู่ `SOFTWARE_LICENSES` ต้องเป็น normalized exact serial ที่มีหนึ่งแถวต่อหนึ่งอุปกรณ์เท่านั้น; Serial ซ้ำหรือไม่พบต้องหยุดให้ตรวจด้วยคน
+8. `SOFTWARE_LICENSES` ต้องไม่เปิด Public sharing และ credential ที่เคยเปิดเผยต้องถูกเปลี่ยนก่อน Production release
 
 ## การสำรอง
 

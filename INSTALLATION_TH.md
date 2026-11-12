@@ -102,6 +102,7 @@ git diff --stat
 | Property | ค่า/ความหมาย |
 |---|---|
 | `SPREADSHEET_ID` | ต้องเป็น `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` |
+| `SOFTWARE_LICENSE_SPREADSHEET_ID` | ต้องเป็น `1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4`; แชร์เฉพาะบัญชีเจ้าของ/ผู้ Deploy ห้ามเปิด Public |
 | `ITSD_TIMEZONE` | `Asia/Bangkok` |
 | `ITSD_PROJECT_ID` | รหัสโครงการที่องค์กรกำหนด |
 | `ITSD_ENVIRONMENT` | `PRODUCTION` |
@@ -214,6 +215,7 @@ clasp list-deployments
 - [ ] Pull แล้วตรวจ diff
 - [ ] เพิ่ม patch version และ change history
 - [ ] Syntax/security/secret checks ผ่าน
+- [ ] ฐาน `SOFTWARE_LICENSES` ปิด Public sharing, credential ที่เคยเปิดเผยถูกเปลี่ยน และผู้ Deploy อ่านไฟล์ได้
 - [ ] คู่มือและ diagram อัปเดตตรง source
 - [ ] Commits แยกชัดเจนและ push GitHub สำเร็จ
 - [ ] ได้รับอนุมัติ Apps Script push/deploy

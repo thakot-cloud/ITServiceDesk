@@ -8,7 +8,8 @@ Google Apps Script Web App สำหรับรับแจ้งและต�
 |---|---|
 | Local checkout | `/Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026` |
 | Google Drive folder | [เปิดโฟลเดอร์โครงการ](https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe) |
-| Database | [เปิด Google Sheets](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?gid=999901#gid=999901) |
+| Database / INVENTORY | [เปิด Google Sheets](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?gid=1859184703#gid=1859184703) |
+| Software License Database | [เปิด SOFTWARE_LICENSES](https://docs.google.com/spreadsheets/d/1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4/edit?gid=1597152238#gid=1597152238) |
 | Apps Script source | [เปิด Apps Script editor](https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit) |
 | Production Web App | [เปิด Web App](https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec) |
 | GitHub | [thakot-cloud/ITServiceDesk](https://github.com/thakot-cloud/ITServiceDesk) |
@@ -20,6 +21,7 @@ Google Apps Script Web App สำหรับรับแจ้งและต�
 - Ticket workflow: แจ้งเรื่อง → รับแจ้ง → มอบหมาย → กำลังดำเนินการ → รอยืนยันผล → ปิดงาน
 - ประวัติสถานะ ผู้รับผิดชอบ ไฟล์แนบ และรายงานผลการให้บริการ
 - ทะเบียนครุภัณฑ์ คุณลักษณะทางเทคนิค สถานที่ การสำรวจ และประวัติแจ้งซ่อม
+- License สำหรับติดตั้งใหม่: แสดงเฉพาะ `ADMIN`/`MANAGER`, จับคู่ Serial แบบตรงกัน เปิดดูค่าจริงหลังยืนยันรหัสผ่าน และบันทึก Audit Log
 - Dashboard รายงานบริการ รายงานสำรวจ และ export ตามสิทธิ์
 - ผู้ใช้ Role สิทธิ์ระดับ module/action และ audit log
 - LINE Inbox พร้อมขั้นตอนตรวจสอบก่อนสร้าง ticket
@@ -66,6 +68,7 @@ JavaScript ภายใน `UI_Client.html` ต้องแยกส่วน `<
 ## หลักความปลอดภัย
 
 - ห้าม commit password, session token, HMAC key, LINE secret หรือ Script Properties
+- ฐาน `SOFTWARE_LICENSES` ต้องปิด Public sharing ให้ Script owner/deployer เข้าถึงได้เท่านั้น และกำหนด `SOFTWARE_LICENSE_SPREADSHEET_ID` ใน Script Properties
 - ห้ามแก้/ลบ/เปลี่ยนเลข ticket และข้อมูลประวัติ production โดยไม่มีแผนสำรองและอนุมัติ
 - ใช้สิทธิ์เท่าที่จำเป็น; maintenance entry point ต้องใช้ ADMIN token
 - จำกัด import ต่อคำขอ และตรวจ header/data validation ก่อนเขียนข้อมูล
