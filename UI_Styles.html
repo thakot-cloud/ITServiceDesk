@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.71
+ * Version: V1.1.72
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -5674,25 +5674,26 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   height: 48px;
   margin: 0;
   padding: 10px 44px 10px 42px;
-  border: 2px solid #cfdee2;
-  border-radius: 11px;
-  background: #f8fbfb;
-  color: #163d47;
+  border: 2px solid var(--theme-border, #cfdee2);
+  border-radius: var(--dark-radius-sm, 11px);
+  background: var(--theme-input, #f8fbfb);
+  color: var(--theme-text, #163d47);
   font-size: 14px;
   line-height: 1.3;
   outline: none;
+  box-shadow: none;
   transition:
-    border-color 0.22s ease,
-    background-color 0.22s ease;
+    border-color 0.15s ease,
+    background-color 0.15s ease;
 }
 .login48-card .login48-input input:focus {
-  border-color: #0b8d87;
-  background: #fff;
+  border-color: var(--theme-accent, #00d4ff);
+  background: var(--theme-input, #f8fbfb);
+  color: var(--theme-text, #163d47);
   box-shadow: none;
 }
 .login48-input:focus-within > span.material-symbols-rounded {
-  color: #0b8d87;
-  transform: scale(1.05);
+  color: var(--theme-accent, #00d4ff);
 }
 .login48-card .login48-input input::placeholder {
   color: #9baeb4;
@@ -9161,9 +9162,13 @@ input::file-selector-button:hover {
   outline-offset: 3px;
 }
 
-input:-webkit-autofill {
-  -webkit-text-fill-color: var(--theme-text);
-  box-shadow: 0 0 0 1000px var(--theme-input) inset;
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--theme-text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--theme-input) inset !important;
+  box-shadow: 0 0 0 1000px var(--theme-input) inset !important;
+  caret-color: var(--theme-text) !important;
 }
 
 /* Raised Panels, Cards, Modals & Notifications */
@@ -13105,12 +13110,42 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
   background: var(--dark-border-subtle) !important;
 }
 
-/* Login Focus Override + Editable Field Transition (150ms) */
+/* Login Inputs: Theme-Matched Surface, Crisp Border Without Glow Halo */
+.login48-card .login48-input input,
+.login48-card .login48-input input:hover,
 .login48-card .login48-input input:focus,
 .login48-card .login48-input input:focus-visible {
-  outline: none;
-  border-color: var(--dark-border-default) !important;
-  box-shadow: 0 0 0 3px var(--dark-focus-ring) !important;
+  background: var(--theme-input) !important;
+  color: var(--theme-text) !important;
+  -webkit-text-fill-color: var(--theme-text) !important;
+  caret-color: var(--theme-text) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.login48-card .login48-input input:focus,
+.login48-card .login48-input input:focus-visible {
+  border-color: var(--theme-accent) !important;
+}
+
+.login48-card .login48-input input:-webkit-autofill,
+.login48-card .login48-input input:-webkit-autofill:hover,
+.login48-card .login48-input input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--theme-text) !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--theme-input) inset !important;
+  box-shadow: 0 0 0 1000px var(--theme-input) inset !important;
+  caret-color: var(--theme-text) !important;
+}
+
+.login48-card .login48-password-toggle,
+.login48-card .login48-password-toggle:is(:hover, :focus-visible, :active) {
+  transform: translateY(-50%) !important;
+  box-shadow: none !important;
+}
+
+.login48-card .login48-password-toggle:is(:hover, :focus-visible) {
+  outline: 1.5px solid var(--theme-accent) !important;
+  outline-offset: 0 !important;
 }
 
 :is(input, select, textarea):not(

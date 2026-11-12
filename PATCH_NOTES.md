@@ -3,6 +3,10 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.72 — 2026-11-12
+- แก้ไขช่องกรอก `ชื่อผู้ใช้` และ `รหัสผ่าน` หน้า Login (`.login48-card .login48-input input`) ไม่ให้เปลี่ยนพื้นหลังเป็นสีขาว (`#fff`) ขณะพิมพ์/โฟกัส จนกลืนกับตัวอักษรสีสว่างในโหมด Dark โดยบังคับใช้ `var(--theme-input)` คู่กับ `var(--theme-text)` และครอบคลุมถึง `:-webkit-autofill`
+- ตัดเอฟเฟกต์เงาฟุ้ง (`box-shadow` glow halo) ออกจากการโฟกัสช่องกรอกหน้า Login และปุ่มแสดงรหัสผ่าน (`.login48-password-toggle`) ให้เหลือเพียงเส้นขอบคมชัดสี `var(--theme-accent)` ตามธีมที่เลือก
+
 ## V1.1.71 — 2026-11-12
 - แก้ไขแผง **`ตรวจสอบ ข้อความแจ้งซ่อม ผ่าน LINE`** (`#itsd65LineInbox`, `#itsd65LineSettings`, `.itsd65-help-popover`, `.line78-dialog`) และ **`Import Wizard`** (`.ocpb-import-*`) ให้ใช้ชุดออกแบบใหม่ครบ 100% โดยย้ายกฎ override ที่เคยถูก `line-inbox.css` / `import-dialog.css` เขียนทับให้มาอยู่ท้าย cascade ด้วย Semantic Variables
 - นำปุ่มสลับ **`Light Mode / Dark Mode`** (`#themeToggle`, `setTheme()`, `toggleTheme()`, `ocpb_mode`) กลับมาบน Topbar โดยมี **`# Dark` (`data-theme="dark"`)** เป็นค่าเริ่มต้น และเพิ่มชุดตัวแปร `html[data-theme='light']` ตามมาตรฐาน WCAG 2.2 AA (โดยยังคงตัด `palette-01..12` ออกตามเดิม)
