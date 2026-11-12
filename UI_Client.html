@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.74
+  Version: V1.1.75
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
   - V1.1.74: Make ticket reporter phone (#fPhone) optional (remove required/minlength and asterisk).
   - V1.1.73: Anchor #themeToggle immediately after the notification bell wrap so topbar action order stays consistent across renders.
   - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, ocpb_mode, Dark default) without the multi-palette overhead.
@@ -6936,11 +6937,8 @@ function service70Html(data, logo = '') {
     `<div class="field ${cls}"><span class="lbl">${label}</span><b class="dots">${e(value || '')}</b></div>`;
   const baseLen = (value) =>
     Array.from(String(value || '').normalize('NFC').replace(/[\u0E31\u0E34-\u0E3A\u0E47-\u0E4E]/g, '')).length;
-  const orgField = (label, value) => {
-    const length = baseLen(value);
-    const size = length > 68 ? 6.3 : length > 56 ? 6.9 : length > 44 ? 7.6 : length > 34 ? 8.4 : 9.4;
-    return `<div class="field org-field"><span class="lbl">${label}</span><b class="dots" style="font-size:${size}pt">${e(value || '')}</b></div>`;
-  };
+  const orgField = (label, value) =>
+    `<div class="field org-field"><span class="lbl">${label}</span><b class="dots">${e(value || '')}</b></div>`;
   const checkMark = (checked, label) =>
     `<span class="check"><i class="box">${checked ? '✓' : ''}</i><span>${label}</span></span>`;
   const types = [
@@ -6978,27 +6976,30 @@ function service70Html(data, logo = '') {
   .field .lbl{white-space:nowrap;flex-shrink:0}
   .dots{flex:1;min-width:0;min-height:4.8mm;border-bottom:.25mm dotted #444;padding:0 1.5mm;font-weight:400;line-height:1.25;overflow-wrap:anywhere}
   .dots.center{text-align:center}
-  .org-row .org-field .dots{white-space:nowrap;overflow-wrap:normal;line-height:1.2;letter-spacing:-.08mm}
+  .org-row{grid-template-columns:1.07fr 1fr}
+  .org-row .org-field .dots{font-size:10.5pt;white-space:normal;overflow-wrap:anywhere;line-height:1.25}
   .types-row{display:flex;align-items:center;gap:4.5mm;margin:3.5mm 0 4.5mm;flex-wrap:wrap}
   .types-row .lbl{white-space:nowrap;margin-right:1mm}
   .types-list{flex:1;display:flex;align-items:center;justify-content:space-between;gap:3mm;flex-wrap:wrap}
   .check{display:inline-flex;align-items:center;gap:2mm;white-space:nowrap}
   .check i.box{display:inline-flex;align-items:center;justify-content:center;width:3.8mm;height:3.8mm;border:.3mm solid #111;font-style:normal;font-size:9.5pt;font-weight:700;line-height:1;flex-shrink:0}
   .area{margin-top:4mm}
-  .area-lbl{font-size:10.5pt;margin-bottom:.8mm}
+  .area-lbl{font-size:10.5pt;font-weight:700;margin-bottom:.8mm}
   .ruled-wrap{position:relative}
   .ruled-lines{position:absolute;inset:0 0 auto 0;pointer-events:none}
   .ruled-lines i{display:block;height:7.6mm;border-bottom:.25mm dotted #444}
   .ruled-text{position:relative;line-height:7.6mm;min-height:22.8mm;white-space:pre-wrap;overflow-wrap:anywhere;padding:0 1.5mm}
+  .ruled-wrap.lines2 .ruled-text{min-height:15.2mm}
+  .ruled-wrap.lines3 .ruled-text{min-height:22.8mm}
   .ruled-wrap.lines4 .ruled-text{min-height:30.4mm}
-  .outcome-grid{display:grid;grid-template-columns:auto 1.15fr .85fr 1.05fr 1.15fr;gap:2.5mm 3mm;align-items:center;margin-top:7mm;break-inside:avoid}
-  .outcome-grid .lbl{white-space:nowrap;padding-right:1mm}
+  .outcome-grid{display:grid;grid-template-columns:auto 1.15fr .85fr 1.05fr 1.15fr;gap:2.5mm 3mm;align-items:center;margin-top:6mm;break-inside:avoid}
+  .outcome-grid .lbl{white-space:nowrap;padding-right:1mm;font-weight:700}
   .outcome-grid .date-inline{display:flex;align-items:baseline;gap:1.5mm}
   .outcome-grid .outcome-r2{grid-column:2}
-  .equip-grid{display:grid;grid-template-columns:23mm 1.15fr 1fr 1.15fr;gap:3.2mm 3mm;align-items:baseline;margin-top:5.5mm;break-inside:avoid}
+  .equip-grid{display:grid;grid-template-columns:23mm 1.15fr 1fr 1.15fr;gap:3.2mm 3mm;align-items:baseline;margin-top:5mm;break-inside:avoid}
   .equip-grid .grp{white-space:nowrap}
   .note-row{margin-top:4mm;break-inside:avoid}
-  .signatures{display:grid;grid-template-columns:1fr 1fr;gap:14mm;margin-top:11mm;break-inside:avoid;page-break-inside:avoid}
+  .signatures{display:grid;grid-template-columns:1fr 1fr;gap:14mm;margin-top:8.5mm;break-inside:avoid;page-break-inside:avoid}
   .sig-col{display:flex;flex-direction:column;gap:4.5mm}
   .sig-line,.sig-paren,.sig-date{display:flex;align-items:baseline;gap:1.5mm;white-space:nowrap}
   .sig-paren{padding:0 3mm 0 8mm}
@@ -7020,7 +7021,7 @@ function service70Html(data, logo = '') {
   <div class="row r2">${field('หมายเลขครุภัณฑ์', t.asset_no)}${field('หมายเลขเครื่อง', t.serial)}</div>
   <div class="row r2">${field('ยี่ห้อ', t.brand)}${field('รุ่น', t.model)}</div>
   <div class="types-row"><span class="lbl">ประเภทอุปกรณ์</span><div class="types-list">${types.map(([name, rx]) => checkMark(rx.test(t.device || ''), name)).join('')}</div></div>
-  <section class="area"><div class="area-lbl">ปัญหา</div><div class="ruled-wrap"><div class="ruled-lines" aria-hidden="true"><i></i><i></i><i></i></div><div class="ruled-text">${e(t.description || '')}</div></div></section>
+  <section class="area"><div class="area-lbl">ปัญหา</div><div class="ruled-wrap lines3"><div class="ruled-lines" aria-hidden="true"><i></i><i></i><i></i></div><div class="ruled-text">${e(t.description || '')}</div></div></section>
   <section class="area"><div class="area-lbl">วิธีการแก้ไข</div><div class="ruled-wrap lines4"><div class="ruled-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div class="ruled-text">${e(t.resolution || '')}</div></div></section>
   <section class="outcome-grid">
     <span class="lbl">สถานะของงาน</span>
@@ -7034,7 +7035,7 @@ function service70Html(data, logo = '') {
     <span class="grp">อุปกรณ์ส่งซ่อม</span>${field('ชื่ออุปกรณ์', d.sent_name)}${field('รุ่นของอุปกรณ์', d.sent_model)}${field('หมายเลขอุปกรณ์', d.sent_serial)}
     <span class="grp">อุปกรณ์ทดแทน</span>${field('ชื่ออุปกรณ์', d.replacement_name)}${field('รุ่นของอุปกรณ์', d.replacement_model)}${field('หมายเลขอุปกรณ์', d.replacement_serial)}
   </section>
-  <div class="field note-row"><span class="lbl">หมายเหตุ</span><b class="dots">${e(t.note || '')}</b></div>
+  <section class="area note-row"><div class="area-lbl">หมายเหตุ</div><div class="ruled-wrap lines2"><div class="ruled-lines" aria-hidden="true"><i></i><i></i></div><div class="ruled-text">${e(t.note || '')}</div></div></section>
   <section class="signatures">
     <div class="sig-col">
       <div class="sig-line"><span>ลงชื่อ</span><b class="dots"></b><span>ผู้ปฏิบัติงาน</span></div>
@@ -7192,7 +7193,7 @@ async function service70Edit(id) {
         </div>
         <div class="asset-compact-section">
           <h3>หมายเหตุท้ายใบงาน</h3>
-          <label>หมายเหตุ<input id="service70Note" maxlength="500" value="${escAttr(t.note)}" placeholder="ระบุหมายเหตุเพิ่มเติมในใบงาน (ถ้ามี)" ${disabled}></label>
+          <label>หมายเหตุ<textarea id="service70Note" rows="2" maxlength="500" placeholder="ระบุหมายเหตุเพิ่มเติมในใบงาน (ถ้ามี)" ${disabled}>${esc(t.note || '')}</textarea></label>
         </div>
         <div class="asset-action-bar">
           ${data.can_edit ? '<button class="primary" type="submit">บันทึก</button>' : ''}
