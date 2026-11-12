@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.78
+ * Version: V1.1.79
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14049,6 +14049,82 @@ html[data-theme='light'] :is(.primary, .login48-submit, .itsd65-action.primary, 
 
 .admin36-role-more:is(:hover, :focus-visible) {
   transform: scale(1.04) !important;
+}
+
+html:not([data-theme='light']) :is(.admin36-role-summary, .admin36-user-kpi):is(.tone-blue, .tone-green, .tone-orange, .tone-purple, .tone-red) {
+  background: var(--theme-panel) !important;
+  border-color: var(--theme-border) !important;
+  color: var(--theme-text) !important;
+  box-shadow: var(--dark-shadow-2) !important;
+}
+
+html:not([data-theme='light']) .admin36-role-summary.active {
+  border-color: var(--theme-strong-border) !important;
+  box-shadow: 0 0 0 1px var(--theme-strong-border) inset, var(--dark-shadow-2) !important;
+}
+
+html:not([data-theme='light']) :is(.tone-blue .admin36-role-summary-icon, .tone-blue .admin36-kpi-icon, .admin36-role-mini-icon.tone-blue) {
+  background: rgba(56, 189, 248, 0.16) !important;
+  color: #38bdf8 !important;
+}
+
+html:not([data-theme='light']) :is(.tone-green .admin36-role-summary-icon, .tone-green .admin36-kpi-icon, .admin36-role-mini-icon.tone-green) {
+  background: rgba(34, 197, 94, 0.16) !important;
+  color: #4ade80 !important;
+}
+
+html:not([data-theme='light']) :is(.tone-orange .admin36-role-summary-icon, .admin36-role-mini-icon.tone-orange) {
+  background: rgba(251, 191, 36, 0.16) !important;
+  color: #fbbf24 !important;
+}
+
+html:not([data-theme='light']) :is(.tone-purple .admin36-role-summary-icon, .tone-purple .admin36-kpi-icon, .admin36-role-mini-icon.tone-purple) {
+  background: rgba(167, 139, 250, 0.16) !important;
+  color: #c4b5fd !important;
+}
+
+html:not([data-theme='light']) .tone-red .admin36-kpi-icon {
+  background: rgba(248, 113, 113, 0.16) !important;
+  color: #f87171 !important;
+}
+
+.admin36-role-list-item.active {
+  background: var(--dark-surface-strong) !important;
+  border-color: var(--theme-strong-border) !important;
+  color: var(--theme-strong-text) !important;
+  box-shadow: 0 0 0 1px var(--theme-strong-border) inset, 0 4px 14px var(--dark-surface-strong) !important;
+}
+
+.admin36-permission-matrix .admin36-perm-cell {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  border-radius: 50% !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  vertical-align: middle !important;
+}
+
+.admin36-permission-matrix .admin36-perm-cell.editable:hover {
+  background: transparent !important;
+  box-shadow: 0 0 0 3px var(--dark-surface-strong) !important;
+  transform: scale(1.06) !important;
+}
+
+.admin36-permission-matrix .admin36-perm-state {
+  width: 24px !important;
+  height: 24px !important;
+  font-size: 15px !important;
+}
+
+html:not([data-theme='light']) .admin36-permission-matrix .admin36-perm-state.none {
+  background: var(--theme-surface) !important;
+  color: var(--theme-muted) !important;
+  border-color: var(--theme-border) !important;
 }
 
 </style>
