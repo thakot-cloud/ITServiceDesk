@@ -3,6 +3,9 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.82 — 2026-11-12
+- ปรับสีฟอนต์และพื้นหลังปุ่มเลือกช่วงวัน (`.dash-range-buttons button` และ `.dash-range-buttons button.active`) ให้ใช้ Token ตาม Theme (`var(--theme-surface)`, `var(--theme-text)`, `var(--dark-surface-strong)`, `var(--theme-strong-border)`, `var(--theme-strong-text)`) แทนตัวอักษรสีขาว `#ffffff` บนพื้นสว่าง ทำให้อ่านชัดเจนทั้งใน Light Mode และ Dark Mode
+
 ## V1.1.81 — 2026-11-12
 - หน้าจอเข้าสู่ระบบ (`.login48-card`):
   - ปรับความโค้งมนของช่องกรอก **Username** และ **Password** (`.login48-card .login48-input input`) เป็น `border-radius: 11px` ให้โค้งมนแนวเดียวกันกับปุ่ม **เข้าสู่ระบบ** (`.login48-submit`)

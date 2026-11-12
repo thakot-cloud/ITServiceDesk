@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.81
+ * Version: V1.1.82
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14186,6 +14186,27 @@ summary,
   background: var(--dark-surface-strong) !important;
   color: var(--theme-accent) !important;
   filter: brightness(1.18) !important;
+}
+
+/* V1.1.82: Dashboard day-range buttons readable & theme-matched in both Light and Dark modes */
+.dash-range-buttons button {
+  background: var(--theme-surface) !important;
+  border-color: var(--theme-border) !important;
+  color: var(--theme-text) !important;
+}
+
+.dash-range-buttons button:hover:not(.active) {
+  background: var(--dark-surface-hover) !important;
+  border-color: var(--theme-strong-border) !important;
+  color: var(--theme-strong-text) !important;
+}
+
+.dash-range-buttons button.active {
+  background: var(--dark-surface-strong) !important;
+  border-color: var(--theme-strong-border) !important;
+  color: var(--theme-strong-text) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px var(--dark-surface-strong) !important;
 }
 
 </style>
