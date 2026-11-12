@@ -8,8 +8,8 @@
 - ผสานสถานะ `สถานะ License`, `สถานะ Activation`, และหมายเหตุ QC จากแท็บ `SOFTWARE_LICENSES` ใน `ITServiceDesk — DBS` พร้อมโหมดแสดงผล `masked_only` (ปิดปุ่มเปิดดูค่าจริง) สำหรับกรณี Serial ในต้นทางยังไม่ตรงหรือเข้าถึงไฟล์ต้นทางไม่ได้
 - เพิ่มการส่ง/แก้ไข `หมายเลขสินทรัพย์` (`asset_code`) ใน Inventory และการล้าง cache แท็บ `License` อัตโนมัติหลังบันทึกข้อมูลอุปกรณ์
 - แท็บและ API จำกัดเฉพาะบทบาท `ADMIN` และ `MANAGER`; ค่า License/บัญชี/รหัสผ่านแสดงแบบปกปิดเป็นค่าเริ่มต้น การเปิดดูค่าจริงต้องมี `license.reveal_secret` ยืนยันรหัสผ่านปัจจุบัน แสดง 60 วินาที และบันทึก Audit Log แบบไม่เก็บค่าลับ
-- ผลตรวจข้อมูลหลัง Step 1: จับคู่ใน `ITServiceDesk — DBS` (`SOFTWARE_LICENSES`) ครบ **95 เครื่อง (285 แถว)** แล้ว; ฝั่งไฟล์ต้นทาง `License/Full_Data` จับคู่อัตโนมัติได้ทันที **87 เครื่อง** ส่วนอีก **8 เครื่อง** รอเจ้าของแก้ Serial Number ที่ OCR เพี้ยนในไฟล์ต้นทาง (ระหว่างนี้แสดงผลแบบ `masked_only` ได้)
-- สถานะ: Local Patch; syntax และ unit tests ผ่าน ยังไม่ push/deploy เพราะต้องปิด Public sharing ของฐาน `License` และเปลี่ยน credential ที่เคยเปิดเผยก่อน
+- ผลตรวจข้อมูลหลัง Step 1: จับคู่ใน `ITServiceDesk — DBS` (`SOFTWARE_LICENSES`) ครบ **95 เครื่อง (285 แถว)** แล้ว; ฝั่งไฟล์ต้นทาง `License/Full_Data` จับคู่อัตโนมัติได้ทันที **87 เครื่อง** ส่วนอีก **8 เครื่อง** แสดงผลแบบ `masked_only` จนกว่าเจ้าของไฟล์ `License` จะแก้ Serial Number ที่ OCR เพี้ยนในต้นทาง
+- สถานะ: **Production Deployed** — Push ขึ้น Apps Script (`1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`) เป็น **Version 120** และอัปเดต Production Deployment (`AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps @120`) เรียบร้อยแล้ว (`/exec` ตอบ HTTP 200 พร้อม `version: "V1.1.69"`); ยังคงแนะนำให้เจ้าของไฟล์ `License` ปิด Public sharing และเปลี่ยน credential ที่เคยเปิดเผยต่อไป
 
 ## V1.1.01 — 2026-10-29
 - ปรับไอคอนและพื้นที่กด แถบค้นหา ฟอร์ม เมนู กราฟ และการเลื่อนบน Mobile
