@@ -3,6 +3,11 @@
 ใช้ลำดับเวอร์ชันตามที่ผู้ใช้กำหนด: V1.0.99 → V1.1.01 → V1.1.02 → … → V1.1.10 → …
 เลข Patch หลังจุดสุดท้ายใช้สองหลัก เช่น 01, 02, 10
 
+## V1.1.73 — 2026-11-12
+- ปรับพื้นหลังปุ่มเมนู Sidebar ที่ถูกเลือก (`.sidebar nav button.active`) ปุ่มหลัก (`.primary`, `.login48-submit`, `.itsd65-action.primary`) และแท็บ/ตัวเลขขั้นตอนที่เคยใช้สีม่วง-น้ำเงินทึบ `#4d49fc` ให้เป็นโทนสีจางนุ่มพร้อมเส้นขอบชัดและสีตัวอักษรความต่างสูง (`--theme-strong-text`) เพื่อให้อ่านข้อความและไอคอนได้ชัดเจนทั้งใน **Light Mode** และ **Dark Mode**
+- ย้ายตำแหน่งปุ่มสลับโหมด **Light / Dark Mode** (`#themeToggle`) ใน [Index.html](file:///Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026/Index.html) และ `UI_Client.html` ไปวางต่อท้ายปุ่มแจ้งเตือน (`.ux-notification-wrap`) ก่อนเส้นคั่น `.top-divider` ทันที
+- ปรับพื้นหลังรายการแจ้งเตือน (`.ux-notification-menu`, `.ux-notification-head`, `.ux-notification-list button`, `.ux-notification-empty`) และ `.toast` ให้ใช้สีพื้นหลัง `var(--theme-panel)` ชุดเดียวกันทั้งหมดทั้งหัวข้อและรายการด้านใน พร้อมสีข้อความ `var(--theme-heading)` / `var(--theme-text)` / `var(--theme-muted)` ที่อ่านชัดทั้ง Light Mode และ Dark Mode
+
 ## V1.1.72 — 2026-11-12
 - แก้ไขช่องกรอก `ชื่อผู้ใช้` และ `รหัสผ่าน` หน้า Login (`.login48-card .login48-input input`) ไม่ให้เปลี่ยนพื้นหลังเป็นสีขาว (`#fff`) ขณะพิมพ์/โฟกัส จนกลืนกับตัวอักษรสีสว่างในโหมด Dark โดยบังคับใช้ `var(--theme-input)` คู่กับ `var(--theme-text)` และครอบคลุมถึง `:-webkit-autofill`
 - ตัดเอฟเฟกต์เงาฟุ้ง (`box-shadow` glow halo) ออกจากการโฟกัสช่องกรอกหน้า Login และปุ่มแสดงรหัสผ่าน (`.login48-password-toggle`) ให้เหลือเพียงเส้นขอบคมชัดสี `var(--theme-accent)` ตามธีมที่เลือก

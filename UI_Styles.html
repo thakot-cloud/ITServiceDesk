@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.72
+ * Version: V1.1.73
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-12
  * Change History:
+ * - V1.1.73: Soften active sidebar/primary/tab button surfaces for Light/Dark legibility and unify notification dropdown & toast surfaces across both modes.
  * - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, Dark default) and move LINE Inbox & Import Wizard styles into unified theme tokens.
  * - V1.1.70: Migrate entire Web App to the unified # Dark design system (JetBrains Mono + Noto Sans Thai, #000000/#04060f/#4d49fc/#00d4ff/#ef4444), fix unclosed KPI rule, and remove multi-palette/Light-Dark switcher overhead.
  * - V1.1.69: Add responsive, accessible License cards and horizontal drawer tabs for the secured license workflow.
@@ -8905,8 +8906,14 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   --dark-surface-elevated: #080d1d;
   --dark-surface-hover: #0d1630;
   --dark-surface-input: #02040a;
-  --dark-surface-strong: #4d49fc;
-  --dark-surface-strong-hover: #5c58ff;
+  --dark-surface-strong: rgba(0, 212, 255, 0.12);
+  --dark-surface-strong-hover: rgba(0, 212, 255, 0.22);
+  --theme-strong-border: rgba(0, 212, 255, 0.52);
+  --theme-strong-text: #f8fafc;
+  --theme-nav-active-bg: rgba(0, 212, 255, 0.1);
+  --theme-nav-active-hover-bg: rgba(0, 212, 255, 0.18);
+  --theme-nav-active-border: rgba(0, 212, 255, 0.42);
+  --theme-brand-badge-bg: linear-gradient(135deg, #312e81, #0f172a);
   --dark-border-default: #00d4ff;
   --dark-border-subtle: rgba(0, 212, 255, 0.25);
   --dark-border-muted: rgba(0, 212, 255, 0.14);
@@ -8990,8 +8997,14 @@ html[data-theme='light'] {
   --dark-surface-elevated: #f8fafc;
   --dark-surface-hover: #e8f1fb;
   --dark-surface-input: #ffffff;
-  --dark-surface-strong: #4d49fc;
-  --dark-surface-strong-hover: #3f3be6;
+  --dark-surface-strong: rgba(2, 132, 199, 0.09);
+  --dark-surface-strong-hover: rgba(2, 132, 199, 0.16);
+  --theme-strong-border: rgba(2, 132, 199, 0.45);
+  --theme-strong-text: #0f172a;
+  --theme-nav-active-bg: rgba(2, 132, 199, 0.08);
+  --theme-nav-active-hover-bg: rgba(2, 132, 199, 0.14);
+  --theme-nav-active-border: rgba(2, 132, 199, 0.36);
+  --theme-brand-badge-bg: linear-gradient(135deg, #4338ca, #1e293b);
   --dark-border-default: #0284c7;
   --dark-border-subtle: #cbd5e1;
   --dark-border-muted: #e2e8f0;
@@ -9083,7 +9096,7 @@ body {
 
 :is(input, select, textarea) {
   caret-color: var(--dark-border-default);
-  accent-color: var(--dark-surface-strong);
+  accent-color: var(--theme-accent);
 }
 
 :is(input, textarea)::placeholder {
@@ -9093,7 +9106,7 @@ body {
 
 ::selection {
   background: var(--theme-selection);
-  color: #ffffff;
+  color: var(--theme-text);
 }
 
 :is(button, a, input, select, textarea, [tabindex], [role='button']):focus-visible {
@@ -9246,8 +9259,8 @@ input:-webkit-autofill:focus {
 /* Primary, Secondary, Outline & State Buttons */
 :is(.primary, .login48-submit, .itsd65-action.primary) {
   background: var(--dark-surface-strong);
-  color: #ffffff;
-  border: 1px solid rgba(0, 212, 255, 0.45);
+  color: var(--theme-strong-text);
+  border: 1px solid var(--theme-strong-border);
   border-radius: var(--dark-radius-xs);
   box-shadow: var(--dark-shadow-1);
   transition:
@@ -9260,7 +9273,8 @@ input:-webkit-autofill:focus {
 :is(.primary, .login48-submit, .itsd65-action.primary):hover:not(:disabled) {
   background: var(--dark-surface-strong-hover);
   border-color: var(--dark-border-default);
-  box-shadow: 0 0 14px rgba(0, 212, 255, 0.22);
+  color: var(--theme-strong-text);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.16);
 }
 
 :is(.primary, .login48-submit, .itsd65-action.primary):active:not(:disabled) {
@@ -9321,7 +9335,7 @@ button.is-loading {
 :is(.outline, .secondary, .ghost):hover:not(:disabled) {
   background: var(--dark-surface-hover);
   border-color: var(--dark-border-default);
-  color: #ffffff;
+  color: var(--theme-text);
 }
 
 :is(.error, .login48-error) {
@@ -9436,7 +9450,7 @@ button.is-loading {
 .license-value.is-revealed {
   border-color: var(--dark-border-default);
   background: var(--theme-raised);
-  color: #ffffff;
+  color: var(--theme-text);
   box-shadow: var(--dark-shadow-2);
 }
 
@@ -9497,8 +9511,8 @@ button.is-loading {
 
 :is(.ui-tabbar button.active, .tabs button.active) {
   background: var(--dark-surface-strong);
-  border-color: var(--dark-border-default);
-  color: #ffffff;
+  border-color: var(--theme-strong-border);
+  color: var(--theme-strong-text);
 }
 
 /* Tables, Notifications & Charts */
@@ -9511,6 +9525,12 @@ button.is-loading {
 :is(.table td, .ux-notification-list button) {
   color: var(--theme-text);
   border-color: var(--dark-border-muted);
+}
+
+.ux-notification-head,
+.ux-notification-list button {
+  background: var(--theme-panel);
+  color: var(--theme-text);
 }
 
 .ux-notification-list small {
@@ -9812,8 +9832,8 @@ button.is-loading {
 
 :is(.admin36-role-list-item.active, .admin36-pages button.active, .admin36-selectbox.checked) {
   background: var(--dark-surface-strong);
-  border-color: var(--dark-border-default);
-  color: #ffffff;
+  border-color: var(--theme-strong-border);
+  color: var(--theme-strong-text);
 }
 
 .admin36-role-list-item.active small {
@@ -9949,8 +9969,8 @@ button.is-loading {
 
 .itsd-settings-tabs button[aria-selected='true'] {
   background: var(--dark-surface-strong);
-  color: #ffffff;
-  border-color: var(--dark-border-default);
+  color: var(--theme-strong-text);
+  border-color: var(--theme-strong-border);
 }
 
 /* LINE OA Inbox */
@@ -10002,8 +10022,8 @@ button.is-loading {
 
 :is(.itsd65-action.primary, .itsd65-tabs .itsd65-tab.is-active) {
   background: var(--dark-surface-strong);
-  color: #ffffff;
-  border-color: var(--dark-border-default);
+  color: var(--theme-strong-text);
+  border-color: var(--theme-strong-border);
 }
 
 .itsd65-action.danger {
@@ -12331,8 +12351,9 @@ html[data-theme='dark'] .sr79-stats .card.stat strong { color:var(--theme-headin
 }
 
 .login48-card .login48-logo {
-  background: linear-gradient(135deg, var(--dark-surface-strong), #2c28b5);
+  background: var(--theme-brand-badge-bg);
   border: 1px solid var(--dark-border-default);
+  color: #ffffff;
   box-shadow: var(--dark-shadow-1);
 }
 
@@ -13039,7 +13060,7 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 }
 
 .sidebar .logo {
-  background: linear-gradient(135deg, var(--dark-surface-strong), #1c2463) !important;
+  background: var(--theme-brand-badge-bg) !important;
   border: 1px solid var(--dark-border-default) !important;
   color: #ffffff !important;
   box-shadow: var(--dark-shadow-1) !important;
@@ -13063,15 +13084,22 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 }
 
 .sidebar nav button.active {
-  background: var(--dark-surface-strong) !important;
-  color: #ffffff !important;
-  border-color: var(--dark-border-default) !important;
-  box-shadow: var(--dark-shadow-1) !important;
+  background: var(--theme-nav-active-bg) !important;
+  color: var(--theme-strong-text) !important;
+  border-color: var(--theme-nav-active-border) !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+.sidebar nav button.active:hover {
+  background: var(--theme-nav-active-hover-bg) !important;
+  color: var(--theme-strong-text) !important;
+  border-color: var(--theme-accent) !important;
 }
 
 .sidebar nav button.active .ico,
 .sidebar nav button.active .material-symbols-rounded {
-  color: #ffffff !important;
+  color: var(--theme-accent) !important;
 }
 
 .sidebar .profile {
@@ -13424,8 +13452,8 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 
 /* Strict Danger / Sign-Out Action Buttons (#ef4444) */
 :is(.danger, button.danger, .ux124-logout) {
-  background: rgba(239, 68, 68, 0.15) !important;
-  color: #fca5a5 !important;
+  background: var(--theme-danger-bg) !important;
+  color: var(--theme-danger) !important;
   border: 1px solid rgba(239, 68, 68, 0.5) !important;
   border-radius: var(--dark-radius-xs) !important;
   transition:
@@ -13625,12 +13653,15 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 
 :is(.itsd65-action.primary, .itsd65-tabs .itsd65-tab.is-active, .line78-dialog .itsd65-action.primary) {
   background: var(--dark-surface-strong) !important;
-  border-color: var(--theme-accent) !important;
-  color: #ffffff !important;
+  border-color: var(--theme-strong-border) !important;
+  color: var(--theme-strong-text) !important;
+  font-weight: 700 !important;
 }
 
 :is(.itsd65-action.primary, .line78-dialog .itsd65-action.primary):hover:not(:disabled) {
   background: var(--dark-surface-strong-hover) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-strong-text) !important;
 }
 
 :is(.itsd65-action.danger, .line78-dialog .itsd65-action.danger) {
@@ -13773,16 +13804,102 @@ html[data-theme='light'] .dash-callout text {
   fill: #0f172a;
 }
 
-html[data-theme='light'] :is(.primary, .login48-submit, .itsd65-action.primary):hover:not(:disabled) {
-  background: #3f3be6 !important;
-  color: #ffffff !important;
+html[data-theme='light'] :is(.primary, .login48-submit, .itsd65-action.primary, .line78-dialog .itsd65-action.primary):hover:not(:disabled) {
+  background: var(--dark-surface-strong-hover) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-strong-text) !important;
+}
+
+:is(.primary, .login48-submit) {
+  background: var(--dark-surface-strong) !important;
+  color: var(--theme-strong-text) !important;
+  border: 1px solid var(--theme-strong-border) !important;
+  font-weight: 700 !important;
+}
+
+:is(.primary, .login48-submit):hover:not(:disabled) {
+  background: var(--dark-surface-strong-hover) !important;
+  border-color: var(--theme-accent) !important;
+  color: var(--theme-strong-text) !important;
+}
+
+:is(.primary, .login48-submit, .itsd65-action.primary, .line78-dialog .itsd65-action.primary) :is(.ico, .material-symbols-rounded, svg) {
+  color: var(--theme-accent) !important;
 }
 
 .ui-form-section h3 > span,
 .ui-step > span {
   background: var(--dark-surface-strong) !important;
-  color: #ffffff !important;
-  border: 1px solid var(--theme-accent) !important;
+  color: var(--theme-strong-text) !important;
+  border: 1px solid var(--theme-strong-border) !important;
+}
+
+/* Unified Notification Menu & Toast Alerts (Consistent Single-Theme Surface Across Light & Dark) */
+.ux-notification-menu,
+.ux-notification-head,
+.ux-notification-list,
+.ux-notification-list button,
+.ux-notification-empty {
+  background: var(--theme-panel) !important;
+  color: var(--theme-text) !important;
+}
+
+.ux-notification-menu {
+  border: 1px solid var(--theme-border) !important;
+  border-radius: var(--dark-radius-md) !important;
+  box-shadow: var(--dark-shadow-1) !important;
+}
+
+.ux-notification-head {
+  border-bottom: 1px solid var(--theme-border) !important;
+}
+
+.ux-notification-head strong,
+.ux-notification-list strong {
+  color: var(--theme-heading) !important;
+}
+
+.ux-notification-head small,
+.ux-notification-list small,
+.ux-notification-empty {
+  color: var(--theme-muted) !important;
+}
+
+.ux-notification-list button {
+  border-bottom: 1px solid var(--dark-border-muted) !important;
+  transition:
+    background-color var(--motion-instant) ease,
+    color var(--motion-instant) ease !important;
+}
+
+.ux-notification-list button:last-child {
+  border-bottom: 0 !important;
+}
+
+.ux-notification-list button:hover,
+.ux-notification-list button:focus-visible {
+  background: var(--dark-surface-hover) !important;
+  color: var(--theme-text) !important;
+}
+
+.toast {
+  background: var(--theme-panel) !important;
+  color: var(--theme-text) !important;
+  border: 1px solid var(--theme-strong-border) !important;
+  border-radius: var(--dark-radius-md) !important;
+  box-shadow: var(--dark-shadow-1) !important;
+}
+
+.toast[data-kind='success'] {
+  background: var(--theme-panel) !important;
+  color: var(--theme-success) !important;
+  border-color: rgba(34, 197, 94, 0.55) !important;
+}
+
+.toast[data-kind='error'] {
+  background: var(--theme-panel) !important;
+  color: var(--theme-danger) !important;
+  border-color: rgba(239, 68, 68, 0.65) !important;
 }
 
 .ui-hint-panel li {

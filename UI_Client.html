@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.72
+  Version: V1.1.73
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.73: Anchor #themeToggle immediately after the notification bell wrap so topbar action order stays consistent across renders.
   - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, ocpb_mode, Dark default) without the multi-palette overhead.
   - V1.1.70: Migrate Web App to the unified # Dark design system, update chart/status palettes, and remove the theme switcher.
   - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
@@ -258,8 +259,9 @@ function render() {
   const top = $('topAvatar');
   top.title = state.user.display_name;
   if (!document.getElementById('themeToggle')) {
-    top.insertAdjacentHTML(
-      'beforebegin',
+    const anchor = document.querySelector('.ux-notification-wrap') || top;
+    anchor.insertAdjacentHTML(
+      anchor === top ? 'beforebegin' : 'afterend',
       '<button id="themeToggle" type="button" class="top-icon-button mode-toggle" onclick="toggleTheme()" aria-label="สลับเป็น Light Mode" aria-pressed="true" title="สลับ Light / Dark Mode"><span class="material-symbols-rounded" aria-hidden="true">light_mode</span></button>',
     );
   }

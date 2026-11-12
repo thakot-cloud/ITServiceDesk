@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: Index.html
-  Version: V1.1.72
+  Version: V1.1.73
   Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-12
   Change History:
+  - V1.1.73: Move #themeToggle immediately after the notification bell and soften active/primary UI chrome for Light/Dark legibility.
   - V1.1.71: Restore Light/Dark mode switcher (ocpb_mode, Dark default) and synchronize LINE Inbox & Import Wizard with the unified theme tokens.
   - V1.1.70: Adopt single Dark design system (JetBrains Mono + #000000/#04060f/#4d49fc/#00d4ff) and remove legacy theme/palette switcher to reduce asset load.
   - V1.1.69: Publish the secured Inventory License tab assets and client workflow.
@@ -292,6 +293,17 @@
               </button>
               <div id="uxNotificationMenu" class="ux-notification-menu hidden"></div>
             </div>
+            <button
+              id="themeToggle"
+              type="button"
+              class="top-icon-button mode-toggle"
+              onclick="toggleTheme()"
+              aria-label="สลับเป็น Light Mode"
+              aria-pressed="true"
+              title="สลับ Light / Dark Mode"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">light_mode</span>
+            </button>
             <div class="top-divider" aria-hidden="true"></div>
             <div id="uxTopUserMeta" class="ux-top-user-meta"></div>
             <span
