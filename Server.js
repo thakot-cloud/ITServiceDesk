@@ -1,15 +1,19 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.87
+ * Version: V1.1.91
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-12
+ * Modified: 2026-11-14
  * Change History:
+ * - V1.1.91: Keep password visibility toggle strictly inside input container without jumping or outer focus ring.
+ * - V1.1.90: Standardize patch version format ITSD V1.1.90 and resolve Gas template parser comment bug.
+ * - V1.1.88: Add user profile picture upload to Google Drive folder and camera/file selection.
+ * - V1.1.87: Make sidebar profile button pill-shaped matching settings button.
  * - V1.1.69: Add ADMIN/MANAGER-only, on-demand SOFTWARE_LICENSES lookup matched to Inventory by exact normalized serial number.
  * - V1.1.68: Add sequential inventory IDs with collision protection, finalize CM-Form_69 layout/actions, and retain the confirmed production binding.
  * - V1.1.64: Add shared ticketApplyDevicePatch_ helper so both changeStatus and saveServiceReportDetails can update asset_id, asset_no, brand, model, serial, and device cleanly from Inventory lookups or edits.
@@ -45,7 +49,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.88';
+const APP_VERSION = 'V1.1.91';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
