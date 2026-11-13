@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.91
+ * Version: V1.1.92
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -8925,9 +8925,11 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   --dark-focus-ring: oklab(0.804241 -0.112554 -0.0928449 / 0.5);
   --dark-shadow-1: 0 0 12px 0 rgba(0, 212, 255, 0.08);
   --dark-shadow-2: 0 0 12px 0 rgba(0, 212, 255, 0.05);
-  --dark-radius-xs: 4px;
-  --dark-radius-sm: 4.38px;
-  --dark-radius-md: 10.5px;
+  --dark-radius-xs: 6px;
+  --dark-radius-sm: 11px;
+  --dark-radius-md: 14px;
+  --dark-radius-btn: 11px;
+  --dark-radius-input: 11px;
   --motion-instant: 150ms;
 
   /* Mapped Semantic Theme Tokens */
@@ -9261,7 +9263,7 @@ input:-webkit-autofill:focus {
   background: var(--dark-surface-strong);
   color: var(--theme-strong-text);
   border: 1px solid var(--theme-strong-border);
-  border-radius: var(--dark-radius-xs);
+  border-radius: var(--dark-radius-btn, 11px);
   box-shadow: var(--dark-shadow-1);
   transition:
     background-color var(--motion-instant) ease,
@@ -9317,7 +9319,7 @@ button.is-loading {
   background: var(--theme-raised);
   color: var(--theme-text);
   border-color: var(--theme-border);
-  border-radius: var(--dark-radius-xs);
+  border-radius: var(--dark-radius-btn, 11px);
   transition:
     background-color var(--motion-instant) ease,
     border-color var(--motion-instant) ease,
@@ -13451,7 +13453,7 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
   background: var(--theme-danger-bg) !important;
   color: var(--theme-danger) !important;
   border: 1px solid rgba(239, 68, 68, 0.5) !important;
-  border-radius: var(--dark-radius-xs) !important;
+  border-radius: var(--dark-radius-btn, 11px) !important;
   transition:
     background-color var(--motion-instant) ease,
     border-color var(--motion-instant) ease,
@@ -13630,7 +13632,7 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
   background: var(--theme-raised) !important;
   color: var(--theme-text) !important;
   border: 1px solid var(--theme-border) !important;
-  border-radius: var(--dark-radius-xs) !important;
+  border-radius: var(--dark-radius-btn, 11px) !important;
   transition:
     background-color var(--motion-instant) ease,
     border-color var(--motion-instant) ease,
@@ -14515,6 +14517,38 @@ summary,
   justify-content: center !important;
   gap: 8px !important;
   margin-top: 10px !important;
+}
+
+/* V1.1.92: Modern Balanced Rounded Design (11px) for Buttons and Form Inputs */
+:is(
+  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar),
+  .primary,
+  .secondary,
+  .outline,
+  .danger,
+  .btn,
+  .itsd65-action,
+  .cm-export,
+  .status-action-bar button,
+  .form-actions button,
+  #ticketSideBody > .form-actions button,
+  .line-review-action,
+  .line78-dialog button:not([class*="close"])
+) {
+  border-radius: 11px !important;
+}
+
+:is(
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.top-search input),
+  select,
+  textarea,
+  .field
+) {
+  border-radius: 11px !important;
+}
+
+input[type="checkbox"] {
+  border-radius: 4px !important;
 }
 
 </style>
