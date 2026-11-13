@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.94
+ * Version: V1.1.95
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -9516,18 +9516,68 @@ button.is-loading {
   box-shadow: var(--dark-shadow-1);
 }
 
-:is(#ticketSide, #inventorySide).ui-side > .ui-side-head {
+html[data-theme='dark'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head {
   background: rgba(4, 6, 15, 0.96);
   border-color: var(--theme-border);
 }
 
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head h2,
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head h2 span {
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head small {
+  color: #64748b !important;
+}
+
 .ui-side-tabs {
-  border-color: var(--theme-border);
+  border-bottom: 1px solid var(--theme-border, #e2e8f0) !important;
+  display: flex !important;
+  gap: 12px !important;
+}
+
+.ui-side-tabs button {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 8px 6px !important;
+  color: var(--theme-muted, #64748b) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: color 0.15s ease !important;
+}
+
+.ui-side-tabs button:hover {
+  background: transparent !important;
+  border: none !important;
+  color: var(--theme-text, #0f172a) !important;
 }
 
 .ui-side-tabs button.active {
-  color: var(--dark-border-default);
-  border-color: var(--dark-border-default);
+  color: var(--theme-text, #0f172a) !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-bottom: 2px solid var(--theme-text, #0f172a) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+html[data-theme='light'] .ui-side-tabs button.active {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-bottom: 2px solid #0f172a !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 
 :is(.ui-tabbar button, .ui-pagination button, .tabs button) {
@@ -14555,7 +14605,7 @@ summary,
 
 /* V1.1.94: Soft Curved Rounded Design (14px) for Buttons and Form Inputs */
 :is(
-  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar),
+  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar):not(.ui-side-tabs button):not(.ticket-side-attach-list button),
   .primary,
   .secondary,
   .outline,
@@ -14621,6 +14671,113 @@ input[type="checkbox"] {
     flex-direction: column !important;
     gap: 16px !important;
   }
+}
+
+/* V1.1.95: Light Mode Neutral Normal Background & Clean Normal Border Lines (No colored card borders) */
+html[data-theme='light'] body,
+html[data-theme='light'] .content,
+html[data-theme='light'] .app,
+html[data-theme='light'] .main-wrap {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] .topbar,
+html[data-theme='light'] .sidebar {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+/* All cards: remove colored borders and colored glows, display clean normal neutral border */
+html[data-theme='light'] :is(
+  .card,
+  .ui-panel,
+  .ui-detail,
+  .ui-note,
+  .stat,
+  .modal-box,
+  .ui-drop,
+  .ui-asset-card,
+  .ux-account-grid,
+  .ux-password-box,
+  .ux-profile-identity,
+  .license-card,
+  .license-match-note,
+  .itsd65-panel,
+  .itsd65-layout > form.card,
+  .status125-request,
+  .dash26-grid > .ui-panel,
+  #ticketSide.ui-side,
+  #inventorySide.ui-side,
+  .table-wrap
+) {
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme='light'] :is(
+  .card,
+  .ui-panel,
+  .modal-box,
+  .ui-detail,
+  #ticketSide.ui-side,
+  #inventorySide.ui-side,
+  .table-wrap
+) {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] :is(.ui-note, .status125-request) {
+  background: #f8fafc !important;
+  color: #334155 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+
+/* Ticket & Inventory Drawer head normal light background */
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head {
+  background: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+}
+
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head h2,
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head h2 span {
+  color: #0f172a !important;
+}
+
+html[data-theme='light'] :is(#ticketSide, #inventorySide).ui-side > .ui-side-head small {
+  color: #64748b !important;
+}
+
+/* Tab selection: text becomes bolder/darker, no colored ring or thick border */
+html[data-theme='light'] .ui-side-tabs button {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #64748b !important;
+  font-weight: 500 !important;
+}
+
+html[data-theme='light'] .ui-side-tabs button.active {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  border: none !important;
+  border-bottom: 2px solid #0f172a !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Outline buttons in light mode: clean normal gray border */
+html[data-theme='light'] .outline {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff !important;
+  color: #334155 !important;
+}
+
+html[data-theme='light'] .outline:hover:not(:disabled) {
+  border-color: #94a3b8 !important;
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
 }
 
 </style>
