@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.86
+ * Version: V1.1.87
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14299,16 +14299,38 @@ summary,
 }
 
 .sidebar .profile {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
   margin-bottom: 0 !important;
-  padding: 8px 10px !important;
-  border-radius: var(--dark-radius-sm, 12px) !important;
+  padding: 6px 14px !important;
+  border-radius: 999px !important;
   border: 1px solid var(--dark-border-subtle) !important;
   background: var(--dark-surface-input) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  transition: all 0.2s ease !important;
+}
+
+.sidebar .profile:hover {
+  background: var(--theme-nav-active-bg) !important;
+  border-color: var(--theme-nav-active-border) !important;
 }
 
 .sidebar.is-collapsed .sidebar-bottom {
   margin-bottom: 64px !important;
   padding: 8px !important;
+}
+
+.sidebar.is-collapsed .profile {
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+  margin: 0 auto !important;
+  justify-content: center !important;
+  align-items: center !important;
+  border-radius: 50% !important;
 }
 
 /* V1.1.85: Align status & service sheet buttons on single row and display attachments inline */
