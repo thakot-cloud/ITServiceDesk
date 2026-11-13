@@ -1,119 +1,225 @@
-# ITServiceDesk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์ ออนไลน์
+# 🛠️ ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
 
-Google Apps Script Web App สำหรับรับแจ้งและติดตามงานบริการไอที จัดการครุภัณฑ์ สำรวจอุปกรณ์ วางแผนบำรุงรักษา จัดการสิทธิ์ ออกรายงาน สำรองข้อมูล และรับรายการจาก LINE Gateway โดยใช้ Google Sheets เป็นฐานข้อมูลหลัก
+<div align="center">
 
-## Production ที่ยืนยันแล้ว
+### Next-Gen Serverless IT Service Desk, Asset Inventory Management & Automated Workflow Suite
 
-| รายการ | ค่า |
-|---|---|
-| Release ปัจจุบัน | `V1.1.69` (Apps Script Version `120`) |
-| Local checkout | `/Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026` |
-| Google Drive folder | [เปิดโฟลเดอร์โครงการ](https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe) |
-| Database หลัก (`ITServiceDesk — DBS`) | [เปิด Google Sheets](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?gid=1859184703#gid=1859184703) (`INVENTORY`, `SOFTWARE_LICENSES`, `INCIDENT`, `PM_*`, `APP_*`) |
-| License ต้นฉบับ (`License` / `Full_Data`) | [เปิด License Workbook](https://docs.google.com/spreadsheets/d/1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4/edit?gid=1597152238#gid=1597152238) |
-| Apps Script source | [เปิด Apps Script editor](https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit) |
-| Deployment ID (คงที่) | `AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` |
-| Production Web App | [เปิด Web App](https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec) |
-| GitHub | [thakot-cloud/ITServiceDesk](https://github.com/thakot-cloud/ITServiceDesk) |
+[![Version](https://img.shields.io/badge/Version-ITSD%20V1.1.88-F97316?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
+[![Theme](https://img.shields.io/badge/Theme-Dark%20Theme%20Admin%20Dashboard-0D0D0D?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
+[![Developer](https://img.shields.io/badge/Developer-LongZe%20Design-purple?style=flat-square)](https://github.com/longzedesign-dotcom)
+[![Platform](https://img.shields.io/badge/Platform-Google%20Apps%20Script%20%7C%20Web%20App-34A853?style=flat-square&logo=google)](https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit)
+[![Database](https://img.shields.io/badge/Database-Google%20Sheets%20(DBS%2026%20Tables)-0F9D58?style=flat-square&logo=googlesheets)](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-ก่อน `clasp pull`, `clasp push` หรือ deploy ต้องตรวจว่า `.clasp.json` ใช้ Script ID ข้างต้น และ `SPREADSHEET_ID` / `SOFTWARE_LICENSE_SPREADSHEET_ID` ใน Script Properties ชี้ตรงกับโครงการเสมอ
+**🌐 URL ใช้งานระบบจริง (Web App Production URL):**<br>
+[https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec](https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec)
 
-## สถาปัตยกรรม Web App ภาพรวม
+</div>
+
+---
+
+## 🔗 ลิงก์ทรัพยากรโครงการทั้งหมด (Project Infrastructure Links)
+
+| องค์ประกอบ | ชื่อ / ID | ลิงก์เข้าถึง |
+| :--- | :--- | :--- |
+| **GitHub Repository** | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
+| **Upstream Repository** | `longzedesign-dotcom/ITServiceDesk` | https://github.com/longzedesign-dotcom/ITServiceDesk |
+| **Google Drive Root** | `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
+| **Google Sheets Database** | `ITServiceDesk — DBS` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit |
+| **License ต้นฉบับ** | `License` / `Full_Data` (`1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4`) | https://docs.google.com/spreadsheets/d/1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4/edit |
+| **Apps Script Project (Edit)** | `ITSD_CLASP_STAGING` (`1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`) | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
+| **Web App Deploy (Exec)** | `AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` (`ITSD V1.1.88` · Deployment `@140`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+
+---
+
+## 📖 สารบัญ
+1. [ภาพรวมของระบบ (Overview)](#-ภาพรวมของระบบ-overview)
+2. [ผังสถาปัตยกรรมและ Workflow หลัก](#-ผังสถาปัตยกรรมและ-workflow-หลัก)
+3. [ความสามารถหลักของระบบ (Key Features)](#-ความสามารถหลักของระบบ-key-features)
+4. [โครงสร้างฐานข้อมูล Google Sheets (`DBS` — 26 ตาราง)](#-โครงสร้างฐานข้อมูล-google-sheets-dbs--26-ตาราง)
+5. [โครงสร้างไฟล์โค้ดของระบบ (Codebase Architecture)](#-โครงสร้างไฟล์โค้ดของระบบ-codebase-architecture)
+6. [บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ (Default Accounts)](#-บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ-default-accounts)
+7. [การตรวจสอบและทดสอบระบบ (Verification & Testing)](#-การตรวจสอบและทดสอบระบบ-verification--testing)
+8. [หลักความปลอดภัยและข้อกำหนดสำคัญ (Security & Governance)](#-หลักความปลอดภัยและข้อกำหนดสำคัญ-security--governance)
+9. [เอกสารคู่มือฉบับสมบูรณ์ (Full Documentation)](#-เอกสารคู่มือฉบับสมบูรณ์-full-documentation)
+
+---
+
+## 🌟 ภาพรวมของระบบ (Overview)
+
+**ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)** พัฒนาขึ้นด้วยสถาปัตยกรรม **100% Serverless** บน Google Workspace โดยใช้ **Google Apps Script (V8)** ขับเคลื่อน Single Page Application (SPA) เชื่อมต่อกับ **Google Sheets (`ITServiceDesk — DBS`)** เป็นฐานข้อมูลหลัก และจัดเก็บเอกสาร/รูปภาพ/ไฟล์สำรองข้อมูลบน **Google Drive (`ITSD`)**
+
+**จุดเด่นและฟีเจอร์สำคัญใน V1.1.80 – V1.1.88:**
+- **User Profile Photo & Camera Capture (V1.1.88)**: หน้าต่างข้อมูลบัญชีผู้ใช้รองรับการอัปโหลดรูปภาพโปรไฟล์จากเครื่องคอมพิวเตอร์/มือถือ และสามารถเปิดกล้องเพื่อถ่ายรูปโปรไฟล์ได้ทันที พร้อมระบบบีบอัดและแสดงผลทันที
+- **Sidebar Capsule Admin Profile Button (V1.1.87)**: ปรับแต่งปุ่มโปรไฟล์ผู้ดูแลระบบด้านล่างของ Sidebar ให้มีขอบมนโค้งมน (Capsule Rounded Corner `border-radius: 9999px`) สอดคล้องกับปุ่มตั้งค่าระบบอย่างกลมกลืน
+- **Monthly CM Service Report 16 Columns (V1.1.86)**: รายงานแจ้งซ่อมประจำเดือน (CM) จัดเรียง 16 คอลัมน์มาตรฐาน พร้อมแถบหัวตารางสีฟ้าอ่อน (`#EBF5FB`) รองรับการส่งออกเป็น Excel (.xlsx), CSV และ PDF
+- **Ticket Modal Action Bar & Compact Attachments (V1.1.85)**: ปรับตำแหน่งปุ่ม `อัปเดตสถานะ`, `ข้อมูลใบงาน`, `พิมพ์ใบงาน (PDF)` ให้อยู่ในแนวระนาบเดียวกัน พร้อมจัดแถบแนบเอกสารแสดงผลเป็น 1 บรรทัดกระชับสายตา
+- **Dark Theme Admin Dashboard & Style 5 Orange Energy**: อินเทอร์เฟซ Obsidian Carbon ทันสมัย รองรับทั้ง Dark Theme และ Light Theme พร้อมคู่สีส้มเรืองแสง (`#FA7737` / `#F97316`) ตามมาตรฐาน WCAG 2.2 AA
+- **Auto-Increment Inventory Code**: สร้างรหัสอุปกรณ์ใหม่เรียงลำดับต่อเนื่องอัตโนมัติ (เช่น `INV-TOR70-1651` ➔ `INV-TOR70-1652`) ป้องกันการซ้ำซ้อนด้วย LockService
+- **Modular 4-Tab Equipment Editing**: แท็บทะเบียนครุภัณฑ์แยกส่วน (`ข้อมูลทั่วไป` ➔ `คุณลักษณะ` ➔ `การสำรวจ` ➔ `ประวัติแจ้งซ่อม`) พร้อม Modal บันทึกแยกอิสระ
+- **Software License Integration & Masked Mode**: จัดการคีย์ลิขสิทธิ์ซอฟต์แวร์แบบ Masked / Reveal ด้วยรหัสผ่านยืนยัน 60 วินาที พร้อม Audit Log บันทึกทุกความเคลื่อนไหว
+
+---
+
+## 🔄 ผังสถาปัตยกรรมและ Workflow หลัก
+
+### 1. สถาปัตยกรรมระบบ (System Architecture)
 
 ```mermaid
-flowchart LR
-  subgraph Users["ผู้ใช้งาน (Browser / Mobile & LINE)"]
-    WEB["Web Browser SPA<br/>Index.html + UI_Client.html"]
-    LINE["LINE OA / Group Chat"]
-  end
+flowchart TD
+    User(["ผู้ใช้งาน / ช่างเทคนิค / ADMIN"]) -->|HTTPS| WebApp["ITSD Web App SPA (Index.html + UI_Client.html)"]
+    WebApp -->|google.script.run| Facade["Api.js / Entrypoints.js"]
+    Facade --> Core["Server.js Engine (V1.1.88)"]
 
-  subgraph Edge["Gateway & Entrypoints"]
-    CF["Cloudflare Worker<br/>LINE Gateway + Queue + HMAC"]
-    GAS_EP["Apps Script Entrypoints.js<br/>doGet / doPost"]
-    GAS_API["Api.js<br/>Public RPC Facade"]
-  end
+    subgraph Google["Google Workspace Cloud"]
+        Core <-->|Session & Icon Cache| Cache[("CacheService")]
+        Core <-->|Concurrency Lock| Lock[("LockService")]
+        Core <-->|26 Sheets CRUD| Sheets[("ITServiceDesk — DBS Google Sheets")]
+        Core -->|Backup / Docs / Pics / Assets| Drive[("Google Drive Folder: ITSD")]
+        Core -.->|License Key Matching| LicDB[("License Workbook (Full_Data)")]
+    end
 
-  subgraph Core["Business Logic (Server.js)"]
-    AUTH["Session & RBAC<br/>ADMIN / MANAGER / TECHNICIAN / ITSUPPORT / USER"]
-    SVC["Ticket / CM-Form_69 / Inventory / PM / Reports / License"]
-    SEC["LockService + Audit Log + Masked/Reveal Gate"]
-  end
-
-  subgraph Data["Google Workspace Storage"]
-    DBS[("ITServiceDesk — DBS<br/>INCIDENT / INVENTORY / SOFTWARE_LICENSES / APP_*")]
-    LIC[("License Workbook<br/>Full_Data (External Read-Only)")]
-    DRV[("Google Drive<br/>Attachments / Branding / Backups")]
-    PROPS[("PropertiesService<br/>Script Properties & Secrets")]
-  end
-
-  WEB -->|"google.script.run"| GAS_API
-  LINE -->|"Webhook"| CF
-  CF -->|"POST Signed Envelope"| GAS_EP
-  GAS_EP --> SVC
-  GAS_API --> AUTH --> SVC --> SEC
-  SEC --> DBS
-  SEC -.->|"ADMIN/MANAGER Only<br/>Exact Serial Match"| LIC
-  SVC --> DRV
-  AUTH --> PROPS
+    LINE["LINE Official Account Webhook"] -->|Signed POST + HMAC| Facade
 ```
 
-## ความสามารถหลัก
+### 2. วงจรชีวิตใบงานแจ้งซ่อม 6 ขั้นตอน (6-Stage Incident Lifecycle)
 
-- **Ticket Workflow & CM-Form_69**: แจ้งเรื่อง → รับแจ้ง → มอบหมาย → กำลังดำเนินการ → รอยืนยันผล → ปิดงาน พร้อมพิมพ์ใบงานบริการ A4 (`CM-Form_69`) ลงนามและแนบหลักฐาน
-- **Inventory & Survey (`INV-TOR70-xxxx`)**: ทะเบียนครุภัณฑ์ รหัสอุปกรณ์เรียงลำดับ ช่อง `หมายเลขสินทรัพย์` (`asset_code`) คุณลักษณะทางเทคนิค สถานที่ การสำรวจ และประวัติแจ้งซ่อม
-- **Software License Integration (`V1.1.69`)**: แท็บ `License` สำหรับ `ADMIN` และ `MANAGER` ผสานสถานะจาก `SOFTWARE_LICENSES` บน DBS กับคีย์จริงจาก `License/Full_Data` (รองรับโหมด `masked_only`) พร้อมยืนยันรหัสผ่านเพื่อดูค่าจริง 60 วินาทีและบันทึก Audit Log
-- **Dashboard & Reports**: รายงานงานบริการ รายงานสำรวจ (แบ่งสถานะ **ยังไม่สำรวจ** / **สำรวจเรียบร้อย**) และ Export ตามสิทธิ์
-- **RBAC & Governance**: จัดการผู้ใช้ Role (`ADMIN`, `MANAGER`, `TECHNICIAN`, `ITSUPPORT`, `USER`), Permission Matrix ระดับ module และ action พร้อม Audit Log
-- **LINE Inbox Bridge**: รับ envelope จาก LINE Gateway ผ่าน HMAC เข้าคิว `LINE_INBOX` เพื่อตรวจสอบ อนุมัติ และส่งข้อมูลเข้าสู่ฟอร์มแจ้งซ่อม
-- **PM Calendar & Planning**: แผนบำรุงรักษาเชิงป้องกัน มุมมองปฏิทิน/Planning และวันหยุดราชการ (`APP_HOLIDAYS`)
-- **System Backup & Project Binding**: สำรองฐานข้อมูล ตั้งค่า Branding/Drive/Password Policy/LINE และการสร้างโครงการใหม่
+```mermaid
+sequenceDiagram
+    autonumber
+    actor User as ผู้แจ้งซ่อม
+    participant System as ระบบ ITSD (Server.js)
+    actor Tech as เจ้าหน้าที่ IT / ช่าง
+    participant DB as ITServiceDesk — DBS
+    participant Drive as Google Drive (Pictures / Documents)
 
-## โครงสร้าง source
+    User->>System: เลือกครุภัณฑ์ + กรอกอาการเสีย + แนบภาพ (หรือถ่ายภาพ)
+    System->>Drive: อัปโหลดรูปลงโฟลเดอร์ Pictures
+    System->>DB: บันทึก INCIDENT (สถานะ: แจ้งเรื่อง)
+    Tech->>System: กดรับเรื่อง / มอบหมาย (รับแจ้ง -> มอบหมาย)
+    Tech->>System: เข้าซ่อมแซม (กำลังดำเนินการ)
+    Tech->>System: บันทึกวิธีแก้ไข + พิมพ์ใบงาน (รอยืนยันผล)
+    System->>Drive: เก็บหลักฐาน/ใบงานที่ลงนามลง Documents
+    User->>System: ตรวจรับและยืนยันผล (ปิดงาน)
+    System->>DB: ปิดงานและบันทึก INCIDENT_EVENTS + AUDIT_LOG
+```
 
-| ไฟล์ | หน้าที่ |
-|---|---|
-| `Server.js` | business logic, repository, validation, security และ service ฝั่ง Apps Script |
-| `Api.js` | public compatibility facade ที่ browser/maintenance เรียกใช้ |
-| `Entrypoints.js` | `doGet`/`doPost` และ entry points |
-| `Index.html` | Web App shell |
-| `UI_Client.html` | browser controllers และ client-side behavior |
-| `UI_Styles.html` | styles และ design tokens |
-| `UI_Templates.html` | reusable templates |
-| `appsscript.json` | runtime (`V8`), timezone (`Asia/Bangkok`), scopes และ Web App configuration |
-| `tests/*.test.js` | unit tests ฝั่ง Node.js (ไม่ถูก push ขึ้น Apps Script ตาม `.claspignore`) |
+*(ดู Data Diagram แบบละเอียดครบทุก 26 ตาราง และ Workflow ทั้งหมดได้ที่ [`DATA_DIAGRAM_AND_WORKFLOW.md`](./DATA_DIAGRAM_AND_WORKFLOW.md))*
 
-ไฟล์ในชุดนี้เป็น generated Apps Script bundle และไม่มี module/build tree ต้นทางแยกใน repository นี้ จึงต้องแก้ bundle อย่างระมัดระวังและตรวจ syntax + unit tests ทุกครั้ง
+---
 
-## เอกสารประกอบ
+## 🚀 ความสามารถหลักของระบบ (Key Features)
 
-- [คู่มือการติดตั้ง เผยแพร่ และคำแนะนำ (INSTALLATION_TH.md)](INSTALLATION_TH.md)
-- [คู่มือการใช้งานและคำแนะนำตามบทบาท (USER_GUIDE_TH.md)](USER_GUIDE_TH.md)
-- [Web App Diagram, Screen Map, Data Diagram และ Data Dictionary (DATA_DIAGRAM.md)](DATA_DIAGRAM.md)
-- [แผนผัง Workflow ครบทุกกระบวนการและ Release (WORKFLOW.md)](WORKFLOW.md)
-- [ประวัติการอัปเดตเวอร์ชัน (PATCH_NOTES.md)](PATCH_NOTES.md)
-- [แม่แบบสี Clay and Sea (COLOR_TEMPLATE.md)](COLOR_TEMPLATE.md)
+1. **แดชบอร์ดสถิติและติดตามงาน (KPI Dashboard & Tracking)**: กราฟสรุปสถานะใบงาน, รายการเกินกำหนด, ตัวกรองค้นหาแบบ Real-time และการแจ้งเตือนงาน
+2. **ระบบแจ้งซ่อมและใบงานบริการ (Tickets & Work Order PDF)**: รองรับ 6 สถานะมาตรฐาน, ค้นหาจากเลขครุภัณฑ์/ซีเรียลอัตโนมัติ และพิมพ์ใบงาน Service Report (PDF)
+3. **ทะเบียนครุภัณฑ์ 4 แท็บแยกส่วนอิสระ (Modular Equipment Registry)**:
+   - `ข้อมูลทั่วไป` (`details_only`)
+   - `คุณลักษณะ` (`specs_only` — OS, CPU, Speed, RAM, Harddisk, IP)
+   - `การสำรวจ` (`survey_only` — วันที่สำรวจ, ผู้ตรวจสอบ, สถานะ)
+   - `ประวัติแจ้งซ่อม` (Ticket Timeline)
+4. **แผนบำรุงรักษาเชิงป้องกัน (PM Planning)**: บริหารรอบตรวจตามปีงบประมาณไทย ปฏิทิน PM และการบันทึกประวัติตรวจเช็ก
+5. **เชื่อมต่อ LINE OA (LINE Inbox Review)**: รับข้อความแจ้งซ่อมผ่าน Webhook พร้อมตรวจรับ/แปลงเป็นใบงานได้ทันที
+6. **จัดการสิทธิ์และผู้ใช้ (RBAC & Governance)**: สิทธิ์ 5 ระดับ (`ADMIN`, `MANAGER`, `TECHNICIAN`, `ITSUPPORT`, `USER`), ปรับ Permission Matrix, อัปโหลดภาพโปรไฟล์/ถ่ายภาพผ่านกล้อง
+7. **ตั้งค่าระบบและปรับแต่งแบรนด์โดย ADMIN (Admin Settings & RBAC)**: แก้ไขชื่อโครงการ (`project_name`), ชื่อย่อ (`system_short_name`), คำอธิบาย, ไอคอน 1:1, โฟลเดอร์ Google Drive, และสำรองฐานข้อมูล (Database Backup)
 
-## ตรวจ source และทดสอบแบบรวดเร็ว
+---
+
+## 🗄️ โครงสร้างฐานข้อมูล Google Sheets (`DBS` — 26 ตาราง)
+
+Database ID: **`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`**
+
+| หมวดหมู่ | รายชื่อชีต (Sheet Names) |
+| :--- | :--- |
+| **ความปลอดภัยและสิทธิ์ (7 ชีต)** | `APP_USERS`, `APP_USER_PROFILE`, `APP_ROLES`, `APP_ROLE_PERMISSIONS`, `APP_ROLE_ACTION_PERMISSIONS`, `APP_SESSIONS`, `APP_AUDIT_LOG` |
+| **ตั้งค่าและข้อมูลหลัก (8 ชีต)** | `APP_SETTINGS`, `APP_LOOKUPS`, `Branding`, `MST_ORG_UNITS`, `MST_DEVICE_MODELS`, `SOFTWARE_LICENSES`, `INVENTORY`, `INVENTORY_SORTED` |
+| **ใบงานแจ้งซ่อม (5 ชีต)** | `INCIDENT`, `INCIDENT_META`, `INCIDENT_EVENTS`, `INCIDENT_FILES`, `TICKET_SERVICE_REPORT` |
+| **บำรุงรักษาเชิงป้องกัน PM (4 ชีต)** | `PM_PLANNINGS`, `PM_PLANNING_ITEMS`, `PM_PLANS`, `PM_PLAN_HISTORY` |
+| **LINE Messaging Integration (2 ชีต)** | `LINE_INBOX`, `LINE_INBOX_REVIEWS` |
+
+---
+
+## 📂 โครงสร้างไฟล์โค้ดของระบบ (Codebase Architecture)
+
+```
+ITSD_CLASP_STAGING/SERVER_2026/
+├── .clasp.json                      # เชื่อม Apps Script Project 1drKyOp...
+├── README.md                        # ภาพรวมโครงการ ลิงก์อ้างอิง และคู่มือสรุป
+├── DATA_DIAGRAM_AND_WORKFLOW.md     # ER Diagram 26 ตาราง + ผัง Workflow ทั้งระบบ
+├── MANUAL_USER.md                   # คู่มือการใช้งานระบบฉบับสมบูรณ์
+├── INSTALL_GUIDE.md                 # คู่มือการติดตั้งและตั้งค่าฉบับสมบูรณ์
+├── PATCH_NOTES.md                   # ประวัติการพัฒนาและ Release Notes ถึง V1.1.88
+├── COLOR_TEMPLATE.md                # สเปกชุดสีมาตรฐาน UI (Style 5 Orange Energy)
+├── Entrypoints.js                   # doGet() และ doPost()
+├── Api.js                           # Public API Facade (google.script.run)
+├── Server.js                        # Core Enterprise Engine (V1.1.88)
+├── Index.html                       # Web App Shell & Login Layout
+├── UI_Client.html                   # Client Controllers & SPA Views
+├── UI_Styles.html                   # Theme Tokens (Dark Theme Admin Dashboard / Dark & Light)
+├── UI_Templates.html                # HTML Templates
+├── appsscript.json                  # Manifest (Asia/Bangkok, V8, OAuth Scopes)
+└── tests/                           # Automated Verification Tests
+    ├── next-inventory-id.test.js
+    └── license-matching.test.js
+```
+
+---
+
+## 👥 บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ (Default Accounts)
+
+| รหัสผู้ใช้ | Username | ชื่อ-นามสกุล | สิทธิ์ (Role) | รหัสผ่านเริ่มต้น | สถานะ |
+| :---: | :---: | :--- | :---: | :---: | :---: |
+| **USR-ADMIN** | `ADMIN` | ผู้ดูแลระบบส่วนกลาง | **ADMIN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+| **USR-CHALOEM** | `CHALOEM` | คุณเฉลิม ธนากิจโภคิน | **ADMIN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+| **USR-MANAGER** | `MANAGER` | ผู้จัดการ | **MANAGER** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+| **USR-TECHNICIAN** | `TECHNICIAN` | เจ้าหน้าที่ IT | **TECHNICIAN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+| **USR-ITSUPPORT** | `ITSUPPORT` | ทศพล กาญจนพันธ์ | **ITSUPPORT** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+
+---
+
+## 🧪 การตรวจสอบและทดสอบระบบ (Verification & Testing)
+
+คำสั่งตรวจสอบโค้ดและความถูกต้องก่อนส่งมอบงาน:
 
 ```bash
 cd /Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026
+
+# ตรวจสอบสถานะ git
 git status --short --branch
 git diff --check
+
+# ตรวจสอบ syntax โค้ด JavaScript
 node --check Server.js
 node --check Api.js
 node --check Entrypoints.js
+
+# รัน Automated Unit Tests
 node --test tests/next-inventory-id.test.js tests/license-matching.test.js
+
+# ตรวจสอบ Clasp Deployments
 clasp list-deployments
 ```
 
-JavaScript ภายใน `UI_Client.html` ต้องแยกส่วน `<script>` ไปตรวจด้วย `node --check` ก่อน release
+---
 
-## หลักความปลอดภัยและคำแนะนำสำคัญ
+## 🔒 หลักความปลอดภัยและข้อกำหนดสำคัญ (Security & Governance)
 
-- **ห้ามเก็บ Secret ในโค้ดหรือ Git**: ห้าม commit password, session token, HMAC key, LINE secret, `.clasp.json` หรือ Script Properties
-- **ปิด Public Sharing ฐาน `License`**: ไฟล์ `1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4` ต้องแชร์แบบจำกัดสิทธิ์เฉพาะ Script Owner/Deployer และควรเปลี่ยนรหัสผ่าน/Account ที่เคยถูกแชร์สาธารณะ
-- **คง Deployment ID เดิมเสมอ**: เมื่อ `clasp deploy` ต้องระบุ `--deploymentId AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` เพื่อไม่ให้ URL `/exec` เปลี่ยน
-- **สำรองข้อมูลก่อนปรับแก้ใหญ่**: สร้าง backup ผ่าน Admin และใช้ `clasp pull` สำรอง source ลง `.pull-backups/` ก่อนแก้ไขทุกครั้ง
-- **ไม่แก้ประวัติใน Google Sheets โดยพลการ**: ห้ามเปลี่ยน/ลบเลข Ticket หรือ `รหัสอุปกรณ์` ที่มีประวัติอ้างอิง โดยไม่มี mapping report และการอนุมัติ
+- **ห้ามเก็บ Secret ในโค้ดหรือ Git**: ห้าม commit password, session token, HMAC key, LINE secret, หรือ credentials
+- **คง Deployment ID เดิมเสมอ**: เมื่อ deploy ต้องระบุ `--deploymentId AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` เพื่อไม่ให้ URL `/exec` เปลี่ยน
+- **สำรองข้อมูลก่อนปรับแก้ใหญ่**: สร้าง backup ผ่าน Admin Settings และ pull สำรอง source ก่อนแก้ไขทุกครั้ง
+- **ไม่แก้ประวัติใน Google Sheets โดยพลการ**: ห้ามเปลี่ยน/ลบเลข Ticket หรือ `รหัสอุปกรณ์` ที่มีประวัติอ้างอิงโดยไม่มี mapping report และการอนุมัติ
 
-ดูขั้นตอนติดตั้ง เผยแพร่ ตรวจสอบ push และ rollback แบบเต็มใน [INSTALLATION_TH.md](INSTALLATION_TH.md)
+---
+
+## 📚 เอกสารคู่มือฉบับสมบูรณ์ (Full Documentation)
+
+- **คู่มือการใช้งานระบบฉบับสมบูรณ์**: [`MANUAL_USER.md`](./MANUAL_USER.md)
+- **คู่มือการติดตั้งและตั้งค่าระบบฉบับสมบูรณ์**: [`INSTALL_GUIDE.md`](./INSTALL_GUIDE.md)
+- **Data Diagram (ER 26 ตาราง) & System Workflows**: [`DATA_DIAGRAM_AND_WORKFLOW.md`](./DATA_DIAGRAM_AND_WORKFLOW.md)
+- **บันทึกการเปลี่ยนแปลง (Patch Notes)**: [`PATCH_NOTES.md`](./PATCH_NOTES.md)
+- **สเปกแม่แบบชุดสี (Color Template)**: [`COLOR_TEMPLATE.md`](./COLOR_TEMPLATE.md)
+
+---
+
+<div align="center">
+  <sub>พัฒนาและดูแลโดย LongZe Design © 2026 ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)</sub>
+</div>
