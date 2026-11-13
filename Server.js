@@ -1965,6 +1965,10 @@ function serviceUploadFolder_(mime) {
 }
 
 // apps/webapp/src/server/features/auth/auth-service.js
+function itsdActiveBool_(val) {
+  return val === true || String(val || '').trim().toUpperCase() === 'TRUE';
+}
+
 function normalizeUsername_(value) {
   return boundedText_(value, 'ชื่อผู้ใช้', SECURITY_LIMITS.USERNAME, true).toUpperCase();
 }
@@ -2000,12 +2004,12 @@ function require_(token, admin, allowPasswordChange) {
   const session = find_('APP_SESSIONS', 'token_hash', digest_(token));
   if (
     !session ||
-    session.revoked === 'TRUE' ||
+    itsdActiveBool_(session.revoked) ||
     Date.parse(session.expires_at.replace(' ', 'T') + '+07:00') < Date.now()
   )
     throw Error('เซสชันหมดอายุ กรุณาเข้าสู่ระบบใหม่');
   const user = find_('APP_USERS', 'user_id', session.user_id);
-  if (!user || user.active !== 'TRUE') throw Error('บัญชีไม่พร้อมใช้งาน');
+  if (!user || !itsdActiveBool_(user.active)) throw Error('บัญชีไม่พร้อมใช้งาน');
   if (!allowPasswordChange && nist118Status_(user).required)
     throw Error('PASSWORD_CHANGE_REQUIRED: กรุณาเปลี่ยนรหัสผ่านก่อนใช้งานระบบ');
   if (admin && !['ADMIN', 'TECHNICIAN', 'ITSUPPORT'].includes(String(user.role || '').toUpperCase()))
@@ -2088,7 +2092,7 @@ function itsdImpl_login_(username, password) {
   return lock_(() => {
     const matches = usersByUsername_(username),
       u = matches.length === 1 ? matches[0] : null;
-    if (!u || u.active !== 'TRUE') {
+    if (!u || !itsdActiveBool_(u.active)) {
       try {
         const cache = CacheService.getScriptCache();
         cache.put(rlKey, String(Number(cache.get(rlKey) || 0) + 1), 300);
@@ -2915,9 +2919,9 @@ function publicUser_(u) {
   return {
     user_id: u.user_id,
     username: u.username,
-    display_name: u.display_name,
-    role: u.role,
-    active: u.active === 'TRUE' || u.active === true,
+    display_name: u.display_name || u.username || '',
+    role: u.role || 'USER',
+    active: itsdActiveBool_(u.active),
     picture_url: pictureUrl,
     picture_file_id: pictureFileId,
   };

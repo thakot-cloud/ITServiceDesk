@@ -204,9 +204,15 @@ function applyBootstrapState_(fresh) {
   $('login').classList.add('hidden');
   $('app').classList.remove('hidden');
   applySystemBranding(state.branding || state.settings);
-  $('sideName').textContent = state.user.display_name;
-  $('sideRole').textContent = state.user.role;
-  $('sideAvatar').textContent = $('topAvatar').textContent = state.user.display_name.slice(0, 1);
+  if ($('sideName')) $('sideName').textContent = state.user?.display_name || state.user?.username || '';
+  if ($('sideRole')) $('sideRole').textContent = state.user?.role || '';
+  if (typeof ux5SyncUserChrome === 'function') {
+    ux5SyncUserChrome();
+  } else {
+    const initial = ((state.user && (state.user.display_name || state.user.username)) || 'U').slice(0, 1).toUpperCase();
+    if ($('sideAvatar')) $('sideAvatar').textContent = initial;
+    if ($('topAvatar')) $('topAvatar').textContent = initial;
+  }
   return true;
 }
 
@@ -1073,9 +1079,17 @@ async function signIn() {
   if (loginInFlight) return;
   const username = uiValue('username', true),
     password = uiValue('password');
-  if (!username || !password) return;
+  const errEl = $('loginError');
+  if (!username || !password) {
+    const msg = !username ? 'กรุณากรอกชื่อผู้ใช้' : 'กรุณากรอกรหัสผ่าน';
+    if (errEl) errEl.textContent = msg;
+    toast(msg, 'warning');
+    $('loginForm')?.classList.add('login-error-shake');
+    setTimeout(() => $('loginForm')?.classList.remove('login-error-shake'), 420);
+    return;
+  }
   loginInFlight = true;
-  requireEl('loginError').textContent = '';
+  if (errEl) errEl.textContent = '';
   setLoginUiState('loading', 'กำลังเข้าสู่ระบบ...', 'กำลังตรวจสอบบัญชีผู้ใช้งาน', 'กรุณารอสักครู่');
   loading(true);
   try {
@@ -1093,10 +1107,13 @@ async function signIn() {
     await refresh();
   } catch (e) {
     clearBootCache_();
-  sessionStorage.removeItem('ocpb_token');
+    sessionStorage.removeItem('ocpb_token');
     token = '';
-    requireEl('loginError').textContent = normalizeUiError(e);
-    setLoginUiState('error', '', '', '');
+    const errText = normalizeUiError(e);
+    if (errEl) errEl.textContent = errText;
+    toast(errText, 'error');
+    console.error('[Sign-in Error]', e);
+    setLoginUiState('error', 'เข้าสู่ระบบไม่สำเร็จ', errText, '');
   } finally {
     loginInFlight = false;
     loading(false);
