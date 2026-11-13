@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.93
+ * Version: V1.1.94
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -5710,7 +5710,7 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   margin: 0;
   padding: 10px 44px 10px 42px;
   border: 2px solid var(--theme-border, #cfdee2);
-  border-radius: var(--dark-radius-sm, 11px);
+  border-radius: var(--dark-radius-sm, 14px);
   background: var(--theme-input, #f8fbfb);
   color: var(--theme-text, #163d47);
   font-size: 14px;
@@ -5780,7 +5780,7 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 }
 .login48-submit {
   height: 48px;
-  border-radius: 11px !important;
+  border-radius: 14px !important;
   background: linear-gradient(90deg, #087a7a, #0a9890) !important;
   box-shadow: 0 9px 22px rgba(8, 126, 122, 0.24) !important;
   font-weight: 700;
@@ -8959,11 +8959,11 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   --dark-focus-ring: oklab(0.804241 -0.112554 -0.0928449 / 0.5);
   --dark-shadow-1: 0 0 12px 0 rgba(0, 212, 255, 0.08);
   --dark-shadow-2: 0 0 12px 0 rgba(0, 212, 255, 0.05);
-  --dark-radius-xs: 6px;
-  --dark-radius-sm: 11px;
-  --dark-radius-md: 14px;
-  --dark-radius-btn: 11px;
-  --dark-radius-input: 11px;
+  --dark-radius-xs: 8px;
+  --dark-radius-sm: 14px;
+  --dark-radius-md: 18px;
+  --dark-radius-btn: 14px;
+  --dark-radius-input: 14px;
   --motion-instant: 150ms;
 
   /* Mapped Semantic Theme Tokens */
@@ -14191,7 +14191,7 @@ summary,
 
 /* V1.1.81: Match login input radius with submit button, and keep password toggle centered in place */
 .login48-card .login48-input input {
-  border-radius: 11px !important;
+  border-radius: 14px !important;
 }
 
 .login48-card .login48-password-toggle,
@@ -14553,7 +14553,7 @@ summary,
   margin-top: 10px !important;
 }
 
-/* V1.1.92: Modern Balanced Rounded Design (11px) for Buttons and Form Inputs */
+/* V1.1.94: Soft Curved Rounded Design (14px) for Buttons and Form Inputs */
 :is(
   button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar),
   .primary,
@@ -14567,18 +14567,21 @@ summary,
   .form-actions button,
   #ticketSideBody > .form-actions button,
   .line-review-action,
-  .line78-dialog button:not([class*="close"])
+  .line78-dialog button:not([class*="close"]),
+  .login48-submit,
+  .login48-provider
 ) {
-  border-radius: 11px !important;
+  border-radius: 14px !important;
 }
 
 :is(
   input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not(.top-search input),
   select,
   textarea,
-  .field
+  .field,
+  .login48-card .login48-input input
 ) {
-  border-radius: 11px !important;
+  border-radius: 14px !important;
 }
 
 input[type="checkbox"] {
