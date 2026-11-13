@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.84
+  Version: V1.1.85
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -966,8 +966,8 @@ async function uiTicketSide(id) {
     if (page !== 'tickets' || ui.ticket !== id || !body) return;
     body.innerHTML =
       ui.ticketTab === 'details'
-        ? `<div class="ui-panel-title">ข้อมูลทั่วไป</div><div class="ui-detail">${base.map(([k, v]) => `<b>${k}</b><span>${esc(v) || '—'}</span>`).join('')}</div><h3 style="margin:15px 0 5px">รายละเอียดคำขอ / อาการเสีย</h3><div class="ui-note">${esc(t.description) || '—'}</div><h3 style="margin:15px 0 5px">รายละเอียดการดำเนินงาน / วิธีแก้ไข</h3><div class="ui-note">${esc(t.resolution) || '—'}</div><h3 style="margin:15px 0 5px">เอกสารแนบ (${h.files.length})</h3>${h.files.length ? h.files.map((x) => `<p><span class="material-symbols-rounded" aria-hidden="true">attach_file</span> <button class="link" onclick="openFile('${escAttr(x.id)}')">${esc(x.name)}</button></p>`).join('') : '<p class="muted">ยังไม่มีเอกสาร</p>'}<div class="form-actions">${ticketCanChange(t) ? `<button class="primary" onclick="statusForm('${escAttr(id)}')">อัปเดตสถานะ</button>` : '<button class="outline" disabled title="ไม่มีสถานะที่ได้รับอนุญาต">ไม่สามารถเปลี่ยนสถานะ</button>'}</div>`
-        : `<ol class="ui-history">${h.events.length ? h.events.map((e) => `<li><b>${esc(e.to_status)}</b><br><small>${shortDate(e.event_at)} · ${esc(e.note)}</small></li>`).join('') : '<li>ยังไม่มีเหตุการณ์เพิ่มเติม</li>'}</ol>${ticketCanChange(t) ? `<button class="primary" onclick="statusForm('${escAttr(id)}')">อัปเดตสถานะ</button>` : '<button class="outline" disabled title="ไม่มีสถานะที่ได้รับอนุญาต">ไม่สามารถเปลี่ยนสถานะ</button>'}`;
+        ? `<div class="ui-panel-title">ข้อมูลทั่วไป</div><div class="ui-detail">${base.map(([k, v]) => `<b>${k}</b><span>${esc(v) || '—'}</span>`).join('')}</div><h3 style="margin:15px 0 5px">รายละเอียดคำขอ / อาการเสีย</h3><div class="ui-note">${esc(t.description) || '—'}</div><h3 style="margin:15px 0 5px">รายละเอียดการดำเนินงาน / วิธีแก้ไข</h3><div class="ui-note">${esc(t.resolution) || '—'}</div><div class="ticket-side-attach-row"><b>เอกสารแนบ (${h.files.length}) :</b> ${h.files.length ? `<span class="ticket-side-attach-list">${h.files.map((x) => `<button class="link" onclick="openFile('${escAttr(x.id)}')"><span class="material-symbols-rounded" aria-hidden="true">attach_file</span>${esc(x.name)}</button>`).join('')}</span>` : '<span class="muted">ยังไม่มีเอกสาร</span>'}</div><div class="form-actions">${ticketCanChange(t) ? `<button class="primary" onclick="statusForm('${escAttr(id)}')">อัปเดตสถานะ</button>` : '<button class="outline" disabled title="ไม่มีสถานะที่ได้รับอนุญาต">ไม่สามารถเปลี่ยนสถานะ</button>'}</div>`
+        : `<ol class="ui-history">${h.events.length ? h.events.map((e) => `<li><b>${esc(e.to_status)}</b><br><small>${shortDate(e.event_at)} · ${esc(e.note)}</small></li>`).join('') : '<li>ยังไม่มีเหตุการณ์เพิ่มเติม</li>'}</ol><div class="form-actions">${ticketCanChange(t) ? `<button class="primary" onclick="statusForm('${escAttr(id)}')">อัปเดตสถานะ</button>` : '<button class="outline" disabled title="ไม่มีสถานะที่ได้รับอนุญาต">ไม่สามารถเปลี่ยนสถานะ</button>'}</div>`;
   } catch (e) {
     const body = $('ticketSideBody');
     if (body && page === 'tickets' && ui.ticket === id) body.textContent = e.message;
@@ -9995,23 +9995,26 @@ const service70Outcomes = [
       !host ||
       ui.ticket !== id ||
       !['รอยืนยันผล', 'ปิดงาน'].includes(t?.status) ||
-      host.querySelector('.service70-actions')
+      host.querySelector('.service70-btn-details')
     )
       return;
-    const actions = document.createElement('div');
-    actions.className = 'form-actions service70-actions';
-    const print = document.createElement('button');
-    print.type = 'button';
-    print.className = 'outline';
-    print.textContent = 'พิมพ์ใบงาน (PDF)';
-    print.onclick = () => service70Print(id, print);
+    let actions = host.querySelector('.form-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'form-actions';
+      host.appendChild(actions);
+    }
     const details = document.createElement('button');
     details.type = 'button';
-    details.className = 'outline';
+    details.className = 'outline service70-btn-details';
     details.textContent = 'ข้อมูลใบงาน';
     details.onclick = () => service70Edit(id);
-    actions.append(print, details);
-    host.appendChild(actions);
+    const print = document.createElement('button');
+    print.type = 'button';
+    print.className = 'outline service70-btn-print';
+    print.textContent = 'พิมพ์ใบงาน (PDF)';
+    print.onclick = () => service70Print(id, print);
+    actions.append(details, print);
   };
   const priorStatus = statusForm;
   statusForm = async function (id) {

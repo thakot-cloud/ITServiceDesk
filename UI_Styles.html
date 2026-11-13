@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.84
+ * Version: V1.1.85
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14309,6 +14309,67 @@ summary,
 .sidebar.is-collapsed .sidebar-bottom {
   margin-bottom: 64px !important;
   padding: 8px !important;
+}
+
+/* V1.1.85: Align status & service sheet buttons on single row and display attachments inline */
+.ticket-side-attach-row {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin: 10px 0 6px !important;
+  font-size: 13.5px !important;
+  line-height: 1.4 !important;
+}
+
+.ticket-side-attach-row > b {
+  color: var(--theme-text) !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  white-space: nowrap !important;
+}
+
+.ticket-side-attach-row .muted {
+  font-size: 13px !important;
+}
+
+.ticket-side-attach-list {
+  display: inline-flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px 10px !important;
+}
+
+.ticket-side-attach-list .link {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  padding: 0 !important;
+  font-size: 13px !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.ticket-side-attach-list .link .material-symbols-rounded {
+  font-size: 16px !important;
+  vertical-align: middle !important;
+}
+
+#ticketSideBody > .form-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 12px !important;
+}
+
+#ticketSideBody > .form-actions button {
+  margin: 0 !important;
+  white-space: nowrap !important;
+  font-size: 13px !important;
+  padding: 8px 14px !important;
 }
 
 </style>
