@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.87
+ * Version: V1.1.88
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -14400,6 +14400,104 @@ summary,
   color: #0f2d59 !important;
   font-weight: 700 !important;
   white-space: nowrap !important;
+}
+
+/* V1.1.88: User profile avatar upload, camera capture and management */
+.avatar {
+  overflow: hidden !important;
+}
+
+.ux-profile-identity {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 16px !important;
+  padding: 16px !important;
+}
+
+.ux-profile-avatar-wrap {
+  position: relative !important;
+  flex: none !important;
+}
+
+.ux-profile-avatar {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid var(--theme-accent) !important;
+  background: var(--dark-surface-input, #d7eff8) !important;
+  font-size: 26px !important;
+  font-weight: 700 !important;
+}
+
+.ux-profile-avatar img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  display: block !important;
+}
+
+.ux-profile-meta {
+  flex: 1 1 200px !important;
+  min-width: 0 !important;
+}
+
+.ux-profile-photo-actions {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-top: 8px !important;
+}
+
+.ux-photo-action-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  font-size: 12px !important;
+  padding: 5px 12px !important;
+  border-radius: 999px !important;
+  height: 30px !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  cursor: pointer !important;
+}
+
+.ux-photo-action-btn .material-symbols-rounded {
+  font-size: 16px !important;
+}
+
+.ux-camera-box {
+  background: var(--dark-surface-input, #f8fafc) !important;
+  border: 1px solid var(--dark-border-subtle, #cbd5e1) !important;
+  border-radius: 12px !important;
+  padding: 12px !important;
+  text-align: center !important;
+  margin-top: -6px !important;
+}
+
+.ux-webcam-video {
+  width: 100% !important;
+  max-width: 320px !important;
+  height: 240px !important;
+  object-fit: cover !important;
+  border-radius: 10px !important;
+  background: #000 !important;
+  transform: scaleX(-1) !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+.ux-camera-box-actions {
+  display: flex !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
 }
 
 </style>

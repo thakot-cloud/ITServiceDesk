@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.87
+  Version: V1.1.88
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -1346,6 +1346,7 @@ function openModal(title, html) {
 }
 
 function closeModal() {
+  if (typeof ux5StopWebcam === 'function') ux5StopWebcam();
   const editor = $('assetEditorForm');
   if (editor && !$('modal').classList.contains('hidden')) {
     if (editor.dataset.saving === 'true') return;
@@ -3782,6 +3783,16 @@ function ux5CloseMobileSidebar() {
   if (restoreFocus && window.innerWidth < 768) $('mobileMenuButton')?.focus();
 }
 
+function ux5RenderAvatar(targetEl, user) {
+  if (!targetEl) return;
+  const initial = esc(((user && (user.display_name || user.username)) || 'U').slice(0, 1));
+  if (user && user.picture_url) {
+    targetEl.innerHTML = `<img src="${escAttr(user.picture_url)}" alt="${escAttr(user.display_name || user.username || '')}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" onerror="this.onerror=null;this.parentElement.textContent='${initial}';">`;
+  } else {
+    targetEl.textContent = initial;
+  }
+}
+
 function ux5SyncUserChrome() {
   if (!state || !state.user) return;
   const user = state.user;
@@ -3790,7 +3801,7 @@ function ux5SyncUserChrome() {
     meta.innerHTML = `<strong>${esc(user.display_name || user.username || '')}</strong><small>${esc(user.role || '')}</small>`;
   const top = $('topAvatar');
   if (top) {
-    top.textContent = (user.display_name || user.username || 'U').slice(0, 1);
+    ux5RenderAvatar(top, user);
     top.title = 'ข้อมูลบัญชีผู้ใช้';
     top.onclick = ux5OpenProfile;
     top.onkeydown = (event) => {
@@ -3802,6 +3813,10 @@ function ux5SyncUserChrome() {
   }
   const side = $('sideProfile') || document.querySelector('.sidebar-bottom .profile');
   if (side) {
+    const sideAv = $('sideAvatar') || side.querySelector('.avatar');
+    if (sideAv) {
+      ux5RenderAvatar(sideAv, user);
+    }
     side.onclick = ux5OpenProfile;
     side.onkeydown = (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
@@ -3815,6 +3830,172 @@ function ux5SyncUserChrome() {
   }
 }
 
+let ux5WebcamStream = null;
+
+function ux5CaptureCamera() {
+  if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+    $('ux5ProfileCameraInput')?.click();
+    return;
+  }
+  if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === 'function') {
+    ux5StartWebcam();
+  } else {
+    $('ux5ProfileCameraInput')?.click();
+  }
+}
+
+async function ux5StartWebcam() {
+  const box = $('ux5CameraPreviewBox');
+  const video = $('ux5WebcamVideo');
+  if (!box || !video) return;
+  try {
+    ux5StopWebcam();
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
+    });
+    ux5WebcamStream = stream;
+    video.srcObject = stream;
+    box.style.display = 'block';
+  } catch (err) {
+    console.warn('[Webcam error]', err);
+    $('ux5ProfileCameraInput')?.click();
+  }
+}
+
+function ux5StopWebcam() {
+  if (ux5WebcamStream) {
+    try {
+      ux5WebcamStream.getTracks().forEach((t) => t.stop());
+    } catch (_) {}
+    ux5WebcamStream = null;
+  }
+  const box = $('ux5CameraPreviewBox');
+  if (box) box.style.display = 'none';
+  const video = $('ux5WebcamVideo');
+  if (video) video.srcObject = null;
+}
+
+function ux5SnapWebcam() {
+  const video = $('ux5WebcamVideo');
+  if (!video || !ux5WebcamStream) return;
+  const vw = video.videoWidth || 640;
+  const vh = video.videoHeight || 480;
+  const minDim = Math.min(vw, vh);
+  const sx = (vw - minDim) / 2;
+  const sy = (vh - minDim) / 2;
+  const canvas = document.createElement('canvas');
+  canvas.width = 360;
+  canvas.height = 360;
+  const ctx = canvas.getContext('2d');
+  ctx.translate(360, 0);
+  ctx.scale(-1, 1);
+  ctx.drawImage(video, sx, sy, minDim, minDim, 0, 0, 360, 360);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+  ux5StopWebcam();
+  ux5ProcessAndUploadProfileImage(dataUrl);
+}
+
+function ux5HandleImageFile(input) {
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  if (!file.type || !file.type.startsWith('image/')) {
+    toast('กรุณาเลือกไฟล์รูปภาพ (JPG, PNG, WebP)');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const rawDataUrl = e.target.result;
+    const img = new Image();
+    img.onload = () => {
+      const size = 360;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const minDim = Math.min(img.width, img.height);
+      const sx = (img.width - minDim) / 2;
+      const sy = (img.height - minDim) / 2;
+      ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, size, size);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
+      ux5ProcessAndUploadProfileImage(dataUrl);
+    };
+    img.onerror = () => {
+      toast('ไม่สามารถอ่านไฟล์รูปภาพได้');
+    };
+    img.src = rawDataUrl;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+async function ux5ProcessAndUploadProfileImage(dataUrl) {
+  if (!dataUrl || !dataUrl.includes(',')) {
+    toast('ข้อมูลรูปภาพไม่ถูกต้อง');
+    return;
+  }
+  const parts = dataUrl.split(',');
+  const mimeMatch = parts[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+  const base64 = parts[1];
+  const filename = 'profile-' + (state?.user?.user_id || 'user') + '.jpg';
+
+  loading(true);
+  try {
+    const res = await call('uploadUserProfilePicture', token, filename, mime, base64);
+    if (res && res.picture_url) {
+      if (state && state.user) {
+        state.user.picture_url = res.picture_url;
+      }
+      ux5SyncUserChrome();
+      const av = $('ux5ModalAvatar');
+      if (av && state && state.user) {
+        ux5RenderAvatar(av, state.user);
+      }
+      const delBtn = $('ux5RemovePhotoBtn');
+      if (delBtn) delBtn.style.display = 'inline-flex';
+      toast('อัปเดตรูปโปรไฟล์เรียบร้อยแล้ว');
+    } else {
+      toast('อัปโหลดรูปโปรไฟล์เรียบร้อยแล้ว');
+    }
+  } catch (err) {
+    console.error('[Upload profile picture error]', err);
+    if (state && state.user) {
+      ux5SyncUserChrome();
+      const av = $('ux5ModalAvatar');
+      if (av && state && state.user) {
+        ux5RenderAvatar(av, state.user);
+      }
+    }
+    fail(err);
+  } finally {
+    loading(false);
+  }
+}
+
+async function ux5RemoveProfileImage() {
+  if (!confirm('ต้องการลบรูปโปรไฟล์ใช่หรือไม่?')) return;
+  loading(true);
+  try {
+    await call('removeUserProfilePicture', token);
+    if (state && state.user) {
+      state.user.picture_url = '';
+    }
+    ux5SyncUserChrome();
+    const av = $('ux5ModalAvatar');
+    if (av && state && state.user) {
+      ux5RenderAvatar(av, state.user);
+    }
+    const delBtn = $('ux5RemovePhotoBtn');
+    if (delBtn) delBtn.style.display = 'none';
+    toast('ลบรูปโปรไฟล์เรียบร้อยแล้ว');
+  } catch (err) {
+    fail(err);
+  } finally {
+    loading(false);
+  }
+}
+
 function ux5OpenProfile() {
   if (!state || !state.user) return;
   const user = state.user;
@@ -3822,13 +4003,48 @@ function ux5OpenProfile() {
     user.role === 'ADMIN'
       ? `<button type="button" class="outline" onclick="closeModal();nav('manage')"><span class="material-symbols-rounded" aria-hidden="true">manage_accounts</span> จัดการผู้ใช้งาน</button>`
       : '';
+  const initial = esc((user.display_name || user.username || 'U').slice(0, 1));
+  const avatarContent = user.picture_url
+    ? `<img id="ux5ModalAvatarImg" src="${escAttr(user.picture_url)}" alt="Avatar" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block" onerror="this.onerror=null;this.parentElement.textContent='${initial}';">`
+    : `<span id="ux5ModalAvatarFallback">${initial}</span>`;
+  const removeStyle = user.picture_url ? '' : 'style="display:none"';
+
   openModal(
     'ข้อมูลบัญชีผู้ใช้',
     `
     <div class="ux-profile-card">
       <div class="ux-profile-identity">
-        <span class="avatar ux-profile-avatar">${esc((user.display_name || user.username || 'U').slice(0, 1))}</span>
-        <div><h3>${esc(user.display_name || '-')}</h3><p>@${esc(user.username || '-')} · ${esc(user.role || '-')}</p></div>
+        <div class="ux-profile-avatar-wrap">
+          <div class="avatar ux-profile-avatar" id="ux5ModalAvatar">${avatarContent}</div>
+        </div>
+        <div class="ux-profile-meta">
+          <h3>${esc(user.display_name || '-')}</h3>
+          <p>@${esc(user.username || '-')} · ${esc(user.role || '-')}</p>
+          <div class="ux-profile-photo-actions">
+            <button type="button" class="outline ux-photo-action-btn" onclick="$('ux5ProfileFileInput').click()" title="เลือกรูปภาพจากเครื่อง / มือถือ / คอมพิวเตอร์">
+              <span class="material-symbols-rounded" aria-hidden="true">add_photo_alternate</span> แนบรูปภาพ
+            </button>
+            <button type="button" class="outline ux-photo-action-btn" onclick="ux5CaptureCamera()" title="ถ่ายภาพจากกล้องมือถือหรือกล้องคอมพิวเตอร์">
+              <span class="material-symbols-rounded" aria-hidden="true">photo_camera</span> ถ่ายรูป
+            </button>
+            <button type="button" id="ux5RemovePhotoBtn" class="outline danger ux-photo-action-btn" onclick="ux5RemoveProfileImage()" title="ลบรูปโปรไฟล์" ${removeStyle}>
+              <span class="material-symbols-rounded" aria-hidden="true">delete</span> ลบรูป
+            </button>
+          </div>
+          <input id="ux5ProfileFileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="ux5HandleImageFile(this)">
+          <input id="ux5ProfileCameraInput" type="file" accept="image/*" capture="user" style="display:none" onchange="ux5HandleImageFile(this)">
+        </div>
+      </div>
+      <div id="ux5CameraPreviewBox" style="display:none" class="ux-camera-box">
+        <video id="ux5WebcamVideo" autoplay playsinline class="ux-webcam-video"></video>
+        <div class="ux-camera-box-actions">
+          <button type="button" class="primary ux-photo-action-btn" onclick="ux5SnapWebcam()">
+            <span class="material-symbols-rounded" aria-hidden="true">photo_camera</span> ถ่ายภาพนี้
+          </button>
+          <button type="button" class="outline ux-photo-action-btn" onclick="ux5StopWebcam()">
+            <span class="material-symbols-rounded" aria-hidden="true">close</span> ปิดกล้อง
+          </button>
+        </div>
       </div>
       <div class="ux-account-grid">
         <b>รหัสผู้ใช้</b><span>${esc(user.user_id || '-')}</span>

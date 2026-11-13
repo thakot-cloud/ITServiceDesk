@@ -45,7 +45,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.87';
+const APP_VERSION = 'V1.1.88';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -2901,12 +2901,25 @@ function dashboardAnalyticsFor_(incidents, reportedRaw, scope) {
 
 // apps/webapp/src/server/app/bootstrap-service.js
 function publicUser_(u) {
+  let pictureUrl = '';
+  let pictureFileId = '';
+  try {
+    if (book_().getSheetByName('APP_USER_PROFILE')) {
+      const profile = find_('APP_USER_PROFILE', 'user_id', u.user_id);
+      if (profile) {
+        pictureUrl = profile.picture_url || '';
+        pictureFileId = profile.picture_file_id || '';
+      }
+    }
+  } catch (_) {}
   return {
     user_id: u.user_id,
     username: u.username,
     display_name: u.display_name,
     role: u.role,
-    active: u.active === 'TRUE',
+    active: u.active === 'TRUE' || u.active === true,
+    picture_url: pictureUrl,
+    picture_file_id: pictureFileId,
   };
 }
 
@@ -4926,6 +4939,111 @@ function admin35SaveProfile_(actor, userId, data) {
         patch,
       ),
     );
+}
+
+// apps/webapp/src/server/features/users/user-service.js
+function itsdImpl_uploadUserProfilePicture_(token, name, mime, base64) {
+  const actor = require_(token);
+  ensureAdminModuleSchema_();
+  name = boundedText_(name || 'avatar.jpg', 'ชื่อไฟล์', 120, true);
+  mime = boundedText_(mime || 'image/jpeg', 'ชนิดไฟล์', 80, true);
+  base64 = boundedText_(base64, 'ข้อมูลรูปภาพ', SECURITY_LIMITS.BASE64, false);
+  if (!String(mime || '').startsWith('image/')) {
+    throw Error('รองรับเฉพาะไฟล์รูปภาพเท่านั้น');
+  }
+  const bytes = Utilities.base64Decode(base64);
+  if (!bytes.length) throw Error('ไฟล์รูปภาพว่างเปล่า');
+  if (bytes.length > 5 * 1024 * 1024) throw Error('ไฟล์รูปภาพมีขนาดใหญ่เกินไป (ไม่เกิน 5 MB)');
+
+  return lock_(() => {
+    let folder;
+    const targetFolderId = '18znTfPsF8Y91nj-8bpoYy5rRl1pWZIh-';
+    try {
+      folder = DriveApp.getFolderById(targetFolderId);
+    } catch (_) {
+      try {
+        folder = driveFolderBySetting_('pictures_folder_id', 'Google Drive Pictures');
+      } catch (_) {
+        try {
+          folder = admin35AssetsFolder_();
+        } catch (_) {
+          folder = DriveApp.getRootFolder();
+        }
+      }
+    }
+    const ext = mime === 'image/png' ? '.png' : (mime === 'image/webp' ? '.webp' : '.jpg');
+    const safeName = 'avatar-' + actor.user_id + '-' + Utilities.formatDate(new Date(), TZ, 'yyyyMMdd-HHmmss') + ext;
+    const file = folder.createFile(Utilities.newBlob(bytes, mime, safeName));
+    try {
+      file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+    } catch (_) {}
+
+    const fileId = file.getId();
+    const pictureUrl = 'https://lh3.googleusercontent.com/d/' + fileId;
+    const profileRow = find_('APP_USER_PROFILE', 'user_id', actor.user_id);
+    const oldFileId = profileRow && profileRow.picture_file_id;
+
+    if (profileRow) {
+      update_('APP_USER_PROFILE', profileRow.__row, {
+        picture_file_id: fileId,
+        picture_url: pictureUrl,
+        updated_at: now_(),
+        updated_by: actor.user_id,
+      });
+    } else {
+      append_('APP_USER_PROFILE', {
+        profile_id: 'PRF-' + Utilities.getUuid().slice(0, 8).toUpperCase(),
+        user_id: actor.user_id,
+        email: '',
+        telephone: '',
+        position: '',
+        department_id: '',
+        org_unit_id: '',
+        picture_file_id: fileId,
+        picture_url: pictureUrl,
+        active: true,
+        updated_at: now_(),
+        updated_by: actor.user_id,
+      });
+    }
+
+    if (oldFileId && oldFileId !== fileId) {
+      try {
+        DriveApp.getFileById(oldFileId).setTrashed(true);
+      } catch (_) {}
+    }
+    resetRows_('APP_USER_PROFILE');
+
+    return {
+      success: true,
+      file_id: fileId,
+      picture_url: pictureUrl,
+    };
+  });
+}
+
+// apps/webapp/src/server/features/users/user-service.js
+function itsdImpl_removeUserProfilePicture_(token) {
+  const actor = require_(token);
+  ensureAdminModuleSchema_();
+  return lock_(() => {
+    const profileRow = find_('APP_USER_PROFILE', 'user_id', actor.user_id);
+    if (!profileRow) return { success: true };
+    const oldFileId = profileRow.picture_file_id;
+    update_('APP_USER_PROFILE', profileRow.__row, {
+      picture_file_id: '',
+      picture_url: '',
+      updated_at: now_(),
+      updated_by: actor.user_id,
+    });
+    if (oldFileId) {
+      try {
+        DriveApp.getFileById(oldFileId).setTrashed(true);
+      } catch (_) {}
+    }
+    resetRows_('APP_USER_PROFILE');
+    return { success: true };
+  });
 }
 
 // apps/webapp/src/server/features/users/user-service.js

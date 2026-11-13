@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.1.87
+ * Version: V1.1.88
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -59,6 +59,8 @@ function getPublicSystemIconData() { return itsdImpl_getPublicSystemIconData_.ap
 function getSystemIconData(token) { return itsdImpl_getSystemIconData_.apply(this, arguments); }
 function getAdminUsers(token) { return itsdImpl_getAdminUsers_.apply(this, arguments); }
 function saveAdminUser(token, data) { return itsdImpl_saveAdminUser_.apply(this, arguments); }
+function uploadUserProfilePicture(token, name, mime, base64) { return itsdImpl_uploadUserProfilePicture_.apply(this, arguments); }
+function removeUserProfilePicture(token) { return itsdImpl_removeUserProfilePicture_.apply(this, arguments); }
 function resetAdminUserPassword(token, userId, newPassword) { return itsdImpl_resetAdminUserPassword_.apply(this, arguments); }
 function setAdminUserActive(token, userId, active) { return itsdImpl_setAdminUserActive_.apply(this, arguments); }
 function getAdminPermissions(token) { return itsdImpl_getAdminPermissions_.apply(this, arguments); }
