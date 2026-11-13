@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.95
+ * Version: V1.1.96
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -13310,11 +13310,11 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
   box-shadow: var(--dark-shadow-1);
 }
 
-.dash26-kpi.blue   { --card-color: #00d4ff; border-left: 3px solid #00d4ff; }
-.dash26-kpi.red    { --card-color: #ef4444; border-left: 3px solid #ef4444; }
-.dash26-kpi.orange { --card-color: #f59e0b; border-left: 3px solid #f59e0b; }
-.dash26-kpi.green  { --card-color: #22c55e; border-left: 3px solid #22c55e; }
-.dash26-kpi.purple { --card-color: #4d49fc; border-left: 3px solid #4d49fc; }
+.dash26-kpi.blue   { --card-color: #00d4ff; border-left: 1px solid transparent; }
+.dash26-kpi.red    { --card-color: #ef4444; border-left: 1px solid transparent; }
+.dash26-kpi.orange { --card-color: #f59e0b; border-left: 1px solid transparent; }
+.dash26-kpi.green  { --card-color: #22c55e; border-left: 1px solid transparent; }
+.dash26-kpi.purple { --card-color: #4d49fc; border-left: 1px solid transparent; }
 
 .dash26-kpi small {
   color: var(--dark-text-secondary) !important;
@@ -14605,7 +14605,7 @@ summary,
 
 /* V1.1.94: Soft Curved Rounded Design (14px) for Buttons and Form Inputs */
 :is(
-  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar):not(.ui-side-tabs button):not(.ticket-side-attach-list button),
+  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar):not(.ui-side-tabs button):not(.ticket-side-attach-list button):not(.sidebar nav button),
   .primary,
   .secondary,
   .outline,
@@ -14778,6 +14778,151 @@ html[data-theme='light'] .outline:hover:not(:disabled) {
   border-color: #94a3b8 !important;
   background: #f1f5f9 !important;
   color: #0f172a !important;
+}
+
+/* V1.1.96: Sidebar Nav Buttons match Profile Pill Radius (999px) */
+.sidebar nav button {
+  border-radius: 999px !important;
+}
+
+/* V1.1.96: Overview Dashboard KPI Cards - Remove colored borders and apply solid tinted backgrounds */
+.dash26-kpi {
+  border-left: 1px solid transparent !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  transition: transform var(--motion-instant) ease, box-shadow var(--motion-instant) ease !important;
+}
+
+.dash26-kpi:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
+}
+
+/* Dark Mode Tinted Backgrounds replacing border colors */
+.dash26-kpi.blue {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(0, 212, 255, 0.07)) !important;
+  border: 1px solid rgba(0, 212, 255, 0.28) !important;
+  border-left: 1px solid rgba(0, 212, 255, 0.28) !important;
+}
+.dash26-kpi.blue .dash-kpi-icon {
+  background: rgba(0, 212, 255, 0.15) !important;
+  color: #00d4ff !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+}
+
+.dash26-kpi.red {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.07)) !important;
+  border: 1px solid rgba(239, 68, 68, 0.28) !important;
+  border-left: 1px solid rgba(239, 68, 68, 0.28) !important;
+}
+.dash26-kpi.red .dash-kpi-icon {
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+}
+
+.dash26-kpi.orange {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.07)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  border-left: 1px solid rgba(245, 158, 11, 0.28) !important;
+}
+.dash26-kpi.orange .dash-kpi-icon {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+.dash26-kpi.green {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.07)) !important;
+  border: 1px solid rgba(34, 197, 94, 0.28) !important;
+  border-left: 1px solid rgba(34, 197, 94, 0.28) !important;
+}
+.dash26-kpi.green .dash-kpi-icon {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #22c55e !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+
+.dash26-kpi.purple {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.08)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+  border-left: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+.dash26-kpi.purple .dash-kpi-icon {
+  background: rgba(99, 102, 241, 0.16) !important;
+  color: #818cf8 !important;
+  border: 1px solid rgba(99, 102, 241, 0.32) !important;
+}
+
+/* Light Mode Tinted Backgrounds for KPI Cards */
+html[data-theme='light'] .dash26-kpi.blue {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff) !important;
+  border: 1px solid #bae6fd !important;
+  border-left: 1px solid #bae6fd !important;
+}
+html[data-theme='light'] .dash26-kpi.blue .dash-kpi-icon {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border: 1px solid #bae6fd !important;
+}
+html[data-theme='light'] .dash26-kpi.blue strong {
+  color: #0369a1 !important;
+}
+
+html[data-theme='light'] .dash26-kpi.red {
+  background: linear-gradient(135deg, #fee2e2, #fef2f2) !important;
+  border: 1px solid #fecaca !important;
+  border-left: 1px solid #fecaca !important;
+}
+html[data-theme='light'] .dash26-kpi.red .dash-kpi-icon {
+  background: #ffffff !important;
+  color: #dc2626 !important;
+  border: 1px solid #fecaca !important;
+}
+html[data-theme='light'] .dash26-kpi.red strong {
+  color: #b91c1c !important;
+}
+
+html[data-theme='light'] .dash26-kpi.orange {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb) !important;
+  border: 1px solid #fde68a !important;
+  border-left: 1px solid #fde68a !important;
+}
+html[data-theme='light'] .dash26-kpi.orange .dash-kpi-icon {
+  background: #ffffff !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+html[data-theme='light'] .dash26-kpi.orange strong {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] .dash26-kpi.green {
+  background: linear-gradient(135deg, #dcfce7, #f0fdf4) !important;
+  border: 1px solid #bbf7d0 !important;
+  border-left: 1px solid #bbf7d0 !important;
+}
+html[data-theme='light'] .dash26-kpi.green .dash-kpi-icon {
+  background: #ffffff !important;
+  color: #16a34a !important;
+  border: 1px solid #bbf7d0 !important;
+}
+html[data-theme='light'] .dash26-kpi.green strong {
+  color: #15803d !important;
+}
+
+html[data-theme='light'] .dash26-kpi.purple {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff) !important;
+  border: 1px solid #ddd6fe !important;
+  border-left: 1px solid #ddd6fe !important;
+}
+html[data-theme='light'] .dash26-kpi.purple .dash-kpi-icon {
+  background: #ffffff !important;
+  color: #6d28d9 !important;
+  border: 1px solid #ddd6fe !important;
+}
+html[data-theme='light'] .dash26-kpi.purple strong {
+  color: #5b21b6 !important;
 }
 
 </style>
