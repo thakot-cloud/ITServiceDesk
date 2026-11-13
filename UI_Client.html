@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.85
+  Version: V1.1.86
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -1463,21 +1463,12 @@ async function runReport() {
     const reportBody = $('reportBody');
     if (!reportBody || page !== 'reports') return;
     reportBody.innerHTML = `<div class="grid stats">${stats.map(([name, value, icon, key]) => `<div class="card stat report33-kpi report33-kpi-${key}"><div><small>${name}</small><strong>${value}</strong><span class="muted">จากทั้งหมด ${n} รายการ</span></div><span class="stat-icon">${icon}</span></div>`).join('')}</div><div class="ui-grid-2"><section class="ui-panel ui-report-chart"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span> จำนวนการแจ้งเรื่องรายสัปดาห์</div>${uiBarChart(reportRows)}</section><section class="ui-panel ui-report-chart"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">donut_small</span> สัดส่วนสถานะงานบริการ</div><div class="report100-status" style="display:flex;align-items:center;gap:15px"><div class="ui-donut" style="background:${donut}"><div>${n}<small style="display:block;font-size:12px">ครั้ง</small></div></div><div class="report32-status-legend"><p><i class="report32-dot closed" aria-hidden="true"></i><span>ปิดงาน ${closed} (${a}%)</span></p><p><i class="report32-dot pending" aria-hidden="true"></i><span>ค้าง ${pending} (${b}%)</span></p><p><i class="report32-dot confirm" aria-hidden="true"></i><span>รอยืนยัน ${confirm} (${c}%)</span></p></div></div></section></div><section class="ui-panel" style="margin-top:14px"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">assignment</span> รายการสำหรับรายงานประจำเดือน (CM)<div class="actions" style="margin-left:auto"><button class="outline cm-export pdf" onclick="exportPdf()"><span class="material-symbols-rounded" aria-hidden="true">picture_as_pdf</span> PDF</button><button class="outline cm-export csv" onclick="exportCsv()"><span class="material-symbols-rounded" aria-hidden="true">table_view</span> CSV</button><button class="outline cm-export xls" onclick="exportXls()"><span class="material-symbols-rounded" aria-hidden="true">grid_on</span> XLS</button></div></div>${rowsTable(
-      [
-        'เลขที่แจ้งปัญหา',
-        'วันที่และเวลาแจ้ง',
-        'หน่วยงาน',
-        'อุปกรณ์',
-        'รายละเอียดคำขอ / อาการเสีย',
-        'รายละเอียดการดำเนินงาน / วิธีแก้ไข',
-        'วันที่แก้ไขเสร็จ',
-        'สถานะ',
-      ],
+      reportHeads,
       reportRows
         .slice(0, 100)
         .map(
           (t) =>
-            `<tr><td>${esc(t.id)}</td><td>${shortDate(t.reported_at)}</td><td>${esc(t.org)}</td><td>${esc(t.device)}</td><td title="${esc(t.description)}">${esc((t.description || '').slice(0, 65))}</td><td title="${esc(t.resolution)}">${esc((t.resolution || '').slice(0, 65))}</td><td>${esc(t.finished_at)}</td><td>${badge(t.status)}</td></tr>`,
+            `<tr>${reportKeys.map((k) => `<td title="${esc(t[k] || '')}">${k === 'status' ? badge(t[k]) : (k === 'reported_at' ? shortDate(t[k]) : (['description', 'resolution'].includes(k) ? esc((t[k] || '').slice(0, 65)) : esc(t[k] || '—')))}</td>`).join('')}</tr>`,
         )
         .join(''),
     )}${reportRows.length > 100 ? '<p class="muted">แสดง 100 รายการแรก; ไฟล์ส่งออกมีครบทุกแถว</p>' : ''}</section>`;
@@ -2783,7 +2774,11 @@ async function exportXls() {
     ];
     const wb = XLSX.utils.book_new(),
       ws = XLSX.utils.aoa_to_sheet(matrix);
-    ws['!cols'] = reportHeads.map((_, i) => ({ wch: i === 9 || i === 11 ? 45 : 22 }));
+    ws['!cols'] = reportHeads.map((_, i) => ({ wch: i === 11 || i === 13 ? 45 : 22 }));
+    reportHeads.forEach((_, i) => {
+      const addr = XLSX.utils.encode_cell({ r: 0, c: i });
+      if (ws[addr]) ws[addr].s = { fill: { fgColor: { rgb: 'D0E8FF' } }, font: { bold: true } };
+    });
     XLSX.utils.book_append_sheet(wb, ws, 'CM');
     XLSX.writeFile(wb, base + '.xls', { bookType: 'biff8' });
     toast('ส่งออก XLS เรียบร้อย');
@@ -2812,7 +2807,7 @@ function cmPrintHtml() {
   }).format(new Date());
   const branding = currentSystemBranding();
   return `<!doctype html><html lang="th"><head><meta charset="utf-8"><title>${esc(branding.short_name)} — CM ${esc(range)}</title><link href="https:\/\/fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet"><style>
-  @page{size:A3 landscape;margin:11mm}body{font-family:'Noto Sans Thai',sans-serif;color:#102b49;font-size:9px;margin:0}h1{font-size:17px;margin:0 0 6px}.meta{margin-bottom:12px;color:#53677a}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #cbd5e1;padding:4px;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2fc;text-align:left}thead{display:table-header-group}tr{break-inside:avoid}th:nth-child(10),th:nth-child(12){width:16%}td{white-space:pre-wrap}.summary{margin:8px 0;font-weight:600}
+  @page{size:A3 landscape;margin:11mm}body{font-family:'Noto Sans Thai',sans-serif;color:#102b49;font-size:9px;margin:0}h1{font-size:17px;margin:0 0 6px}.meta{margin-bottom:12px;color:#53677a}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{border:1px solid #cbd5e1;padding:4px;vertical-align:top;overflow-wrap:anywhere}th{background:#d0e8ff;text-align:left;font-weight:700}thead{display:table-header-group}tr{break-inside:avoid}th:nth-child(12),th:nth-child(14){width:14%}td{white-space:pre-wrap}.summary{margin:8px 0;font-weight:600}
   </style></head><body><h1>รายงานประจำเดือน (CM) — ${esc(branding.project_name)}</h1><div class="meta">ช่วงวันที่ ${esc(range)} | ส่งออก ${esc(stamp)} (Asia/Bangkok)</div><div class="summary">จำนวนรายการ ${reportRows.length}</div><table><thead><tr>${header}</tr></thead><tbody>${rows || `<tr><td colspan="${reportHeads.length}">ไม่พบรายการในช่วงที่เลือก</td></tr>`}</tbody></table></body></html>`;
 }
 
@@ -7540,8 +7535,10 @@ const reportHeads = [
   'เลขที่แจ้งปัญหา',
   'วันที่และเวลาที่แจ้ง',
   'ผู้แจ้งปัญหา',
-  'เบอร์โทร',
   'ประเภทอุปกรณ์',
+  'ยี่ห้ออุปกรณ์',
+  'รุ่นอุปกรณ์',
+  'หมายเลขซีเรียล',
   'เลขครุภัณฑ์',
   'หน่วยงานหลัก',
   'หน่วยงานย่อย',
@@ -7557,8 +7554,10 @@ const reportKeys = [
   'id',
   'reported_at',
   'reporter',
-  'phone',
   'device',
+  'brand',
+  'model',
+  'serial',
   'asset_no',
   'org',
   'suborg',
