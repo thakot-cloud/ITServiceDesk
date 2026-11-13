@@ -28,7 +28,7 @@
 | **Google Sheets Database** | `ITServiceDesk — DBS` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit |
 | **License ต้นฉบับ** | `License` / `Full_Data` (`1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4`) | https://docs.google.com/spreadsheets/d/1ZiBugthGA-lD8KTAqntK6ckboTLlqoU61X-FpBdEIL4/edit |
 | **Apps Script Project (Edit)** | `ITSD_CLASP_STAGING` (`1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`) | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
-| **Web App Deploy (Exec)** | `AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` (`ITSD V1.1.88` · Deployment `@140`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+| **Web App Deploy (Exec)** | `AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps` (`ITSD V1.1.88` · Deployment `@144`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 ---
 
@@ -164,15 +164,17 @@ ITSD_CLASP_STAGING/SERVER_2026/
 
 ---
 
-## 👥 บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ (Default Accounts)
+## 👥 บัญชีผู้ใช้งานจริงในระบบ (System Users)
 
-| รหัสผู้ใช้ | Username | ชื่อ-นามสกุล | สิทธิ์ (Role) | รหัสผ่านเริ่มต้น | สถานะ |
-| :---: | :---: | :--- | :---: | :---: | :---: |
-| **USR-ADMIN** | `ADMIN` | ผู้ดูแลระบบส่วนกลาง | **ADMIN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
-| **USR-CHALOEM** | `CHALOEM` | คุณเฉลิม ธนากิจโภคิน | **ADMIN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
-| **USR-MANAGER** | `MANAGER` | ผู้จัดการ | **MANAGER** | `Admin@ITSD2026!` | พร้อมใช้งาน |
-| **USR-TECHNICIAN** | `TECHNICIAN` | เจ้าหน้าที่ IT | **TECHNICIAN** | `Admin@ITSD2026!` | พร้อมใช้งาน |
-| **USR-ITSUPPORT** | `ITSUPPORT` | ทศพล กาญจนพันธ์ | **ITSUPPORT** | `Admin@ITSD2026!` | พร้อมใช้งาน |
+| รหัสผู้ใช้ (User ID) | Username | ชื่อแสดง (Display Name) | สิทธิ์ (Role) | ตำแหน่ง (Position) | อีเมล / เบอร์โทรศัพท์ | สถานะ |
+| :---: | :---: | :--- | :---: | :--- | :--- | :---: |
+| **USR-ADMIN** | `ADMIN` | ผู้ดูแลระบบ | **ADMIN** | Administrators | `c.thakot@gmail.com`<br>`064-224-9454` | พร้อมใช้งาน |
+| **USR-MANAGER** | `MANAGER` | ผู้จัดการ | **MANAGER** | Manager | `c.thakot@gmail.com`<br>`064-224-9454` | พร้อมใช้งาน |
+| **USR-TECHNICIAN** | `TECHNICIAN` | เจ้าหน้าที่ IT | **TECHNICIAN** | Technician | `c.thakot@gmail.com`<br>`064-224-9454` | พร้อมใช้งาน |
+| **USR-ITSUPPORT** | `ITSUPPORT` | ทศพล กาญจนพันธ์ | **ITSUPPORT** | IT Support | `thodsaphon@opentechnology.co.th`<br>`099-329-0899` | พร้อมใช้งาน |
+| **USR-USER01** | `USER001` | ชัยวุฒิ ศรีแก้ว | **ITSUPPORT** | IT Support | `chaiwut@opentechnology.co.th`<br>`097-130-3369` | พร้อมใช้งาน |
+| **USR-USER02** | `USER002` | วินยาดา บึงกระเสริม | **USER** | IT Support | `winyada.b@opentechnology.co.th`<br>`082-296-9649` | พร้อมใช้งาน |
+| **USR-USER03** | `USER003` | วีรภัทร  ธนันทา | **USER** | IT Support | `weerapat@opentechnology.co.th`<br>`061-293-3939` | พร้อมใช้งาน |
 
 ---
 
