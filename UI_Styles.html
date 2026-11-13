@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.92
+ * Version: V1.1.93
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -4378,11 +4378,18 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 }
 .dash26-status .dash-donut-wrap {
   min-height: 220px;
-  gap: 14px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  padding: 10px 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 .dash26-status .dash-donut {
   width: 150px;
   height: 150px;
+  flex: 0 0 auto;
 }
 .dash26-status .dash-donut > div {
   width: 90px;
@@ -4391,9 +4398,36 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 .dash26-status .dash-donut strong {
   font-size: 25px;
 }
+.dash26-status .dash-donut-legend {
+  flex: 0 1 auto;
+  min-width: 160px;
+  max-width: 240px;
+}
 .dash26-status .dash-donut-legend > div {
-  font-size: 9px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
   margin: 8px 0;
+}
+.dash26-status .dash-donut-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.dash26-status .dash-donut-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 0;
+  flex: none;
+}
+.dash26-status .dash-donut-legend b {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 .dash26-problems .dash-vbars {
   height: 220px;
@@ -14549,6 +14583,41 @@ summary,
 
 input[type="checkbox"] {
   border-radius: 4px !important;
+}
+
+/* V1.1.93: Center Grouped layout for dashboard status donut chart & legend */
+.dash26-status .dash-donut-wrap {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 28px !important;
+  padding: 10px 16px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.dash26-status .dash-donut {
+  flex: 0 0 auto !important;
+}
+
+.dash26-status .dash-donut-legend {
+  flex: 0 1 auto !important;
+  min-width: 160px !important;
+  max-width: 240px !important;
+}
+
+.dash26-status .dash-donut-legend > div {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+@media (max-width: 480px) {
+  .dash26-status .dash-donut-wrap {
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
 }
 
 </style>

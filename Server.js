@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.92
+ * Version: V1.1.93
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-14
  * Change History:
+ * - V1.1.93: Center Grouped layout for dashboard status donut chart & legend.
  * - V1.1.92: Apply Modern Balanced rounded design (11px) across buttons, line inbox, and form input elements.
  * - V1.1.91: Keep password visibility toggle strictly inside input container without jumping or outer focus ring.
  * - V1.1.90: Standardize patch version format ITSD V1.1.90 and resolve Gas template parser comment bug.
@@ -50,7 +51,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.92';
+const APP_VERSION = 'V1.1.93';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
