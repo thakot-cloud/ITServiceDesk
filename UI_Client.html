@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.96
+  Version: V1.1.97
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -2636,10 +2636,10 @@ function surveyReportBars(groups) {
 function drawSurveyReport() {
   const result=SURVEY_REPORT.result;if(!result)return;
   const s=result.summary,pct=s.total?s.surveyed*100/s.total:0, pendingEnd=s.total?(s.surveyed+s.pending)*100/s.total:0;
-  const stats=[['อุปกรณ์ในขอบเขต',surveyReportNumber(s.total),'inventory_2'],['สำรวจเรียบร้อย',surveyReportNumber(s.surveyed),'task_alt'],['ยังไม่สำรวจ',surveyReportNumber(s.pending),'pending_actions'],['สำรวจสำเร็จ',s.percent+'%','donut_small']];
+  const stats=[['อุปกรณ์ในขอบเขต',surveyReportNumber(s.total),'inventory_2','all'],['สำรวจเรียบร้อย',surveyReportNumber(s.surveyed),'task_alt','surveyed'],['ยังไม่สำรวจ',surveyReportNumber(s.pending),'pending_actions','pending'],['สำรวจสำเร็จ',s.percent+'%','donut_small','rate']];
   const legend=`<div class="sr79-legend"><span><i class="done"></i>สำรวจเรียบร้อย ${surveyReportNumber(s.surveyed)}</span><span><i class="pending"></i>ยังไม่สำรวจ ${surveyReportNumber(s.pending)}</span><span><i class="other"></i>สถานะเดิมอื่น ${surveyReportNumber(s.other)}</span></div>`;
   const exports=result.can_export&&surveyReportCanExport()?`<div class="actions"><button type="button" id="srSummary" class="outline cm-export" onclick="createSurveySummary()" title="Google Sheets: แยกหน่วยงานปี 2563–2569 และผู้สำรวจวันที่ 26–30 ต.ค. 2569">รายงานสรุป</button><button class="outline cm-export pdf sr79-export" onclick="exportSurveyReport('pdf')">PDF</button><button class="outline cm-export csv sr79-export" onclick="exportSurveyReport('csv')">CSV</button><button class="outline cm-export xls sr79-export" onclick="exportSurveyReport('xls')">XLS</button></div>`:'';
-  $('surveyReportBody').innerHTML=`<div class="grid stats sr79-stats">${stats.map(([label,value,icon])=>`<div class="card stat"><div><small>${label}</small><strong>${value}</strong></div><span class="stat-icon" aria-hidden="true"><span class="material-symbols-rounded">${icon}</span></span></div>`).join('')}</div>
+  $('surveyReportBody').innerHTML=`<div class="grid stats sr79-stats">${stats.map(([label,value,icon,key])=>`<div class="card stat sr79-kpi sr79-kpi-${key}"><div><small>${label}</small><strong>${value}</strong></div><span class="stat-icon" aria-hidden="true"><span class="material-symbols-rounded">${icon}</span></span></div>`).join('')}</div>
     ${s.other?`<p class="sr79-note">พบสถานะเดิมอื่น ๆ ${surveyReportNumber(s.other)} รายการ แสดงแยกจากยอดสำรวจเรียบร้อยและยังไม่สำรวจ</p>`:''}
     <p class="hint">สรุปความคืบหน้าตามหน่วยงาน ประเภท และตัวกรองข้างต้น ก่อนแยกสถานะสำหรับตารางรายการ</p>
     <div class="ui-grid-2"><section class="ui-panel ui-report-chart"><div class="ui-panel-title"><span class="material-symbols-rounded" aria-hidden="true">bar_chart</span> ความคืบหน้ารายหน่วยงาน</div>${surveyReportBars(result.by_org)}</section>
@@ -4485,7 +4485,7 @@ function admin35MasterRender() {
     LOCATION: lookups.filter((x) => x.type === 'LOCATION').length,
   };
   $('content').innerHTML =
-    `<section class="admin35">${admin35Header('account_tree', 'จัดการข้อมูลหลัก', 'จัดการข้อมูลพื้นฐานของระบบ โดยไม่กระทบข้อมูล INCIDENT และ INVENTORY')}<div class="admin35-grid kpi">${admin35Kpi('หน่วยงาน', counts.ORG, 'account_tree')}${admin35Kpi('ประเภทอุปกรณ์', counts.DEVICE, 'devices_other', 'green')}${admin35Kpi('ประเภทปัญหา', counts.PROBLEM, 'build', 'amber')}${admin35Kpi('สถานที่', counts.LOCATION, 'home')}</div><div class="admin35-card"><div class="admin35-tabs">${[
+    `<section class="admin35">${admin35Header('account_tree', 'จัดการข้อมูลหลัก', 'จัดการข้อมูลพื้นฐานของระบบ โดยไม่กระทบข้อมูล INCIDENT และ INVENTORY')}<div class="admin35-grid kpi">${admin35Kpi('หน่วยงาน', counts.ORG, 'account_tree', 'purple')}${admin35Kpi('ประเภทอุปกรณ์', counts.DEVICE, 'devices_other', 'green')}${admin35Kpi('ประเภทปัญหา', counts.PROBLEM, 'build', 'amber')}${admin35Kpi('สถานที่', counts.LOCATION, 'home', 'blue')}</div><div class="admin35-card"><div class="admin35-tabs">${[
       ['ORG', 'หน่วยงาน'],
       ['DEVICE', 'ประเภทอุปกรณ์'],
       ['BRAND', 'ยี่ห้อ'],
@@ -4891,10 +4891,10 @@ function admin35UsersRender() {
   $('content').innerHTML =
     `<section class="admin35 admin36-users">${admin35Header('group', 'จัดการผู้ใช้', 'จัดการบัญชีผู้ใช้งานในระบบอย่างปลอดภัย โดยไม่ส่งผลกระทบต่อการใช้งานหน้าอื่นๆ')}
   <div class="admin36-user-kpis">
-    ${admin36UserKpi('ผู้ใช้ทั้งหมด', users.length, 'บัญชีผู้ใช้งาน', 'groups', 'blue')}
-    ${admin36UserKpi('ผู้ดูแลระบบ', admins, 'บัญชี', 'shield', 'red')}
-    ${admin36UserKpi('เจ้าหน้าที่ IT', tech, 'บัญชี', 'support_agent', 'purple')}
+    ${admin36UserKpi('ผู้ใช้ทั้งหมด', users.length, 'บัญชีผู้ใช้งาน', 'groups', 'purple')}
     ${admin36UserKpi('ใช้งานอยู่', active, 'บัญชี', 'circle', 'green')}
+    ${admin36UserKpi('ผู้ดูแลระบบ', admins, 'บัญชี', 'shield', 'orange')}
+    ${admin36UserKpi('เจ้าหน้าที่ IT', tech, 'บัญชี', 'support_agent', 'blue')}
   </div>
   <div class="admin36-user-toolbar">
     <div class="admin36-search"><span class="material-symbols-rounded">search</span><input id="admin35UserQ" placeholder="ค้นหาชื่อ, รหัสผู้ใช้, อีเมล..." oninput="debounceCall_('userFilter', admin36UserFilterChanged)"></div>
@@ -5086,19 +5086,19 @@ function admin36RoleVisual(code) {
     ADMIN: {
       icon: 'crown',
       fallback: 'workspace_premium',
-      tone: 'blue',
+      tone: 'red',
       desc: 'สิทธิ์เต็มรูปแบบ สามารถเข้าถึงทุกเมนูและจัดการระบบได้',
     },
     MANAGER: {
       icon: 'groups',
       fallback: 'groups',
-      tone: 'green',
+      tone: 'orange',
       desc: 'จัดการงานและดูแลทีม เข้าถึงเมนูหลักและรายงาน',
     },
     TECHNICIAN: {
       icon: 'support_agent',
       fallback: 'support_agent',
-      tone: 'orange',
+      tone: 'green',
       desc: 'สิทธิ์ขึ้นกับ Matrix รวมงานแจ้งซ่อมและงานผู้ดูแล',
     },
     ITSUPPORT: {
@@ -5242,7 +5242,7 @@ function admin36PermissionIcon(state) {
 
 function admin36SortRoles(roles) {
   const order = new Map(
-    ['ADMIN', 'MANAGER', 'TECHNICIAN', 'ITSUPPORT', 'USER'].map((code, index) => [code, index]),
+    ['ADMIN', 'MANAGER', 'TECHNICIAN', 'USER', 'ITSUPPORT'].map((code, index) => [code, index]),
   );
   return roles.slice().sort((a, b) => {
     const aCode = String(a.code || '').trim().toUpperCase();
@@ -5399,7 +5399,7 @@ function admin35AuditRender(filters) {
     );
     module.value = filters.module || '';
   }
-  body.innerHTML = `<div class="admin35-grid kpi">${admin35Kpi('กิจกรรมวันนี้', d.summary.today, 'schedule')}${admin35Kpi('Login วันนี้', d.summary.login, 'login', 'green')}${admin35Kpi('การเปลี่ยนข้อมูล', d.summary.changes, 'edit', 'amber')}${admin35Kpi('รายการไม่สำเร็จ', d.summary.failed, 'block', d.summary.failed ? 'red' : '')}</div><div class="admin35-card-head"><div><h2>Audit Log</h2><p>แสดงสูงสุด 500 รายการต่อการค้นหา</p></div>${d.can_export ? '<button class="outline" onclick="admin35ExportAudit()"><span class="material-symbols-rounded">download</span> ส่งออก CSV</button>' : ''}</div><div class="admin35-table-wrap"><table class="admin35-table"><thead><tr><th>วันเวลา</th><th>ผู้ใช้</th><th>การกระทำ</th><th>โมดูล</th><th>รายการ</th><th>ผลลัพธ์</th><th>รายละเอียด</th></tr></thead><tbody>${d.rows.length ? d.rows.map((x) => `<tr><td>${esc(x.event_at)}</td><td>${esc(x.user)}</td><td><span class="admin35-role">${esc(x.action)}</span></td><td>${esc(x.module || '—')}</td><td>${esc([x.entity_type, x.entity_id].filter(Boolean).join(' / ') || '—')}</td><td>${admin35Status(x.result === 'SUCCESS' ? 'สำเร็จ' : 'ไม่สำเร็จ', x.result === 'SUCCESS' ? 'success' : 'failed')}</td><td class="admin35-audit-detail">${esc(x.detail || '—')}</td></tr>`).join('') : `<tr><td colspan="7" class="admin35-empty">ไม่พบประวัติการใช้งาน</td></tr>`}</tbody></table></div>${d.truncated ? '<div class="admin35-truncated">ผลลัพธ์มีมากกว่า 500 รายการ กรุณาระบุช่วงวันที่หรือเงื่อนไขเพิ่มเติม</div>' : ''}`;
+  body.innerHTML = `<div class="admin35-grid kpi">${admin35Kpi('กิจกรรมวันนี้', d.summary.today, 'schedule', 'purple')}${admin35Kpi('Login วันนี้', d.summary.login, 'login', 'green')}${admin35Kpi('การเปลี่ยนข้อมูล', d.summary.changes, 'edit', 'amber')}${admin35Kpi('รายการไม่สำเร็จ', d.summary.failed, 'block', 'blue')}</div><div class="admin35-card-head"><div><h2>Audit Log</h2><p>แสดงสูงสุด 500 รายการต่อการค้นหา</p></div>${d.can_export ? '<button class="outline" onclick="admin35ExportAudit()"><span class="material-symbols-rounded">download</span> ส่งออก CSV</button>' : ''}</div><div class="admin35-table-wrap"><table class="admin35-table"><thead><tr><th>วันเวลา</th><th>ผู้ใช้</th><th>การกระทำ</th><th>โมดูล</th><th>รายการ</th><th>ผลลัพธ์</th><th>รายละเอียด</th></tr></thead><tbody>${d.rows.length ? d.rows.map((x) => `<tr><td>${esc(x.event_at)}</td><td>${esc(x.user)}</td><td><span class="admin35-role">${esc(x.action)}</span></td><td>${esc(x.module || '—')}</td><td>${esc([x.entity_type, x.entity_id].filter(Boolean).join(' / ') || '—')}</td><td>${admin35Status(x.result === 'SUCCESS' ? 'สำเร็จ' : 'ไม่สำเร็จ', x.result === 'SUCCESS' ? 'success' : 'failed')}</td><td class="admin35-audit-detail">${esc(x.detail || '—')}</td></tr>`).join('') : `<tr><td colspan="7" class="admin35-empty">ไม่พบประวัติการใช้งาน</td></tr>`}</tbody></table></div>${d.truncated ? '<div class="admin35-truncated">ผลลัพธ์มีมากกว่า 500 รายการ กรุณาระบุช่วงวันที่หรือเงื่อนไขเพิ่มเติม</div>' : ''}`;
 }
 
 function admin35ExportAudit() {

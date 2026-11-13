@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.96
+ * Version: V1.1.97
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -13379,24 +13379,24 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 .track25-stat.blue,
 .report33-kpi-received,
 .sr79-kpi-all {
-  border-left: 3px solid #00d4ff !important;
+  border-left: 1px solid transparent !important;
 }
 
 .track25-stat.slate,
 .report33-kpi-confirm,
 .sr79-kpi-rate {
-  border-left: 3px solid #4d49fc !important;
+  border-left: 1px solid transparent !important;
 }
 
 .track25-stat.green,
 .report33-kpi-closed,
 .sr79-kpi-surveyed {
-  border-left: 3px solid #22c55e !important;
+  border-left: 1px solid transparent !important;
 }
 
 .report33-kpi-pending,
 .sr79-kpi-pending {
-  border-left: 3px solid #f59e0b !important;
+  border-left: 1px solid transparent !important;
 }
 
 .report33-kpi .stat-icon,
@@ -14785,143 +14785,550 @@ html[data-theme='light'] .outline:hover:not(:disabled) {
   border-radius: 999px !important;
 }
 
-/* V1.1.96: Overview Dashboard KPI Cards - Remove colored borders and apply solid tinted backgrounds */
-.dash26-kpi {
+/* V1.1.97: KPI Cards - Remove colored borders and apply soft tinted backgrounds across all modules */
+:is(
+  .dash26-kpi,
+  .track25-stat,
+  .report33-kpi,
+  .sr79-kpi,
+  .sr79-stats .card.stat,
+  .admin35-grid.kpi .admin35-kpi,
+  .admin36-user-kpis .admin36-user-kpi,
+  .admin36-role-cards .admin36-role-summary
+) {
   border-left: 1px solid transparent !important;
   border-radius: 16px !important;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
   transition: transform var(--motion-instant) ease, box-shadow var(--motion-instant) ease !important;
 }
 
-.dash26-kpi:hover {
+:is(
+  .dash26-kpi,
+  .track25-stat,
+  .report33-kpi,
+  .sr79-kpi,
+  .sr79-stats .card.stat,
+  .admin35-grid.kpi .admin35-kpi,
+  .admin36-user-kpis .admin36-user-kpi,
+  .admin36-role-cards .admin36-role-summary
+):hover {
   transform: translateY(-2px) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18) !important;
 }
 
-/* Dark Mode Tinted Backgrounds replacing border colors */
-.dash26-kpi.blue {
+.admin36-user-kpi .admin36-kpi-ghost {
+  opacity: 0.12 !important;
+}
+
+/* ========================================================
+   Dark Mode Tinted Backgrounds replacing heavy border colors
+   ======================================================== */
+
+/* BLUE (ฟ้า) */
+:is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) {
   background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(0, 212, 255, 0.07)) !important;
   border: 1px solid rgba(0, 212, 255, 0.28) !important;
   border-left: 1px solid rgba(0, 212, 255, 0.28) !important;
 }
-.dash26-kpi.blue .dash-kpi-icon {
+:is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: rgba(0, 212, 255, 0.15) !important;
   color: #00d4ff !important;
   border: 1px solid rgba(0, 212, 255, 0.3) !important;
 }
+:is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
+  color: #00d4ff !important;
+}
 
-.dash26-kpi.red {
+/* RED (แดง) */
+:is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) {
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(239, 68, 68, 0.07)) !important;
   border: 1px solid rgba(239, 68, 68, 0.28) !important;
   border-left: 1px solid rgba(239, 68, 68, 0.28) !important;
 }
-.dash26-kpi.red .dash-kpi-icon {
+:is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: rgba(239, 68, 68, 0.15) !important;
   color: #ef4444 !important;
   border: 1px solid rgba(239, 68, 68, 0.3) !important;
 }
+:is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
+  color: #ef4444 !important;
+}
 
-.dash26-kpi.orange {
+/* ORANGE / AMBER (ส้มเหลือง) */
+:is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.07)) !important;
   border: 1px solid rgba(245, 158, 11, 0.28) !important;
   border-left: 1px solid rgba(245, 158, 11, 0.28) !important;
 }
-.dash26-kpi.orange .dash-kpi-icon {
+:is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: rgba(245, 158, 11, 0.15) !important;
   color: #f59e0b !important;
   border: 1px solid rgba(245, 158, 11, 0.3) !important;
 }
+:is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
+  color: #f59e0b !important;
+}
 
-.dash26-kpi.green {
+/* GREEN (เขียว) */
+:is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) {
   background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.07)) !important;
   border: 1px solid rgba(34, 197, 94, 0.28) !important;
   border-left: 1px solid rgba(34, 197, 94, 0.28) !important;
 }
-.dash26-kpi.green .dash-kpi-icon {
+:is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: rgba(34, 197, 94, 0.15) !important;
   color: #22c55e !important;
   border: 1px solid rgba(34, 197, 94, 0.3) !important;
 }
+:is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
+  color: #22c55e !important;
+}
 
-.dash26-kpi.purple {
+/* PURPLE / INDIGO / SLATE (ม่วง/น้ำเงิน) */
+:is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) {
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.08)) !important;
   border: 1px solid rgba(99, 102, 241, 0.3) !important;
   border-left: 1px solid rgba(99, 102, 241, 0.3) !important;
 }
-.dash26-kpi.purple .dash-kpi-icon {
+:is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: rgba(99, 102, 241, 0.16) !important;
   color: #818cf8 !important;
   border: 1px solid rgba(99, 102, 241, 0.32) !important;
 }
+:is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
+  color: #a5b4fc !important;
+}
 
-/* Light Mode Tinted Backgrounds for KPI Cards */
-html[data-theme='light'] .dash26-kpi.blue {
+/* ========================================================
+   Light Mode Tinted Backgrounds for all KPI Cards
+   ======================================================== */
+
+/* BLUE (ฟ้า) */
+html[data-theme='light'] :is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) {
   background: linear-gradient(135deg, #e0f2fe, #f0f9ff) !important;
   border: 1px solid #bae6fd !important;
   border-left: 1px solid #bae6fd !important;
 }
-html[data-theme='light'] .dash26-kpi.blue .dash-kpi-icon {
+html[data-theme='light'] :is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: #ffffff !important;
   color: #0284c7 !important;
   border: 1px solid #bae6fd !important;
 }
-html[data-theme='light'] .dash26-kpi.blue strong {
+html[data-theme='light'] :is(
+  .dash26-kpi.blue,
+  .track25-stat.blue,
+  .report33-kpi-confirm,
+  #reportBody .report33-kpi:nth-child(4),
+  .sr79-kpi-surveyed,
+  .sr79-stats .card.stat:nth-child(2),
+  .admin35-grid.kpi .admin35-kpi.blue,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(4),
+  .admin36-user-kpis .admin36-user-kpi.tone-blue,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(4),
+  .admin36-role-cards .admin36-role-summary.tone-blue
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #0369a1 !important;
 }
 
-html[data-theme='light'] .dash26-kpi.red {
+/* RED (แดง) */
+html[data-theme='light'] :is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) {
   background: linear-gradient(135deg, #fee2e2, #fef2f2) !important;
   border: 1px solid #fecaca !important;
   border-left: 1px solid #fecaca !important;
 }
-html[data-theme='light'] .dash26-kpi.red .dash-kpi-icon {
+html[data-theme='light'] :is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: #ffffff !important;
   color: #dc2626 !important;
   border: 1px solid #fecaca !important;
 }
-html[data-theme='light'] .dash26-kpi.red strong {
+html[data-theme='light'] :is(
+  .dash26-kpi.red,
+  .admin35-grid.kpi .admin35-kpi.red,
+  .admin36-user-kpis .admin36-user-kpi.tone-red,
+  .admin36-role-cards .admin36-role-summary.tone-red
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #b91c1c !important;
 }
 
-html[data-theme='light'] .dash26-kpi.orange {
+/* ORANGE / AMBER (ส้มเหลือง) */
+html[data-theme='light'] :is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) {
   background: linear-gradient(135deg, #fef3c7, #fffbeb) !important;
   border: 1px solid #fde68a !important;
   border-left: 1px solid #fde68a !important;
 }
-html[data-theme='light'] .dash26-kpi.orange .dash-kpi-icon {
+html[data-theme='light'] :is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: #ffffff !important;
   color: #d97706 !important;
   border: 1px solid #fde68a !important;
 }
-html[data-theme='light'] .dash26-kpi.orange strong {
+html[data-theme='light'] :is(
+  .dash26-kpi.orange,
+  .report33-kpi-pending,
+  #reportBody .report33-kpi:nth-child(3),
+  .sr79-kpi-pending,
+  .sr79-stats .card.stat:nth-child(3),
+  .admin35-grid.kpi .admin35-kpi.amber,
+  .admin35-grid.kpi .admin35-kpi.orange,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(3),
+  .admin36-user-kpis .admin36-user-kpi.tone-orange,
+  .admin36-user-kpis .admin36-user-kpi.tone-amber,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(3),
+  .admin36-role-cards .admin36-role-summary.tone-orange
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #b45309 !important;
 }
 
-html[data-theme='light'] .dash26-kpi.green {
+/* GREEN (เขียว) */
+html[data-theme='light'] :is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) {
   background: linear-gradient(135deg, #dcfce7, #f0fdf4) !important;
   border: 1px solid #bbf7d0 !important;
   border-left: 1px solid #bbf7d0 !important;
 }
-html[data-theme='light'] .dash26-kpi.green .dash-kpi-icon {
+html[data-theme='light'] :is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: #ffffff !important;
   color: #16a34a !important;
   border: 1px solid #bbf7d0 !important;
 }
-html[data-theme='light'] .dash26-kpi.green strong {
+html[data-theme='light'] :is(
+  .dash26-kpi.green,
+  .track25-stat.green,
+  .report33-kpi-closed,
+  #reportBody .report33-kpi:nth-child(2),
+  .sr79-kpi-rate,
+  .sr79-stats .card.stat:nth-child(4),
+  .admin35-grid.kpi .admin35-kpi.green,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(2),
+  .admin36-user-kpis .admin36-user-kpi.tone-green,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(2),
+  .admin36-role-cards .admin36-role-summary.tone-green
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #15803d !important;
 }
 
-html[data-theme='light'] .dash26-kpi.purple {
+/* PURPLE / INDIGO / SLATE (ม่วง/น้ำเงิน) */
+html[data-theme='light'] :is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) {
   background: linear-gradient(135deg, #ede9fe, #f5f3ff) !important;
   border: 1px solid #ddd6fe !important;
   border-left: 1px solid #ddd6fe !important;
 }
-html[data-theme='light'] .dash26-kpi.purple .dash-kpi-icon {
+html[data-theme='light'] :is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) :is(.dash-kpi-icon, .track25-stat-icon, .stat-icon, i, .admin36-kpi-icon, .admin36-role-summary-icon) {
   background: #ffffff !important;
   color: #6d28d9 !important;
   border: 1px solid #ddd6fe !important;
 }
-html[data-theme='light'] .dash26-kpi.purple strong {
+html[data-theme='light'] :is(
+  .dash26-kpi.purple,
+  .track25-stat.slate,
+  .track25-stat.purple,
+  .report33-kpi-received,
+  #reportBody .report33-kpi:nth-child(1),
+  .sr79-kpi-all,
+  .sr79-stats .card.stat:nth-child(1),
+  .admin35-grid.kpi .admin35-kpi.purple,
+  .admin35 .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  #admin35AuditBody .admin35-grid.kpi > .admin35-kpi:nth-child(1),
+  .admin36-user-kpis .admin36-user-kpi.tone-purple,
+  .admin36-user-kpis > .admin36-user-kpi:nth-child(1),
+  .admin36-role-cards .admin36-role-summary.tone-purple
+) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #5b21b6 !important;
 }
 
