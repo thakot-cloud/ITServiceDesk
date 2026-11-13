@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.97
+ * Version: V1.1.98
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -5198,25 +5198,16 @@ body.ux8-manage-modal-open .ux8-manage-actions {
     0 2px 5px rgba(0, 0, 0, 0.25);
 }
 
-/* V1.0.33 — Report KPI Dark Mode completion
-   Scope: Dark Mode only. Light Mode remains unchanged. */#reportBody .grid.stats .card.stat.report33-kpi {
-  --report33-accent: var(--theme-accent);
-  --report33-surface: var(--theme-raised);
-  --report33-surface-2: var(--theme-raised);
-  --report33-border: var(--theme-border);
-  --report33-icon-bg: rgba(90, 169, 255, 0.14);
+/* V1.0.33 — Report KPI Dark Mode completion */
+#reportBody .grid.stats .card.stat.report33-kpi {
   position: relative;
   overflow: hidden;
   isolation: isolate;
   min-height: 112px;
-  background: linear-gradient(
-    145deg,
-    var(--report33-surface) 0%,
-    var(--report33-surface-2) 100%
-  ) !important;
-  border: 1px solid var(--report33-border) !important;
+  border-radius: 16px !important;
+  border: 1px solid var(--theme-border) !important;
   color: var(--theme-info) !important;
-  box-shadow: 0 8px 22px rgba(2, 8, 23, 0.18) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
 }
 #reportBody .grid.stats .card.stat.report33-kpi > div,
 #reportBody .grid.stats .card.stat.report33-kpi > .stat-icon {
@@ -5225,7 +5216,6 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 }
 #reportBody .grid.stats .card.stat.report33-kpi small {
   display: block;
-  color: var(--report33-accent) !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   line-height: 1.4 !important;
@@ -5233,11 +5223,9 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 #reportBody .grid.stats .card.stat.report33-kpi strong {
   display: block;
   margin-top: 4px;
-  color: var(--theme-info) !important;
   font-size: 28px !important;
   font-weight: 800 !important;
   line-height: 1.08 !important;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.18);
 }
 #reportBody .grid.stats .card.stat.report33-kpi .muted {
   display: block;
@@ -5252,47 +5240,12 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   display: grid !important;
   place-items: center !important;
   border-radius: 10px !important;
-  background: var(--report33-icon-bg) !important;
-  color: var(--report33-accent) !important;
-  border: 1px solid var(--report33-border) !important;
   box-shadow: none !important;
 }
 #reportBody .grid.stats .card.stat.report33-kpi .stat-icon .material-symbols-rounded {
   color: inherit !important;
   font-size: 23px !important;
 }
-
-/* Status-consistent semantic surfaces */#reportBody .report33-kpi-received {
-  --report33-accent: var(--theme-accent);
-  --report33-surface: var(--theme-raised);
-  --report33-surface-2: var(--theme-raised);
-  --report33-border: var(--theme-border);
-  --report33-icon-bg: rgba(90, 169, 255, 0.14);
-}
-#reportBody .report33-kpi-closed {
-  --report33-accent: #86efac;
-  --report33-surface: rgba(34, 197, 94, 0.16);
-  --report33-surface-2: rgba(34, 197, 94, 0.16);
-  --report33-border: #22c55e;
-  --report33-icon-bg: rgba(85, 214, 169, 0.14);
-}
-#reportBody .report33-kpi-pending {
-  --report33-accent: #fcd34d;
-  --report33-surface: var(--theme-raised);
-  --report33-surface-2: var(--theme-raised);
-  --report33-border: #f59e0b;
-  --report33-icon-bg: rgba(255, 208, 107, 0.13);
-}
-#reportBody .report33-kpi-confirm {
-  --report33-accent: var(--theme-accent);
-  --report33-surface: var(--theme-raised);
-  --report33-surface-2: var(--theme-raised);
-  --report33-border: var(--theme-border);
-  --report33-icon-bg: rgba(105, 184, 255, 0.13);
-}
-#reportBody .grid.stats .card.stat.report33-kpi:hover {
-  border-color: var(--report33-accent) !important;
-  box-shadow: 0 10px 26px rgba(2, 8, 23, 0.24) !important;
 }
 @media (max-width: 900px) {#reportBody .grid.stats .card.stat.report33-kpi {
     min-height: 104px;
@@ -8398,32 +8351,34 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   }
 }
 
-/* V1.0.65 Settings UI Patch: mockup-aligned, visual-only LINE interface */
+/* Settings Tabs Base Styles */
 .itsd-settings-tabs {
   display: flex;
-  gap: 0;
-  margin: 0 0 14px;
+  gap: 8px;
+  margin: 0 0 16px;
   align-items: center;
   flex-wrap: wrap;
 }
 .itsd-settings-tabs button {
-  border: 1px solid #d7e4f3;
-  padding: 10px 17px;
-  background: #f7faff;
-  color: #385675;
-  display: flex;
+  border: 1px solid var(--theme-border);
+  padding: 9px 18px;
+  background: var(--theme-panel);
+  color: var(--theme-muted);
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   font: inherit;
-  font-weight: 700;
+  font-size: 13.5px;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 12px;
+  box-shadow: none;
+  outline: none;
+  transition: all var(--motion-instant) ease;
 }
-.itsd-settings-tabs button[aria-selected='true'] {
-  color: #075add;
-  background: #eaf4ff;
-  border-color: #70abfa;
-  box-shadow: inset 0 2px #127aff;
+.itsd-settings-tabs button[aria-selected='true'],
+.itsd-settings-tabs button.active {
+  box-shadow: none !important;
 }
 .itsd-settings-tabs .material-symbols-rounded {
   font-size: 20px;
@@ -10051,12 +10006,6 @@ html[data-theme='light'] .ui-side-tabs button.active {
   background: var(--theme-panel);
   color: var(--theme-muted);
   border-color: var(--theme-border);
-}
-
-.itsd-settings-tabs button[aria-selected='true'] {
-  background: var(--dark-surface-strong);
-  color: var(--theme-strong-text);
-  border-color: var(--theme-strong-border);
 }
 
 /* LINE OA Inbox */
@@ -13356,7 +13305,6 @@ html[data-theme='dark'] .ux-profile-actions button.ux124-logout:focus-visible { 
 
 /* Queue / Track25 / Service Report / Inventory Survey KPIs */
 :is(.track25-stat, .report33-kpi, .sr79-kpi, .admin35-kpi, .admin36-user-kpi) {
-  background: var(--dark-surface-raised) !important;
   border: 1px solid var(--dark-border-subtle) !important;
   border-radius: var(--dark-radius-md) !important;
   box-shadow: var(--dark-shadow-2) !important;
@@ -15330,6 +15278,226 @@ html[data-theme='light'] :is(
   .admin36-role-cards .admin36-role-summary.tone-purple
 ) :is(strong, .admin36-kpi-number, .admin36-role-summary-text > b, .admin36-role-arrow) {
   color: #5b21b6 !important;
+}
+
+/* ========================================================
+   V1.1.98: Report33 Service KPI Cards Specificity Guarantee
+   ======================================================== */
+/* 1. Received (แจ้งซ่อมทั้งหมด - ม่วง/น้ำเงิน) */
+#reportBody .card.stat.report33-kpi.report33-kpi-received,
+#reportBody .grid.stats .report33-kpi-received,
+#reportBody .grid.stats > .card:nth-child(1) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(99, 102, 241, 0.08)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.3) !important;
+  border-left: 1px solid rgba(99, 102, 241, 0.3) !important;
+}
+#reportBody :is(.report33-kpi-received, .card:nth-child(1)) .stat-icon {
+  background: rgba(99, 102, 241, 0.16) !important;
+  color: #818cf8 !important;
+  border: 1px solid rgba(99, 102, 241, 0.32) !important;
+}
+#reportBody :is(.report33-kpi-received, .card:nth-child(1)) strong {
+  color: #a5b4fc !important;
+}
+
+/* 2. Closed (ปิดงานแล้ว - เขียว) */
+#reportBody .card.stat.report33-kpi.report33-kpi-closed,
+#reportBody .grid.stats .report33-kpi-closed,
+#reportBody .grid.stats > .card:nth-child(2) {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(34, 197, 94, 0.07)) !important;
+  border: 1px solid rgba(34, 197, 94, 0.28) !important;
+  border-left: 1px solid rgba(34, 197, 94, 0.28) !important;
+}
+#reportBody :is(.report33-kpi-closed, .card:nth-child(2)) .stat-icon {
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #22c55e !important;
+  border: 1px solid rgba(34, 197, 94, 0.3) !important;
+}
+#reportBody :is(.report33-kpi-closed, .card:nth-child(2)) strong {
+  color: #22c55e !important;
+}
+
+/* 3. Pending (ค้างดำเนินการ - ส้มเหลือง) */
+#reportBody .card.stat.report33-kpi.report33-kpi-pending,
+#reportBody .grid.stats .report33-kpi-pending,
+#reportBody .grid.stats > .card:nth-child(3) {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.07)) !important;
+  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  border-left: 1px solid rgba(245, 158, 11, 0.28) !important;
+}
+#reportBody :is(.report33-kpi-pending, .card:nth-child(3)) .stat-icon {
+  background: rgba(245, 158, 11, 0.15) !important;
+  color: #f59e0b !important;
+  border: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+#reportBody :is(.report33-kpi-pending, .card:nth-child(3)) strong {
+  color: #f59e0b !important;
+}
+
+/* 4. Confirm (รอยืนยัน - ฟ้า) */
+#reportBody .card.stat.report33-kpi.report33-kpi-confirm,
+#reportBody .grid.stats .report33-kpi-confirm,
+#reportBody .grid.stats > .card:nth-child(4) {
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.18), rgba(0, 212, 255, 0.07)) !important;
+  border: 1px solid rgba(0, 212, 255, 0.28) !important;
+  border-left: 1px solid rgba(0, 212, 255, 0.28) !important;
+}
+#reportBody :is(.report33-kpi-confirm, .card:nth-child(4)) .stat-icon {
+  background: rgba(0, 212, 255, 0.15) !important;
+  color: #00d4ff !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+}
+#reportBody :is(.report33-kpi-confirm, .card:nth-child(4)) strong {
+  color: #00d4ff !important;
+}
+
+/* Light Mode Overrides for Report33 */
+html[data-theme='light'] #reportBody .card.stat.report33-kpi.report33-kpi-received,
+html[data-theme='light'] #reportBody .grid.stats .report33-kpi-received,
+html[data-theme='light'] #reportBody .grid.stats > .card:nth-child(1) {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff) !important;
+  border: 1px solid #ddd6fe !important;
+  border-left: 1px solid #ddd6fe !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-received, .card:nth-child(1)) .stat-icon {
+  background: #ffffff !important;
+  color: #6d28d9 !important;
+  border: 1px solid #ddd6fe !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-received, .card:nth-child(1)) strong {
+  color: #5b21b6 !important;
+}
+
+html[data-theme='light'] #reportBody .card.stat.report33-kpi.report33-kpi-closed,
+html[data-theme='light'] #reportBody .grid.stats .report33-kpi-closed,
+html[data-theme='light'] #reportBody .grid.stats > .card:nth-child(2) {
+  background: linear-gradient(135deg, #dcfce7, #f0fdf4) !important;
+  border: 1px solid #bbf7d0 !important;
+  border-left: 1px solid #bbf7d0 !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-closed, .card:nth-child(2)) .stat-icon {
+  background: #ffffff !important;
+  color: #16a34a !important;
+  border: 1px solid #bbf7d0 !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-closed, .card:nth-child(2)) strong {
+  color: #15803d !important;
+}
+
+html[data-theme='light'] #reportBody .card.stat.report33-kpi.report33-kpi-pending,
+html[data-theme='light'] #reportBody .grid.stats .report33-kpi-pending,
+html[data-theme='light'] #reportBody .grid.stats > .card:nth-child(3) {
+  background: linear-gradient(135deg, #fef3c7, #fffbeb) !important;
+  border: 1px solid #fde68a !important;
+  border-left: 1px solid #fde68a !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-pending, .card:nth-child(3)) .stat-icon {
+  background: #ffffff !important;
+  color: #d97706 !important;
+  border: 1px solid #fde68a !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-pending, .card:nth-child(3)) strong {
+  color: #b45309 !important;
+}
+
+html[data-theme='light'] #reportBody .card.stat.report33-kpi.report33-kpi-confirm,
+html[data-theme='light'] #reportBody .grid.stats .report33-kpi-confirm,
+html[data-theme='light'] #reportBody .grid.stats > .card:nth-child(4) {
+  background: linear-gradient(135deg, #e0f2fe, #f0f9ff) !important;
+  border: 1px solid #bae6fd !important;
+  border-left: 1px solid #bae6fd !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-confirm, .card:nth-child(4)) .stat-icon {
+  background: #ffffff !important;
+  color: #0284c7 !important;
+  border: 1px solid #bae6fd !important;
+}
+html[data-theme='light'] #reportBody :is(.report33-kpi-confirm, .card:nth-child(4)) strong {
+  color: #0369a1 !important;
+}
+
+/* ========================================================
+   V1.1.98: System Settings Tab Buttons (ตั้งค่าระบบ)
+   - Every tab button removes thick borders & thick box-shadow
+   - Normal state: clean thin standard border
+   - Selected state only: Soft Tinted ม่วง/น้ำเงิน (Purple/Indigo)
+   ======================================================== */
+.itsd-settings-tabs {
+  display: flex !important;
+  gap: 8px !important;
+  margin: 0 0 16px !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+}
+
+/* Default / Unselected Buttons */
+.itsd-settings-tabs button,
+.itsd-settings-tabs [role='tab'] {
+  border: 1px solid var(--theme-border) !important;
+  border-radius: 12px !important;
+  padding: 9px 18px !important;
+  background: var(--theme-panel) !important;
+  color: var(--theme-muted) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font: inherit !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transition: all var(--motion-instant) ease !important;
+}
+
+.itsd-settings-tabs button:hover:not([aria-selected='true']):not(.active) {
+  background: var(--dark-surface-hover) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--dark-border-default) !important;
+}
+
+/* Unselected in Light Mode */
+html[data-theme='light'] .itsd-settings-tabs button,
+html[data-theme='light'] .itsd-settings-tabs [role='tab'] {
+  background: #ffffff !important;
+  color: #475569 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='light'] .itsd-settings-tabs button:hover:not([aria-selected='true']):not(.active) {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Selected State Only: ม่วง/น้ำเงิน Soft Tinted Background */
+/* Dark Mode Selected */
+.itsd-settings-tabs button:is([aria-selected='true'], .active),
+.itsd-settings-tabs [role='tab']:is([aria-selected='true'], .active) {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(99, 102, 241, 0.09)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.45) !important;
+  color: #c4b5fd !important;
+  box-shadow: none !important;
+}
+
+.itsd-settings-tabs button:is([aria-selected='true'], .active) .material-symbols-rounded,
+.itsd-settings-tabs [role='tab']:is([aria-selected='true'], .active) .material-symbols-rounded {
+  color: #a5b4fc !important;
+}
+
+/* Light Mode Selected */
+html[data-theme='light'] .itsd-settings-tabs button:is([aria-selected='true'], .active),
+html[data-theme='light'] .itsd-settings-tabs [role='tab']:is([aria-selected='true'], .active) {
+  background: linear-gradient(135deg, #ede9fe, #f5f3ff) !important;
+  border: 1px solid #ddd6fe !important;
+  color: #5b21b6 !important;
+  box-shadow: none !important;
+}
+
+html[data-theme='light'] .itsd-settings-tabs button:is([aria-selected='true'], .active) .material-symbols-rounded,
+html[data-theme='light'] .itsd-settings-tabs [role='tab']:is([aria-selected='true'], .active) .material-symbols-rounded {
+  color: #6d28d9 !important;
 }
 
 </style>

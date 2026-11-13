@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.97
+  Version: V1.1.98
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -6671,6 +6671,7 @@ function project70SelectTab(which, focus = false) {
       panel = $('itsdSettings' + suffix);
     if (tab) {
       tab.setAttribute('aria-selected', String(key === which));
+      tab.classList.toggle('active', key === which);
       tab.tabIndex = key === which ? 0 : -1;
       if (key === which && focus) tab.focus();
     }

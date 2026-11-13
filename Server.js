@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.97
+ * Version: V1.1.98
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-14
  * Change History:
+ * - V1.1.98: Fix service report KPI cards dark mode tinted backgrounds; system settings tabs remove thick border and apply soft purple/indigo tinted background only when selected.
  * - V1.1.97: Apply soft tinted backgrounds and clean borders across all KPI cards (tracking, service reports, inventory survey, master data, users, permissions, audit log).
  * - V1.1.96: Sidebar nav buttons match profile pill radius; overview KPI cards remove colored border and apply tinted background.
  * - V1.1.95: Light mode neutral clean background and natural card borders; darker text tab selection.
@@ -55,7 +56,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.97';
+const APP_VERSION = 'V1.1.98';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
