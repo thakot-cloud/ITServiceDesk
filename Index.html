@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: Index.html
-  Version: V1.1.99
+  Version: V1.2.00
   Stage: production
   Purpose: Web application shell and generated asset includes
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-15
   Change History:
+  - V1.2.00: Add forgot password modal for user email verification and password reset requests.
   - V1.1.99: Replace social login buttons with circular LINE and Google popup login buttons.
   - V1.1.73: Move #themeToggle immediately after the notification bell and soften active/primary UI chrome for Light/Dark legibility.
   - V1.1.71: Restore Light/Dark mode switcher (ocpb_mode, Dark default) and synchronize LINE Inbox & Import Wizard with the unified theme tokens.
@@ -140,7 +141,7 @@
           <button
             type="button"
             class="login48-text-link"
-            onclick="showLoginFutureNotice('ลืมรหัสผ่าน')"
+            onclick="openForgotPasswordModal()"
           >
             ลืมรหัสผ่าน?
           </button>
@@ -348,6 +349,98 @@
           </button>
         </div>
         <div id="modalBody"></div>
+      </div>
+    </div>
+
+    <!-- Modal ลืมรหัสผ่าน (Forgot Password Modal) -->
+    <div
+      id="forgotPasswordModal"
+      class="forgot-modal hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="forgotPasswordTitle"
+    >
+      <div class="forgot-modal-backdrop" onclick="closeForgotPasswordModal()"></div>
+      <div class="forgot-modal-box">
+        <div class="forgot-modal-head">
+          <div class="forgot-modal-title-wrap">
+            <span class="material-symbols-rounded forgot-modal-icon" aria-hidden="true">lock_reset</span>
+            <h2 id="forgotPasswordTitle">ลืมรหัสผ่าน</h2>
+          </div>
+          <button
+            type="button"
+            class="forgot-modal-close"
+            onclick="closeForgotPasswordModal()"
+            aria-label="ปิดหน้าต่าง"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">close</span>
+          </button>
+        </div>
+
+        <form id="forgotPasswordForm" onsubmit="event.preventDefault(); submitForgotPassword();">
+          <div id="forgotFormContent">
+            <p class="forgot-modal-desc">
+              กรุณากรอกอีเมลที่ลงทะเบียนไว้ในระบบ (อีเมลเดียวกันกับในข้อมูลผู้ใช้) เพื่อตรวจสอบสิทธิ์และขอรีเซ็ตรหัสผ่าน
+            </p>
+
+            <label class="forgot-modal-field" for="forgotEmail">
+              <span>อีเมลผู้ใช้งาน (Registered Email)</span>
+              <div class="forgot-modal-input-wrap">
+                <span class="material-symbols-rounded" aria-hidden="true">mail</span>
+                <input
+                  id="forgotEmail"
+                  type="email"
+                  autocomplete="email"
+                  inputmode="email"
+                  required
+                  placeholder="ตัวอย่าง: user@example.com"
+                  oninput="clearForgotError()"
+                />
+              </div>
+            </label>
+
+            <div id="forgotError" class="forgot-modal-alert error hidden" role="alert"></div>
+
+            <div class="forgot-modal-actions">
+              <button type="button" class="btn secondary" onclick="closeForgotPasswordModal()">
+                ยกเลิก
+              </button>
+              <button type="submit" id="forgotSubmitBtn" class="btn primary">
+                <span id="forgotSubmitIcon" class="material-symbols-rounded" aria-hidden="true">search_check</span>
+                <span id="forgotSubmitText">ตรวจสอบข้อมูล</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="forgotSuccessContent" class="forgot-success-content hidden">
+            <div class="forgot-success-badge">
+              <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+            </div>
+            <h3 class="forgot-success-title">ตรวจสอบข้อมูลสำเร็จ</h3>
+            <div class="forgot-success-card">
+              <div class="forgot-info-row">
+                <span class="label">ชื่อผู้ใช้:</span>
+                <strong id="forgotFoundUsername" class="value">-</strong>
+              </div>
+              <div class="forgot-info-row">
+                <span class="label">ชื่อ-นามสกุล:</span>
+                <strong id="forgotFoundDisplay" class="value">-</strong>
+              </div>
+              <div class="forgot-info-row">
+                <span class="label">อีเมล:</span>
+                <span id="forgotFoundEmail" class="value text-dim">-</span>
+              </div>
+            </div>
+            <p class="forgot-success-hint">
+              ระบบยืนยันข้อมูลผู้ใช้งานตรงกับระบบแล้ว กรุณาติดต่อผู้ดูแลระบบ (Admin) เพื่อขอรับรหัสผ่านชั่วคราว หรือปฏิบัติตามคำแนะนำของหน่วยงาน
+            </p>
+            <div class="forgot-modal-actions centered">
+              <button type="button" class="btn primary" onclick="closeForgotPasswordModal()">
+                กลับสู่หน้าเข้าสู่ระบบ
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
     <div id="toast" class="toast hidden" role="status" aria-live="polite" aria-atomic="true"></div>

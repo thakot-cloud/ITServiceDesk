@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.99
+  Version: V1.2.00
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-15
   Change History:
+  - V1.2.00: Add forgot password modal handler, email validation and server verification.
   - V1.1.99: Add loginWithLine and loginWithGoogle popup window handlers.
   - V1.1.77: Replace bell icon on .itsd65-help-trigger with info icon and make both help trigger and popover close buttons circular.
   - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
@@ -1105,6 +1106,127 @@ function loginWithGoogle() {
   );
   if (!popup || popup.closed || typeof popup.closed === 'undefined') {
     window.open(url, '_blank');
+  }
+}
+
+let forgotInFlight = false;
+
+function openForgotPasswordModal() {
+  const modal = $('forgotPasswordModal');
+  if (!modal) return;
+  const emailInput = $('forgotEmail');
+  const errBox = $('forgotError');
+  const formContent = $('forgotFormContent');
+  const successContent = $('forgotSuccessContent');
+
+  if (emailInput) emailInput.value = '';
+  if (errBox) {
+    errBox.textContent = '';
+    errBox.classList.add('hidden');
+  }
+  if (formContent) formContent.classList.remove('hidden');
+  if (successContent) successContent.classList.add('hidden');
+
+  setForgotLoading(false);
+  modal.classList.remove('hidden');
+
+  setTimeout(() => {
+    if (emailInput) emailInput.focus();
+  }, 120);
+
+  document.addEventListener('keydown', handleForgotKeydown);
+}
+
+function closeForgotPasswordModal() {
+  const modal = $('forgotPasswordModal');
+  if (modal) modal.classList.add('hidden');
+  setForgotLoading(false);
+  document.removeEventListener('keydown', handleForgotKeydown);
+}
+
+function handleForgotKeydown(e) {
+  if (e.key === 'Escape') {
+    closeForgotPasswordModal();
+  }
+}
+
+function clearForgotError() {
+  const errBox = $('forgotError');
+  if (errBox) {
+    errBox.textContent = '';
+    errBox.classList.add('hidden');
+  }
+}
+
+function setForgotLoading(isLoading) {
+  forgotInFlight = isLoading;
+  const btn = $('forgotSubmitBtn');
+  const icon = $('forgotSubmitIcon');
+  const text = $('forgotSubmitText');
+  const input = $('forgotEmail');
+
+  if (btn) btn.disabled = isLoading;
+  if (input) input.disabled = isLoading;
+  if (icon) icon.textContent = isLoading ? 'hourglass_top' : 'search_check';
+  if (text) text.textContent = isLoading ? 'กำลังตรวจสอบ...' : 'ตรวจสอบข้อมูล';
+}
+
+function submitForgotPassword() {
+  if (forgotInFlight) return;
+  const emailInput = $('forgotEmail');
+  const email = String(emailInput ? emailInput.value : '').trim();
+
+  if (!email) {
+    showForgotError('กรุณากรอกอีเมล');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showForgotError('รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบใหม่อีกครั้ง');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  clearForgotError();
+  setForgotLoading(true);
+
+  if (typeof google !== 'undefined' && google.script && google.script.run) {
+    google.script.run
+      .withSuccessHandler(function (res) {
+        setForgotLoading(false);
+        if (res && res.success) {
+          $('forgotFoundUsername').textContent = res.username || '-';
+          $('forgotFoundDisplay').textContent = res.display_name || '-';
+          $('forgotFoundEmail').textContent = res.email || email;
+          $('forgotFormContent').classList.add('hidden');
+          $('forgotSuccessContent').classList.remove('hidden');
+        } else {
+          showForgotError(res && res.message ? res.message : 'ไม่พบข้อมูลผู้ใช้งานที่ตรงกับอีเมลนี้');
+        }
+      })
+      .withFailureHandler(function (err) {
+        setForgotLoading(false);
+        const msg = (err && err.message) ? err.message.replace(/^Error:\s*/, '') : 'เกิดข้อผิดพลาดในการตรวจสอบอีเมล';
+        showForgotError(msg);
+      })
+      .verifyForgotPasswordEmail(email);
+  } else {
+    setTimeout(function () {
+      setForgotLoading(false);
+      showForgotError('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ในขณะนี้');
+    }, 500);
+  }
+}
+
+function showForgotError(message) {
+  const errBox = $('forgotError');
+  if (errBox) {
+    errBox.textContent = message;
+    errBox.classList.remove('hidden');
+    errBox.classList.add('login-error-shake');
+    setTimeout(() => errBox.classList.remove('login-error-shake'), 450);
   }
 }
 

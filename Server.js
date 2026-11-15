@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.99
+ * Version: V1.2.00
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-15
  * Change History:
+ * - V1.2.00: Add forgot password email verification service and user profile lookup.
  * - V1.1.99: Replace social login buttons with circular LINE and Google popup login.
  * - V1.1.98: Fix service report KPI cards dark mode tinted backgrounds; system settings tabs remove thick border and apply soft purple/indigo tinted background only when selected.
  * - V1.1.97: Apply soft tinted backgrounds and clean borders across all KPI cards (tracking, service reports, inventory survey, master data, users, permissions, audit log).
@@ -57,7 +58,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.99';
+const APP_VERSION = 'V1.2.00';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -2144,6 +2145,83 @@ function itsdImpl_login_(username, password) {
     auditAuth_(u, 'LOGIN_SUCCESS', 'SUCCESS', 'เข้าสู่ระบบสำเร็จ', digest_(token).slice(0, 16));
     return { token, user: publicUser_(u) };
   });
+}
+
+// apps/webapp/src/server/features/auth/auth-service.js
+function itsdImpl_verifyForgotPasswordEmail_(email) {
+  const emailClean = String(email || '').trim().toLowerCase();
+  if (!emailClean) {
+    throw Error('กรุณากรอกอีเมล');
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClean)) {
+    throw Error('รูปแบบอีเมลไม่ถูกต้อง กรุณาตรวจสอบและกรอกใหม่อีกครั้ง');
+  }
+  const rlKey = 'ITSD_FORGOT_RL_' + digest_(emailClean).slice(0, 24);
+  try {
+    const attempts = Number(CacheService.getScriptCache().get(rlKey) || 0);
+    if (attempts >= 10) throw Error('ทำรายการบ่อยเกินไป กรุณารอสักครู่แล้วลองใหม่');
+  } catch (e) {
+    if (String(e && e.message || '').includes('บ่อยเกินไป')) throw e;
+  }
+
+  // 1. ค้นหาจาก APP_USER_PROFILE ก่อน
+  const profiles = rows_('APP_USER_PROFILE');
+  let matchedUserId = null;
+  for (let i = 0; i < profiles.length; i++) {
+    const p = profiles[i];
+    if (String(p.email || '').trim().toLowerCase() === emailClean) {
+      matchedUserId = p.user_id;
+      break;
+    }
+  }
+
+  // 2. ค้นหาใน APP_USERS (หากพบจาก profile หรือ username ตรงกับ email)
+  let matchedUser = null;
+  if (matchedUserId) {
+    matchedUser = find_('APP_USERS', 'user_id', matchedUserId);
+  } else {
+    const allUsers = rows_('APP_USERS');
+    for (let j = 0; j < allUsers.length; j++) {
+      const u = allUsers[j];
+      if (String(u.username || '').trim().toLowerCase() === emailClean) {
+        matchedUser = u;
+        break;
+      }
+    }
+  }
+
+  if (!matchedUser || !itsdActiveBool_(matchedUser.active)) {
+    try {
+      const cache = CacheService.getScriptCache();
+      cache.put(rlKey, String(Number(cache.get(rlKey) || 0) + 1), 300);
+    } catch (_) {}
+    throw Error('ไม่พบข้อมูลผู้ใช้งานที่ตรงกับอีเมลนี้ในระบบ (กรุณาใช้อีเมลเดียวกับที่บันทึกไว้ในข้อมูลผู้ใช้)');
+  }
+
+  try {
+    CacheService.getScriptCache().remove(rlKey);
+  } catch (_) {}
+
+  // 3. บันทึก audit log
+  try {
+    writeAudit_(
+      { user_id: matchedUser.user_id, username: matchedUser.username },
+      'FORGOT_PASSWORD_REQUEST',
+      'AUTH',
+      'APP_USERS',
+      matchedUser.user_id,
+      'SUCCESS',
+      'ตรวจสอบอีเมลสำหรับรีเซ็ตรหัสผ่านสำเร็จ: ' + emailClean
+    );
+  } catch (_) {}
+
+  return {
+    success: true,
+    found: true,
+    username: matchedUser.username,
+    display_name: matchedUser.display_name || matchedUser.username,
+    email: emailClean,
+  };
 }
 
 // apps/webapp/src/server/features/auth/auth-service.js

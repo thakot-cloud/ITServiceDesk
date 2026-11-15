@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Entrypoints.js
- * Version: V1.1.99
+ * Version: V1.2.00
  * Stage: production
  * Purpose: Web application and LINE HTTP entrypoints
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-15
  * Change History:
+ * - V1.2.00: Version bump for forgot password email verification.
  * - V1.1.99: Version bump for circular social login buttons.
  * - V1.1.69: Align entrypoint metadata with the secured License integration release.
  * - V1.1.68: Align release metadata with the verified production project.

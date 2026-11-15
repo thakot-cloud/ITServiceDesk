@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.1.99
+ * Version: V1.2.00
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-15
  * Change History:
+ * - V1.2.00: Expose verifyForgotPasswordEmail public endpoint.
  * - V1.1.99: Version bump for circular social login buttons.
  * - V1.1.69: Add authenticated, on-demand Inventory License summary and secret-reveal endpoints.
  * - V1.1.68: Publish the sequential inventory and CM-Form_69 release while retaining authenticated maintenance entry points.
@@ -22,6 +23,7 @@
 function getPublicSystemBranding() { return itsdImpl_getPublicSystemBranding_.apply(this, arguments); }
 function include(name) { return itsdImpl_include_.apply(this, arguments); }
 function login(username, password) { return itsdImpl_login_.apply(this, arguments); }
+function verifyForgotPasswordEmail(email) { return itsdImpl_verifyForgotPasswordEmail_.apply(this, arguments); }
 function logout(token) { return itsdImpl_logout_.apply(this, arguments); }
 function changePassword(token, oldPassword, newPassword) { return itsdImpl_changePassword_.apply(this, arguments); }
 function getBootstrap(token) { return itsdImpl_getBootstrap_.apply(this, arguments); }
