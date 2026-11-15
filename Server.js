@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.1.98
+ * Version: V1.1.99
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-14
+ * Modified: 2026-11-15
  * Change History:
+ * - V1.1.99: Replace social login buttons with circular LINE and Google popup login.
  * - V1.1.98: Fix service report KPI cards dark mode tinted backgrounds; system settings tabs remove thick border and apply soft purple/indigo tinted background only when selected.
  * - V1.1.97: Apply soft tinted backgrounds and clean borders across all KPI cards (tracking, service reports, inventory survey, master data, users, permissions, audit log).
  * - V1.1.96: Sidebar nav buttons match profile pill radius; overview KPI cards remove colored border and apply tinted background.
@@ -56,7 +57,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.1.98';
+const APP_VERSION = 'V1.1.99';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =

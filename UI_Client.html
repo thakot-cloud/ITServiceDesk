@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.1.98
+  Version: V1.1.99
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
   - No secrets in source code
   - Preserve existing data and backward compatibility
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
-  Modified: 2026-11-12
+  Modified: 2026-11-15
   Change History:
+  - V1.1.99: Add loginWithLine and loginWithGoogle popup window handlers.
   - V1.1.77: Replace bell icon on .itsd65-help-trigger with info icon and make both help trigger and popover close buttons circular.
   - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
   - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
@@ -1073,6 +1074,38 @@ function showLoginFutureNotice(feature) {
   error.textContent =
     String(feature || 'ฟังก์ชันนี้') +
     ' เตรียม UI รองรับไว้แล้ว และยังไม่เปิดใช้งานการยืนยันตัวตนจริง';
+}
+
+function loginWithLine() {
+  const width = 500;
+  const height = 650;
+  const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - width) / 2));
+  const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - height) / 2));
+  const url = 'https://access.line.me/oauth2/v2.1/login';
+  const popup = window.open(
+    url,
+    'itsd_line_login',
+    `width=${width},height=${height},left=${left},top=${top},status=no,resizable=yes,scrollbars=yes`
+  );
+  if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+    window.open(url, '_blank');
+  }
+}
+
+function loginWithGoogle() {
+  const width = 500;
+  const height = 650;
+  const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - width) / 2));
+  const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - height) / 2));
+  const url = 'https://accounts.google.com/signin';
+  const popup = window.open(
+    url,
+    'itsd_google_login',
+    `width=${width},height=${height},left=${left},top=${top},status=no,resizable=yes,scrollbars=yes`
+  );
+  if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+    window.open(url, '_blank');
+  }
 }
 
 async function signIn() {

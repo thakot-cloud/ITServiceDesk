@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.1.98
+ * Version: V1.1.99
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-12
+ * Modified: 2026-11-15
  * Change History:
+ * - V1.1.99: Circular LINE and Google social login icon buttons with soft shadow and dark/light mode support.
  * - V1.1.73: Soften active sidebar/primary/tab button surfaces for Light/Dark legibility and unify notification dropdown & toast surfaces across both modes.
  * - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, Dark default) and move LINE Inbox & Import Wizard styles into unified theme tokens.
  * - V1.1.70: Migrate entire Web App to the unified # Dark design system (JetBrains Mono + Noto Sans Thai, #000000/#04060f/#4d49fc/#00d4ff/#ef4444), fix unclosed KPI rule, and remove multi-palette/Light-Dark switcher overhead.
@@ -5763,9 +5764,11 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   background: #e2eaed;
 }
 .login48-social {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 16px !important;
+  margin: 10px 0 0 !important;
 }
 .login48-provider {
   height: 42px;
@@ -5783,6 +5786,46 @@ body.ux8-manage-modal-open .ux8-manage-actions {
 .login48-provider:hover {
   background: #f3f9f9;
   border-color: #c1d8da;
+}
+.login48-provider-circle {
+  width: 48px !important;
+  height: 48px !important;
+  min-width: 48px !important;
+  min-height: 48px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer;
+  border: 1px solid #d9e5e8;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease;
+}
+.login48-provider-circle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e1;
+}
+.login48-provider-circle:active {
+  transform: translateY(0);
+}
+.login48-provider-circle svg {
+  display: block;
+  pointer-events: none;
+}
+[data-theme='dark'] .login48-provider-circle,
+.dark .login48-provider-circle {
+  background: #182234 !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+}
+[data-theme='dark'] .login48-provider-circle:hover,
+.dark .login48-provider-circle:hover {
+  background: #233148 !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5) !important;
 }
 .login48-provider .material-symbols-rounded {
   font-size: 18px;
@@ -5871,10 +5914,9 @@ body.ux8-manage-modal-open .ux8-manage-actions {
     height: 49px;
   }
   .login48-social {
-    grid-template-columns: 1fr;
-  }
-  .login48-provider {
-    height: 43px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
   }
 }
 @media (max-width: 360px) {
@@ -12502,8 +12544,8 @@ html[data-theme='dark'] .sr79-stats .card.stat strong { color:var(--theme-headin
   .login48-card { flex-shrink: 0; }
   .login48-card .login48-input input { padding-right: 52px; }
   .login48-password-toggle { width: 44px; height: 44px; right: 3px; }
-  .login48-provider, .login48-text-link { min-height: 44px; }
-  .login48-social { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .login48-provider:not(.login48-provider-circle), .login48-text-link { min-height: 44px; }
+  .login48-social { display: flex; justify-content: center; gap: 16px; }
   .login48-brand-copy p, .login48-heading p, .login48-field { font-size: 13px; }
   .toast {
     max-width: calc(100% - 24px);
@@ -14553,7 +14595,7 @@ summary,
 
 /* V1.1.94: Soft Curved Rounded Design (14px) for Buttons and Form Inputs */
 :is(
-  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar):not(.ui-side-tabs button):not(.ticket-side-attach-list button):not(.sidebar nav button),
+  button:not(.ux-circle-icon-btn):not(.icon-btn):not(.mode-toggle):not(.top-icon-button):not(.sidebar-collapse):not(.login48-password-toggle):not(.modal-head button):not(.ux-drawer-close):not(.ux-photo-action-btn):not([class*="close"]):not(.modal-close):not(.login48-provider-mark):not(.avatar):not(.ui-side-tabs button):not(.ticket-side-attach-list button):not(.sidebar nav button):not(.login48-provider-circle),
   .primary,
   .secondary,
   .outline,
@@ -14567,7 +14609,7 @@ summary,
   .line-review-action,
   .line78-dialog button:not([class*="close"]),
   .login48-submit,
-  .login48-provider
+  .login48-provider:not(.login48-provider-circle)
 ) {
   border-radius: 14px !important;
 }
