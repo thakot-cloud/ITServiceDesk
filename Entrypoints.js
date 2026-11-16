@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Entrypoints.js
- * Version: V1.2.03
+ * Version: V1.2.04
  * Stage: production
  * Purpose: Web application and LINE HTTP entrypoints
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.04: Version bump for Google Sites iframe embedding support.
  * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
  * - V1.2.02: Version bump for compact ticket detail fields and file upload zone.
  * - V1.2.01: Version bump for LINE inbox UI improvements.
