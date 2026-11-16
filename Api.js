@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.05
+ * Version: V1.2.06
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.06: Version bump for step numbers bright green styling.
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Version bump for Google Sites iframe embedding support.
  * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.

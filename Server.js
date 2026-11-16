@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.05
+ * Version: V1.2.06
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.06: Bright green background for form section step numbers (1, 2, 3).
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Enable XFrameOptionsMode.ALLOWALL to allow embedding in Google Sites and external iframes without warning banner.
  * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
@@ -63,7 +64,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.05';
+const APP_VERSION = 'V1.2.06';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
