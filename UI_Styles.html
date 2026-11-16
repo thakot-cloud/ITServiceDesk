@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.2.04
+ * Version: V1.2.05
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Version bump for Google Sites iframe embedding support.
  * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
  * - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
@@ -16168,6 +16169,83 @@ html[data-theme='light'] .itsd-settings-tabs [role='tab']:is([aria-selected='tru
     justify-content: flex-end !important;
     margin-top: 8px !important;
   }
+}
+
+/* V1.2.05: Inline Header for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข) */
+#content .page-head.new-ticket-head,
+#content .page-head.itsd65-help-head {
+  margin-bottom: 12px !important;
+  align-items: center !important;
+}
+
+#content .page-head.new-ticket-head .ui-title,
+#content .page-head.itsd65-help-head .ui-title {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+#content .page-head.new-ticket-head .ui-title-icon,
+#content .page-head.itsd65-help-head .ui-title-icon {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  font-size: 20px !important;
+  border-radius: 9px !important;
+  flex-shrink: 0 !important;
+}
+
+#content .page-head.new-ticket-head .new-ticket-title-inline,
+#content .page-head.itsd65-help-head .ui-title > div {
+  display: flex !important;
+  align-items: baseline !important;
+  flex-wrap: wrap !important;
+  gap: 6px 10px !important;
+  min-width: 0 !important;
+}
+
+#content .page-head.new-ticket-head h1,
+#content .page-head.itsd65-help-head h1 {
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  margin: 0 !important;
+  color: var(--dark-text-heading, #102c58) !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+#content .page-head.new-ticket-head .new-ticket-title-sep {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  color: var(--dark-text-dim, #94a3b8) !important;
+  margin: 0 1px !important;
+  flex-shrink: 0 !important;
+}
+
+#content .page-head.new-ticket-head p,
+#content .page-head.itsd65-help-head p {
+  font-size: 13px !important;
+  color: var(--dark-text-dim, #6d8198) !important;
+  margin: 0 !important;
+  line-height: 1.3 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+[data-theme='dark'] #content .page-head.new-ticket-head h1,
+[data-theme='dark'] #content .page-head.itsd65-help-head h1,
+.dark #content .page-head.new-ticket-head h1,
+.dark #content .page-head.itsd65-help-head h1 {
+  color: #f8fafc !important;
+}
+
+[data-theme='dark'] #content .page-head.new-ticket-head p,
+[data-theme='dark'] #content .page-head.itsd65-help-head p,
+.dark #content .page-head.new-ticket-head p,
+.dark #content .page-head.itsd65-help-head p {
+  color: #94a3b8 !important;
 }
 
 </style>
