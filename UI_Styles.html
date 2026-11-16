@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.2.00
+ * Version: V1.2.01
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-15
+ * Modified: 2026-11-16
  * Change History:
+ * - V1.2.01: Official iOS rounded squircle LINE icon and scrollable LINE inbox messages with locked new ticket form.
  * - V1.2.00: Styling for forgot password modal, inputs, states and dark/light theme support.
  * - V1.1.99: Circular LINE and Google social login icon buttons with soft shadow and dark/light mode support.
  * - V1.1.73: Soften active sidebar/primary/tab button surfaces for Light/Dark legibility and unify notification dropdown & toast surfaces across both modes.
@@ -11757,10 +11758,34 @@ html[data-theme='light'] .ui-side-tabs button.active {
   width: 42px;
   height: 42px;
   border-radius: 12px;
-  background: #05b43d;
+  background: #06C755;
   color: white;
   font-size: 13px;
   font-weight: 800;
+}
+.itsd65-icon.itsd65-icon-ios {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 0 0 44px !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 11px !important;
+  background: #06C755 !important;
+  border: none !important;
+  box-shadow: 0 3px 10px rgba(6, 199, 85, 0.35) !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.itsd65-icon.itsd65-icon-ios:hover {
+  transform: scale(1.05);
+  box-shadow: 0 5px 14px rgba(6, 199, 85, 0.48) !important;
+}
+.itsd65-icon.itsd65-icon-ios svg {
+  display: block;
+  width: 28px;
+  height: 28px;
 }
 .itsd65-header h3 {
   font-size: 16px;
@@ -11851,13 +11876,36 @@ html[data-theme='light'] .ui-side-tabs button.active {
 .itsd65-item-text {
   margin: 10px 0 12px;
   background: #edf6ff;
-  border-radius: 9px;
+  border-radius: 10px;
   padding: 11px 12px;
   font-size: 13px;
-  line-height: 1.75;
+  line-height: 1.7;
   color: #315879;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  max-height: 220px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.itsd65-item-text::-webkit-scrollbar {
+  width: 5px;
+}
+.itsd65-item-text::-webkit-scrollbar-thumb {
+  background: rgba(49, 88, 121, 0.28);
+  border-radius: 8px;
+}
+.itsd65-item-text::-webkit-scrollbar-thumb:hover {
+  background: rgba(49, 88, 121, 0.45);
+}
+[data-theme='dark'] .itsd65-item-text,
+.dark .itsd65-item-text {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+[data-theme='dark'] .itsd65-item-text::-webkit-scrollbar-thumb,
+.dark .itsd65-item-text::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22) !important;
 }
 .itsd65-actions {
   display: flex;
@@ -11972,7 +12020,7 @@ html[data-theme='light'] .ui-side-tabs button.active {
 /* UI Layout Alignment V1.0.65 — styles scoped to LINE production integration */
 #content > .ui-steps-form.itsd65-repair-layout {
   display: grid;
-  grid-template-columns: minmax(0, 65fr) minmax(310px, 35fr);
+  grid-template-columns: minmax(0, 65fr) minmax(320px, 35fr);
   align-items: start;
   gap: 18px;
 }
@@ -11981,6 +12029,21 @@ html[data-theme='light'] .ui-side-tabs button.active {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  grid-column: 1;
+  grid-row: 1;
+  position: sticky !important;
+  top: 16px !important;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+.itsd65-form-column::-webkit-scrollbar {
+  width: 5px;
+}
+.itsd65-form-column::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 8px;
 }
 .itsd65-repair-layout #ticketForm {
   min-width: 0;
@@ -11999,12 +12062,32 @@ html[data-theme='light'] .ui-side-tabs button.active {
   grid-row: 1;
   min-width: 0;
   width: 100%;
-  position: sticky;
-  top: 16px;
+  position: static !important;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
 }
-.itsd65-repair-layout .itsd65-form-column {
-  grid-column: 1;
-  grid-row: 1;
+#itsd65LineInbox .itsd65-body {
+  padding: 12px;
+  display: grid;
+  gap: 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  max-height: calc(100vh - 220px);
+}
+#itsd65LineInbox .itsd65-body::-webkit-scrollbar {
+  width: 6px;
+}
+#itsd65LineInbox .itsd65-body::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.28);
+  border-radius: 8px;
+}
+#itsd65LineInbox .itsd65-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
+}
+[data-theme='dark'] #itsd65LineInbox .itsd65-body::-webkit-scrollbar-thumb,
+.dark #itsd65LineInbox .itsd65-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2) !important;
 }
 .itsd65-tabs {
   display: flex;
@@ -12050,9 +12133,12 @@ html[data-theme='light'] .ui-side-tabs button.active {
   .itsd65-repair-layout > #itsd65LineInbox {
     grid-column: 1;
     grid-row: auto;
+    position: static !important;
+    max-height: none !important;
+    overflow-y: visible !important;
   }
-  .itsd65-repair-layout > #itsd65LineInbox {
-    position: static;
+  #itsd65LineInbox .itsd65-body {
+    max-height: 480px;
   }
 }
 

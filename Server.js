@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.00
+ * Version: V1.2.01
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-15
+ * Modified: 2026-11-16
  * Change History:
+ * - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
  * - V1.2.00: Add forgot password email verification service and user profile lookup.
  * - V1.1.99: Replace social login buttons with circular LINE and Google popup login.
  * - V1.1.98: Fix service report KPI cards dark mode tinted backgrounds; system settings tabs remove thick border and apply soft purple/indigo tinted background only when selected.
@@ -58,7 +59,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.00';
+const APP_VERSION = 'V1.2.01';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
