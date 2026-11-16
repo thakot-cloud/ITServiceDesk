@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.02
+ * Version: V1.2.03
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
  * - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
  * - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
  * - V1.2.00: Add forgot password email verification service and user profile lookup.
@@ -60,7 +61,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.02';
+const APP_VERSION = 'V1.2.03';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =

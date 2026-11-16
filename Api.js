@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.02
+ * Version: V1.2.03
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
  * - V1.2.02: Version bump for compact ticket detail fields and file upload zone.
  * - V1.2.01: Version bump for LINE inbox UI improvements.
  * - V1.2.00: Expose verifyForgotPasswordEmail public endpoint.
