@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.2.01
+ * Version: V1.2.02
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-16
  * Change History:
+ * - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
  * - V1.2.01: Official iOS rounded squircle LINE icon and scrollable LINE inbox messages with locked new ticket form.
  * - V1.2.00: Styling for forgot password modal, inputs, states and dark/light theme support.
  * - V1.1.99: Circular LINE and Google social login icon buttons with soft shadow and dark/light mode support.
@@ -15913,6 +15914,159 @@ html[data-theme='light'] .itsd-settings-tabs [role='tab']:is([aria-selected='tru
 [data-theme='dark'] .forgot-success-hint,
 .dark .forgot-success-hint {
   color: #94a3b8;
+}
+
+/* V1.2.02: Compact Ticket Details & File Upload Zone for Single Screen Fit */
+.ui-steps-form .ui-form-section {
+  padding: 14px 18px !important;
+  margin-bottom: 10px !important;
+}
+
+.ui-steps-form .ui-form-section h3 {
+  margin: 0 0 10px !important;
+  font-size: 15.5px !important;
+}
+
+.ui-steps-form .form-grid {
+  gap: 8px 14px !important;
+}
+
+/* ช่องพิมพ์รายละเอียดคำขอ / อาการเสีย */
+.ui-steps-form textarea#fDescription {
+  min-height: 64px !important;
+  height: 68px !important;
+  max-height: 120px !important;
+  padding: 8px 12px !important;
+  font-size: 13.5px !important;
+  line-height: 1.5 !important;
+  resize: vertical;
+}
+
+.ui-steps-form label:has(#fDescription) small.hint,
+.ui-steps-form #fDescription + small.hint {
+  display: block !important;
+  margin-top: 2px !important;
+  font-size: 11px !important;
+  line-height: 1.2 !important;
+}
+
+/* กล่องคำอธิบายระดับความเร่งด่วน */
+.ui-steps-form #priorityHint {
+  padding: 5px 10px !important;
+  margin-top: 4px !important;
+  font-size: 11.5px !important;
+  line-height: 1.35 !important;
+  border-radius: 8px !important;
+}
+
+.ui-steps-form #priorityHint b {
+  font-size: 11.5px !important;
+}
+
+.ui-steps-form #priorityHint small {
+  font-size: 10.5px !important;
+  line-height: 1.3 !important;
+}
+
+/* กล่องไฟล์แนบกะทัดรัด (Compact Drop Zone) */
+.ui-drop.ui-drop-compact,
+.ui-steps-form .ui-drop {
+  min-height: 46px !important;
+  padding: 6px 14px !important;
+  border-radius: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+  border: 1.5px dashed var(--dark-border-subtle, #cbd5e1) !important;
+  background: var(--dark-surface-input, #f8fafc) !important;
+  transition: border-color 0.18s ease, background-color 0.18s ease !important;
+  box-sizing: border-box !important;
+}
+
+.ui-drop.ui-drop-compact:hover,
+.ui-steps-form .ui-drop:hover {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.04) !important;
+}
+
+.ui-drop.ui-drop-compact .ui-drop-row,
+.ui-steps-form .ui-drop .ui-drop-row {
+  display: flex !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 8px 14px !important;
+  width: 100% !important;
+}
+
+.ui-drop.ui-drop-compact .ui-drop-title,
+.ui-steps-form .ui-drop span:first-child {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: var(--dark-text-default, #1e293b) !important;
+  white-space: nowrap !important;
+}
+
+.ui-drop.ui-drop-compact .ui-drop-title .material-symbols-rounded,
+.ui-steps-form .ui-drop .material-symbols-rounded {
+  font-size: 20px !important;
+  color: #3b82f6 !important;
+}
+
+.ui-drop.ui-drop-compact input[type="file"],
+.ui-steps-form .ui-drop input[type="file"] {
+  font-size: 12px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--dark-text-dim, #64748b) !important;
+  cursor: pointer !important;
+  flex: 1 1 auto !important;
+  max-width: 260px !important;
+}
+
+.ui-drop.ui-drop-compact small.hint,
+.ui-steps-form .ui-drop small.hint {
+  font-size: 11px !important;
+  color: var(--dark-text-dim, #64748b) !important;
+  margin: 0 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+/* ปรับระยะปุ่มล้างข้อมูลและบันทึกคำขอ */
+.ui-steps-form .form-actions {
+  margin-top: 10px !important;
+  padding-top: 2px !important;
+  gap: 10px !important;
+}
+
+.ui-steps-form .form-actions button {
+  min-height: 40px !important;
+  padding: 0 20px !important;
+  font-size: 13.5px !important;
+}
+
+/* Dark mode overrides for compact drop */
+[data-theme='dark'] .ui-drop.ui-drop-compact,
+[data-theme='dark'] .ui-steps-form .ui-drop,
+.dark .ui-drop.ui-drop-compact,
+.dark .ui-steps-form .ui-drop {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+[data-theme='dark'] .ui-drop.ui-drop-compact:hover,
+[data-theme='dark'] .ui-steps-form .ui-drop:hover,
+.dark .ui-drop.ui-drop-compact:hover,
+.dark .ui-steps-form .ui-drop:hover {
+  background: rgba(59, 130, 246, 0.08) !important;
+  border-color: #60a5fa !important;
 }
 
 </style>
