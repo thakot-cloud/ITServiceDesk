@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.06
+ * Version: V1.2.07
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-16
+ * Modified: 2026-11-17
  * Change History:
+ * - V1.2.07: Add Sticker Template (แม่แบบสติ๊กเกอร์) tab and batch A4 sheet printing for equipment maintenance labels.
  * - V1.2.06: Bright green background for form section step numbers (1, 2, 3).
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Enable XFrameOptionsMode.ALLOWALL to allow embedding in Google Sites and external iframes without warning banner.
@@ -64,7 +65,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.06';
+const APP_VERSION = 'V1.2.07';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -10693,6 +10694,27 @@ function project70Configuration_() {
       ),
       { report_logo_data_url: serviceReportReadLogoDataUrl_(settings) },
     ),
+    sticker: Object.assign(
+      Object.fromEntries(
+        [
+          'sticker_project_title',
+          'sticker_org_subtitle',
+          'sticker_contract_no',
+          'sticker_warranty_period',
+          'sticker_contact_phone',
+          'sticker_provider_name',
+          'sticker_provider_address',
+          'sticker_seq_prefix',
+          'sticker_layout',
+          'sticker_logo_file_id',
+          'sticker_provider_logo_file_id',
+        ].map((k) => [k, settings[k] || '']),
+      ),
+      {
+        sticker_logo_data_url: serviceReportReadLogoDataUrl_(settings, 'sticker_logo_file_id'),
+        sticker_provider_logo_data_url: serviceReportReadLogoDataUrl_(settings, 'sticker_provider_logo_file_id'),
+      },
+    ),
   };
 }
 
@@ -10719,9 +10741,25 @@ function itsdImpl_saveProjectConfiguration_(token, input) {
     'report_provider_address',
     'report_title',
     'report_project_description',
+    'sticker_project_title',
+    'sticker_org_subtitle',
+    'sticker_contract_no',
+    'sticker_warranty_period',
+    'sticker_contact_phone',
+    'sticker_provider_name',
+    'sticker_provider_address',
+    'sticker_seq_prefix',
+    'sticker_layout',
   ].forEach(
     (k) =>
-      (settings[k] = boundedText_(input[k], k, k === 'report_provider_address' ? 500 : 240, true)),
+      (settings[k] = boundedText_(
+        input[k],
+        k,
+        k.includes('address') || k.includes('title') || k.includes('project') || k.includes('warranty')
+          ? 500
+          : 240,
+        true,
+      )),
   );
   return lock_(() => {
     project70CheckRevision_(input.revision);
@@ -10988,11 +11026,11 @@ function itsdImpl_createProjectDriveFolders_(token, input) {
 }
 
 // apps/webapp/src/server/features/service-reports/work-order-service.js
-function serviceReportReadLogoDataUrl_(settings) {
+function serviceReportReadLogoDataUrl_(settings, key = 'report_logo_file_id') {
   const s = settings || systemSettingsMap_();
-  const id = String(s.report_logo_file_id || '').trim();
+  const id = String(s[key] || '').trim();
   if (!id) return '';
-  const cacheKey = 'ITSD_REPORT_LOGO_' + id;
+  const cacheKey = 'ITSD_LOGO_' + id;
   const cached = CacheService.getScriptCache().get(cacheKey);
   if (cached) return cached;
   try {
@@ -11011,6 +11049,30 @@ function serviceReportReadLogoDataUrl_(settings) {
 }
 
 function itsdImpl_uploadServiceReportLogo_(token, name, mime, base64) {
+  return project70UploadLogoHelper_(token, name, mime, base64, 'report_logo_file_id', 'REPORT_LOGO', 'อัปโหลดโลโก้หัวใบงาน ');
+}
+
+function itsdImpl_clearServiceReportLogo_(token) {
+  return project70ClearLogoHelper_(token, 'report_logo_file_id', 'REPORT_LOGO', 'คืนค่าโลโก้หัวใบงานเป็นค่าเริ่มต้น');
+}
+
+function itsdImpl_uploadStickerLogo_(token, name, mime, base64) {
+  return project70UploadLogoHelper_(token, name, mime, base64, 'sticker_logo_file_id', 'STICKER_LOGO', 'อัปโหลดโลโก้โครงการบนสติ๊กเกอร์ ');
+}
+
+function itsdImpl_clearStickerLogo_(token) {
+  return project70ClearLogoHelper_(token, 'sticker_logo_file_id', 'STICKER_LOGO', 'คืนค่าโลโก้โครงการบนสติ๊กเกอร์เป็นค่าเริ่มต้น');
+}
+
+function itsdImpl_uploadStickerProviderLogo_(token, name, mime, base64) {
+  return project70UploadLogoHelper_(token, name, mime, base64, 'sticker_provider_logo_file_id', 'STICKER_PROVIDER_LOGO', 'อัปโหลดโลโก้ผู้ให้บริการบนสติ๊กเกอร์ ');
+}
+
+function itsdImpl_clearStickerProviderLogo_(token) {
+  return project70ClearLogoHelper_(token, 'sticker_provider_logo_file_id', 'STICKER_PROVIDER_LOGO', 'คืนค่าโลโก้ผู้ให้บริการบนสติ๊กเกอร์เป็นค่าเริ่มต้น');
+}
+
+function project70UploadLogoHelper_(token, name, mime, base64, settingKey, auditTarget, auditDesc) {
   const actor = project70Admin_(token, 'EDIT');
   name = boundedText_(name, 'ชื่อไฟล์', 120, true);
   mime = boundedText_(mime, 'ชนิดไฟล์', 80, true);
@@ -11023,48 +11085,48 @@ function itsdImpl_uploadServiceReportLogo_(token, name, mime, base64) {
   if (bytes.length > 5 * 1024 * 1024) throw Error('ไฟล์โลโก้ต้องมีขนาดไม่เกิน 5 MB');
   return lock_(() => {
     ensureAdminModuleSchema_();
-    const old = find_('APP_SETTINGS', 'key', 'report_logo_file_id'),
+    const old = find_('APP_SETTINGS', 'key', settingKey),
       oldId = (old && old.value) || '';
     const safeName =
-      'service-report-logo-' +
+      settingKey + '-' +
       Utilities.formatDate(new Date(), TZ, 'yyyyMMdd-HHmmss') +
       (mime === 'image/png' ? '.png' : '.jpg');
     const file = admin35AssetsFolder_().createFile(Utilities.newBlob(bytes, mime, safeName));
-    admin35SetSetting_('report_logo_file_id', file.getId());
+    admin35SetSetting_(settingKey, file.getId());
     if (oldId && oldId !== file.getId()) {
       try {
-        CacheService.getScriptCache().remove('ITSD_REPORT_LOGO_' + oldId);
+        CacheService.getScriptCache().remove('ITSD_LOGO_' + oldId);
         DriveApp.getFileById(oldId).setTrashed(true);
       } catch (_) {}
     }
     const dataUrl = 'data:' + mime + ';base64,' + Utilities.base64Encode(bytes);
     try {
       if (dataUrl.length < 95000)
-        CacheService.getScriptCache().put('ITSD_REPORT_LOGO_' + file.getId(), dataUrl, 21600);
+        CacheService.getScriptCache().put('ITSD_LOGO_' + file.getId(), dataUrl, 21600);
     } catch (_) {}
     writeAudit_(
       actor,
       'UPLOAD',
       'SETTINGS',
-      'REPORT_LOGO',
+      auditTarget,
       file.getId(),
       'SUCCESS',
-      'อัปโหลดโลโก้หัวใบงาน ' + name,
+      auditDesc + name,
     );
     return { file_id: file.getId(), data_url: dataUrl, revision: project70Revision_() };
   });
 }
 
-function itsdImpl_clearServiceReportLogo_(token) {
+function project70ClearLogoHelper_(token, settingKey, auditTarget, auditDesc) {
   const actor = project70Admin_(token, 'EDIT');
   return lock_(() => {
     ensureAdminModuleSchema_();
-    const old = find_('APP_SETTINGS', 'key', 'report_logo_file_id'),
+    const old = find_('APP_SETTINGS', 'key', settingKey),
       oldId = (old && old.value) || '';
-    admin35SetSetting_('report_logo_file_id', '');
+    admin35SetSetting_(settingKey, '');
     if (oldId) {
       try {
-        CacheService.getScriptCache().remove('ITSD_REPORT_LOGO_' + oldId);
+        CacheService.getScriptCache().remove('ITSD_LOGO_' + oldId);
         DriveApp.getFileById(oldId).setTrashed(true);
       } catch (_) {}
     }
@@ -11072,10 +11134,10 @@ function itsdImpl_clearServiceReportLogo_(token) {
       actor,
       'DELETE',
       'SETTINGS',
-      'REPORT_LOGO',
+      auditTarget,
       oldId,
       'SUCCESS',
-      'คืนค่าโลโก้หัวใบงานเป็นค่าเริ่มต้น',
+      auditDesc,
     );
     return { file_id: '', data_url: '', revision: project70Revision_() };
   });

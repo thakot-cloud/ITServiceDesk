@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.06
+ * Version: V1.2.07
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-16
+ * Modified: 2026-11-17
  * Change History:
+ * - V1.2.07: Expose upload/clear endpoints for sticker template logos.
  * - V1.2.06: Version bump for step numbers bright green styling.
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Version bump for Google Sites iframe embedding support.
@@ -136,6 +137,10 @@ function getServiceReport(token, id) { return itsdImpl_getServiceReport_.apply(t
 function saveServiceReportDetails(token, id, input) { return itsdImpl_saveServiceReportDetails_.apply(this, arguments); }
 function uploadServiceReportLogo(token, name, mime, base64) { return itsdImpl_uploadServiceReportLogo_.apply(this, arguments); }
 function clearServiceReportLogo(token) { return itsdImpl_clearServiceReportLogo_.apply(this, arguments); }
+function uploadStickerLogo(token, name, mime, base64) { return itsdImpl_uploadStickerLogo_.apply(this, arguments); }
+function clearStickerLogo(token) { return itsdImpl_clearStickerLogo_.apply(this, arguments); }
+function uploadStickerProviderLogo(token, name, mime, base64) { return itsdImpl_uploadStickerProviderLogo_.apply(this, arguments); }
+function clearStickerProviderLogo(token) { return itsdImpl_clearStickerProviderLogo_.apply(this, arguments); }
 function lineLegacyReviewInbox(token, input) { return itsdImpl_lineLegacyReviewInbox_.apply(this, arguments); }
 function saveDeviceModel(token, data) { return itsdImpl_saveDeviceModel_.apply(this, arguments); }
 function deactivateDeviceModel(token, id) { return itsdImpl_deactivateDeviceModel_.apply(this, arguments); }
