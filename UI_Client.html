@@ -7770,12 +7770,13 @@ const STICKER_DEFAULTS = {
   sticker_provider_name: 'บริษัท นิวเทคโนโลยี อินฟอร์เมชั่น จำกัด',
   sticker_provider_address:
     'เลขที่ 110/42 หมู่ 3 ถนนรัตนาธิเบศร์ ตำบลไทรมา้ อำเภอเมืองนนทบุรี จังหวัดนนทบุรี 11000',
-  sticker_seq_prefix: '17_',
+  sticker_seq_prefix: '',
   sticker_layout: '10',
 };
 
 function formatStickerSeq(prefix, seqIndex) {
-  prefix = prefix == null ? '' : String(prefix);
+  prefix = prefix == null ? '' : String(prefix).trim();
+  if (!prefix) return '';
   if (/\{[0-9a-zA-Z#_-]+\}/i.test(prefix)) {
     return prefix.replace(/\{([0-9a-zA-Z#_-]+)\}/i, (_, token) => {
       if (/^0+$/.test(token)) return String(seqIndex).padStart(token.length, '0');
@@ -7850,7 +7851,7 @@ function stickerCardHtml(item, template, seq) {
           <div><b>ยี่ห้อ :</b> <span>${brand}</span></div>
           <div><b>รุ่น :</b> <span>${model}</span></div>
         </div>
-        <div class="stk-row"><b>รหัสอุปกรณ์ (Serial Number) :</b> <span>${serial}</span></div>
+        <div class="stk-row"><b>ซีเรียลนัมเบอร์ :</b> <span>${serial}</span></div>
         <div class="stk-row stk-split">
           <div><b>หมายเลขครุภัณฑ์ :</b> <span>${assetNo}</span></div>
           <div><b>หมายเลขสินทรัพย์ :</b> <span>${assetId}</span></div>
@@ -8365,7 +8366,7 @@ function project70RenderSticker(mount, d) {
         <label class="project70-full">ที่อยู่ผู้ให้บริการ
           <textarea id="project70StickerAddress" rows="2" maxlength="300">${esc(stk.sticker_provider_address || STICKER_DEFAULTS.sticker_provider_address)}</textarea>
         </label>
-        ${project70Input('project70StickerSeqPrefix', 'คำนำหน้าลำดับ (Sequence Prefix)', stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix, 'กำหนดรูปแบบอิสระ เช่น open-, 17_, IT- (ระบบจะต่อด้วยตัวเลขรันลำดับอัตโนมัติ เช่น open-1, open-2, ...)')}
+        ${project70Input('project70StickerSeqPrefix', 'คำนำหน้าลำดับ (Sequence Prefix)', stk.sticker_seq_prefix ?? STICKER_DEFAULTS.sticker_seq_prefix, 'เว้นว่างหากไม่ต้องการรันหมายเลข หรือกำหนด เช่น open-, IT- (ต่อด้วยเลขรันอัตโนมัติ)')}
         <label>การจัดหน้ากระดาษ A4
           <select id="project70StickerLayout">
             <option value="10" ${(stk.sticker_layout || '10') === '10' ? 'selected' : ''}>รูปแบบ 1 : 10 ดวง / แผ่น A4 (2 คอลัมน์ x 5 แถว · 95 x 53.5 mm · มาตรฐานแนะนำ)</option>
@@ -8412,7 +8413,7 @@ function project70RenderSticker(mount, d) {
             <input id="stkFilterSearch" type="search" placeholder="เลขครุภัณฑ์, Serial, ยี่ห้อ, รุ่น, สินทรัพย์..." oninput="stickerFilterInventory()">
           </label>
           <label style="max-width:180px;">คำนำหน้าลำดับ (Prefix)
-            <input id="stkBatchSeqPrefix" type="text" value="${escAttr(stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix)}" placeholder="เช่น open-, 17_" style="width:100%;" oninput="stickerUpdateCount()">
+            <input id="stkBatchSeqPrefix" type="text" value="${escAttr(stk.sticker_seq_prefix ?? STICKER_DEFAULTS.sticker_seq_prefix)}" placeholder="เว้นว่างหากไม่ต้องการรัน" style="width:100%;" oninput="stickerUpdateCount()">
           </label>
           <label style="max-width:110px;">เริ่มลำดับที่
             <input id="stkStartSeq" type="number" min="1" value="1" style="width:100%;" onchange="stickerUpdateCount()" oninput="stickerUpdateCount()">
@@ -8631,7 +8632,7 @@ function stickerUpdateCount() {
       ? batchPrefixInput.value.trim()
       : (uiValue('project70StickerSeqPrefix', true) || project70UI?.data?.sticker?.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix);
     const startSeq = Math.max(1, parseInt(uiValue('stkStartSeq') || '1', 10));
-    const rangeText = count > 0 ? ` · ลำดับ ${formatStickerSeq(prefix, startSeq)} ถึง ${formatStickerSeq(prefix, startSeq + count - 1)}` : '';
+    const rangeText = count > 0 && prefix ? ` · ลำดับ ${formatStickerSeq(prefix, startSeq)} ถึง ${formatStickerSeq(prefix, startSeq + count - 1)}` : '';
     badge.textContent = `เลือกแล้ว ${count} รายการ (พิมพ์ ${pages} แผ่น A4${rangeText})`;
   }
   const page1Btn = $('stkBtnPage1');
