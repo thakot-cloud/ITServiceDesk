@@ -21,14 +21,14 @@
 
 ## 1. โครงสร้างทรัพยากรหลักของโครงการ (Project Bindings)
 
-| รายการ | ชื่อทรัพยากร | ID / URL หลักของโครงการ |
-| :--- | :--- | :--- |
-| **GitHub Repository** | `ITServiceDesk` | `https://github.com/thakot-cloud/ITServiceDesk` |
-| **Local Workspace** | `ITSD` | `/Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026` (Source Deploy อยู่ในโฟลเดอร์ `src/`) |
-| **Google Drive Root** | `005_ITServiceDesk` | ID: `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`<br>`https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` |
-| **Google Sheets (26 ตาราง)** | `ITServiceDesk — DBS` | ID: `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`<br>`https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk` |
-| **Google Apps Script** | `ITServiceDesk` | Script ID: `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`<br>`https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit` |
-| **Web App Production URL** | `ITSD Web App` | `https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec` |
+| องค์ประกอบ | ชื่อที่ถูกต้อง (Resource Name) | รหัสอ้างอิง (ID) | ลิงก์เข้าถึงทางการ |
+| :--- | :--- | :--- | :--- |
+| **GitHub Repository** | `ITServiceDesk` | `thakot-cloud/ITServiceDesk` | `https://github.com/thakot-cloud/ITServiceDesk` |
+| **Local Workspace** | `ITSD` | `/Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026` | Source Deploy อยู่ในโฟลเดอร์ `src/` |
+| **Google Drive Root** | `005_ITServiceDesk` | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | `https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` |
+| **Google Sheets Database** | `ITServiceDesk — DBS` | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | `https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk` |
+| **Apps Script Project (Edit)** | `ITServiceDesk` | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | `https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit` |
+| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | `https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec` |
 
 ---
 

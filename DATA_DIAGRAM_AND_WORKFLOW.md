@@ -8,13 +8,13 @@
 
 ## 📌 ข้อมูลอ้างอิงโครงสร้างโปรเจกต์ (Unified Project Links)
 
-| องค์ประกอบ | รหัสอ้างอิง (ID) | ลิงก์เข้าถึง |
-| :--- | :--- | :--- |
-| **GitHub Repository** | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
-| **Google Drive Root (`005_ITServiceDesk`)** | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
-| **Google Sheets (`ITServiceDesk — DBS`)** | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
-| **Apps Script Editor** | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
-| **Web App Production URL** | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+| องค์ประกอบ | ชื่อที่ถูกต้อง (Resource Name) | รหัสอ้างอิง (ID) | ลิงก์เข้าถึงทางการ |
+| :--- | :--- | :--- | :--- |
+| **GitHub Repository** | `ITServiceDesk` | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
+| **Google Drive Root** | `005_ITServiceDesk` | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
+| **Google Sheets Database** | `ITServiceDesk — DBS` | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
+| **Apps Script Project (Edit)** | `ITServiceDesk` | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
+| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 ---
 
