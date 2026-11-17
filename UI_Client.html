@@ -7090,16 +7090,90 @@ async function calendar122Load() {
 
 function calendar122Render(host, entries, entry = null) {
   const current = entry || {id:'',revision:0,title:'',kind:'HOLIDAY',start_date:bkkDate().slice(0,10),end_date:bkkDate().slice(0,10),notes:'',active:true};
-  host.innerHTML = `<section class="calendar122-settings"><h2>จัดการวันหยุด</h2><p>ADMIN เพิ่มวันหยุดราชการ วันหยุดพิเศษ และประกาศสำหรับปฏิทิน PM โดยระบุวันที่ตามประกาศจริง</p><p class="hint">พื้นหลังแดงอ่อน: วันหยุดราชการ / วันหยุดพิเศษ · พื้นหลังเทา: เสาร์–อาทิตย์ · ประกาศทั่วไปแสดงข้อความโดยไม่เปลี่ยนวันทำการ ไม่มีการเพิ่มวันหยุดราชการให้อัตโนมัติ</p><form id="calendar122Form"><h3>${current.id ? 'แก้ไขรายการ' : 'เพิ่มวันหยุด / ประกาศ'}</h3><div class="project70-grid"><label>ประเภท<select id="calendar122Kind">${Object.entries(CALENDAR122_KINDS).map(([key,label]) => `<option value="${key}" ${current.kind === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label><label>ชื่อวันหยุด / ประกาศ<input id="calendar122Title" required maxlength="160" value="${escAttr(current.title)}"></label><label>ตั้งแต่วันที่<input id="calendar122Start" type="date" required value="${escAttr(current.start_date)}"></label><label>ถึงวันที่<input id="calendar122End" type="date" required value="${escAttr(current.end_date)}" min="${escAttr(current.start_date)}"></label><label class="project70-full">รายละเอียด / อ้างอิงประกาศ<textarea id="calendar122Notes" rows="3" maxlength="2000">${esc(current.notes || '')}</textarea></label><label class="calendar122-active"><input id="calendar122Active" type="checkbox" ${current.active ? 'checked' : ''}>เปิดใช้งานในปฏิทิน</label></div><div class="project70-actions"><button class="primary" type="submit">บันทึกรายการ</button>${current.id ? '<button class="outline" type="button" id="calendar122Cancel">ยกเลิกแก้ไข</button>' : ''}</div><p id="calendar122Message" role="status"></p></form><h3>วันหยุดและประกาศ (${entries.length} รายการ)</h3><div class="calendar122-table-wrap"><table class="table"><thead><tr><th>ช่วงวันที่</th><th>ประเภท</th><th>ชื่อ / รายละเอียด</th><th>สถานะ</th><th>จัดการ</th></tr></thead><tbody>${entries.length ? entries.map(x => `<tr><td>${esc(x.start_date)}${x.end_date !== x.start_date ? '<br>ถึง ' + esc(x.end_date) : ''}</td><td>${esc(CALENDAR122_KINDS[x.kind] || x.kind)}</td><td><b>${esc(x.title)}</b><small>${esc(x.notes || '')}</small></td><td>${x.active ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</td><td><div class="calendar122-actions"><button type="button" class="outline" data-calendar-edit="${escAttr(x.id)}">แก้ไข</button><button type="button" class="danger" data-calendar-delete="${escAttr(x.id)}">ลบ</button></div></td></tr>`).join('') : '<tr><td colspan="5">ยังไม่มีวันหยุดหรือประกาศที่ตั้งค่าไว้ เสาร์–อาทิตย์แสดงสีเทาอัตโนมัติ</td></tr>'}</tbody></table></div></section>`;
+  host.innerHTML = `<section class="calendar122-settings">
+<h2>จัดการวันหยุด</h2>
+<p>ADMIN จัดการวันหยุดราชการ วันหยุดพิเศษ และประกาศสำหรับปฏิทิน PM โดยสามารถดึงวันหยุดราชการไทยล่วงหน้าอัตโนมัติ หรือเพิ่ม/แก้ไขรายการเองตามต้องการ</p>
+<p class="hint">พื้นหลังแดงอ่อน: วันหยุดราชการ / วันหยุดพิเศษ · พื้นหลังเทา: เสาร์–อาทิตย์ · ระบบรองรับการดึงวันหยุดราชการไทยอัตโนมัติล่วงหน้า 3–4 ปี (2569–2573) และนำไปไฮไลต์บนปฏิทินแผน PM โดยตรง</p>
+
+<div class="calendar122-import-box">
+  <div class="import-row">
+    <div>
+      <div class="import-title">
+        <span class="material-symbols-rounded">event_available</span>
+        <span>ดึงวันหยุดราชการไทยอัตโนมัติ (ล่วงหน้า 3–4 ปี)</span>
+      </div>
+      <p class="import-desc">
+        ดึงวันหยุดราชการไทยตามประกาศสำนักนายกรัฐมนตรี / ธปท. (พ.ศ. 2569, 2570, 2571, 2572, 2573) เข้าสู่ระบบและแสดงบนปฏิทินแผน PM ทันที
+      </p>
+    </div>
+    <div class="import-controls">
+      <label style="margin:0;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
+        เลือกปี พ.ศ.
+        <select id="calendar122ImportYearSelect">
+          <option value="2569">พ.ศ. 2569 (2026)</option>
+          <option value="2570" selected>พ.ศ. 2570 (2027)</option>
+          <option value="2571">พ.ศ. 2571 (2028)</option>
+          <option value="2572">พ.ศ. 2572 (2029)</option>
+          <option value="2573">พ.ศ. 2573 (2030)</option>
+        </select>
+      </label>
+      <button type="button" class="primary" id="calendar122ImportYearBtn">
+        <span class="material-symbols-rounded">cloud_download</span>
+        ดึงวันหยุดตามปีที่เลือก
+      </button>
+      <button type="button" class="outline" id="calendar122ImportAllBtn" title="ดึงวันหยุดราชการทุกปีตั้งแต่ พ.ศ. 2569 ถึง 2572 (และ 2573)">
+        <span class="material-symbols-rounded">library_add</span>
+        ดึงวันหยุดทุกปี (2569 - 2572)
+      </button>
+    </div>
+  </div>
+</div>
+
+<form id="calendar122Form">
+  <h3>${current.id ? 'แก้ไขรายการ' : 'เพิ่มวันหยุด / ประกาศ'}</h3>
+  <div class="project70-grid">
+    <label>ประเภท<select id="calendar122Kind">${Object.entries(CALENDAR122_KINDS).map(([key,label]) => `<option value="${key}" ${current.kind === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+    <label>ชื่อวันหยุด / ประกาศ<input id="calendar122Title" required maxlength="160" value="${escAttr(current.title)}"></label>
+    <label>ตั้งแต่วันที่<input id="calendar122Start" type="date" required value="${escAttr(current.start_date)}"></label>
+    <label>ถึงวันที่<input id="calendar122End" type="date" required value="${escAttr(current.end_date)}" min="${escAttr(current.start_date)}"></label>
+    <label class="project70-full">รายละเอียด / อ้างอิงประกาศ<textarea id="calendar122Notes" rows="3" maxlength="2000">${esc(current.notes || '')}</textarea></label>
+    <label class="calendar122-active"><input id="calendar122Active" type="checkbox" ${current.active ? 'checked' : ''}>เปิดใช้งานในปฏิทิน</label>
+  </div>
+  <div class="project70-actions">
+    <button class="primary" type="submit">บันทึกรายการ</button>
+    ${current.id ? '<button class="outline" type="button" id="calendar122Cancel">ยกเลิกแก้ไข</button>' : ''}
+  </div>
+  <p id="calendar122Message" role="status"></p>
+</form>
+
+<h3>วันหยุดและประกาศ (${entries.length} รายการ)</h3>
+<div class="calendar122-table-wrap">
+  <table class="table">
+    <thead>
+      <tr><th>ช่วงวันที่</th><th>ประเภท</th><th>ชื่อ / รายละเอียด</th><th>สถานะ</th><th>จัดการ</th></tr>
+    </thead>
+    <tbody>
+      ${entries.length ? entries.map(x => `<tr><td>${esc(x.start_date)}${x.end_date !== x.start_date ? '<br>ถึง ' + esc(x.end_date) : ''}</td><td>${esc(CALENDAR122_KINDS[x.kind] || x.kind)}</td><td><b>${esc(x.title)}</b><small>${esc(x.notes || '')}</small></td><td>${x.active ? 'เปิดใช้งาน' : 'ปิดใช้งาน'}</td><td><div class="calendar122-actions"><button type="button" class="outline" data-calendar-edit="${escAttr(x.id)}">แก้ไข</button><button type="button" class="danger" data-calendar-delete="${escAttr(x.id)}">ลบ</button></div></td></tr>`).join('') : '<tr><td colspan="5">ยังไม่มีวันหยุดหรือประกาศที่ตั้งค่าไว้ เสาร์–อาทิตย์แสดงสีเทาอัตโนมัติ</td></tr>'}
+    </tbody>
+  </table>
+</div>
+</section>`;
+
   const input = name => host.querySelector('#calendar122' + name);
   input('Start').onchange = () => { input('End').min=input('Start').value; if (input('End').value < input('Start').value) input('End').value=input('Start').value; };
   if (input('Cancel')) input('Cancel').onclick = () => calendar122Render(host, entries);
   let busy = false;
-  async function run(action) {
+  async function run(action, successMsg) {
     if (busy) return;
     busy=true; const buttons=Array.from(host.querySelectorAll('button')); buttons.forEach(b => b.disabled=true);
-    input('Message').textContent='กำลังบันทึก...';
-    try { await action(); if (host.isConnected) { toast('บันทึกวันหยุด / ประกาศแล้ว'); await calendar122Load(); } }
+    if (input('Message')) input('Message').textContent='กำลังดำเนินการ...';
+    try {
+      const res = await action();
+      if (host.isConnected) {
+        toast(typeof successMsg === 'function' ? successMsg(res) : (successMsg || 'บันทึกวันหยุด / ประกาศแล้ว'));
+        await calendar122Load();
+      }
+    }
     catch(e) { if (host.isConnected && input('Message')) input('Message').textContent=normalizeUiError(e); }
     finally { busy=false; buttons.forEach(b => b.disabled=false); }
   }
@@ -7107,10 +7181,34 @@ function calendar122Render(host, entries, entry = null) {
     event.preventDefault();
     if (!event.currentTarget.reportValidity()) return;
     const data={id:current.id,revision:current.revision,kind:input('Kind').value,title:input('Title').value,start_date:input('Start').value,end_date:input('End').value,notes:input('Notes').value,active:input('Active').checked};
-    run(() => call('saveCalendarEntry', token, data));
+    run(() => call('saveCalendarEntry', token, data), 'บันทึกวันหยุด / ประกาศแล้ว');
   };
+
+  const importYearBtn = host.querySelector('#calendar122ImportYearBtn');
+  const importAllBtn = host.querySelector('#calendar122ImportAllBtn');
+  const importSelect = host.querySelector('#calendar122ImportYearSelect');
+  if (importYearBtn && importSelect) {
+    importYearBtn.onclick = () => {
+      const y = importSelect.value;
+      run(() => call('importThaiHolidays', token, y), (res) => {
+        const added = res && res.added != null ? res.added : 0;
+        const updated = res && res.updated != null ? res.updated : 0;
+        return `ดึงวันหยุดราชการไทย พ.ศ. ${y} แล้ว (เพิ่มใหม่ ${added} รายการ${updated ? ', ปรับปรุง ' + updated + ' รายการ' : ''})`;
+      });
+    };
+  }
+  if (importAllBtn) {
+    importAllBtn.onclick = () => {
+      if (!confirm('ยืนยันดึงวันหยุดราชการไทย พ.ศ. 2569 - 2573 ทั้งหมดเข้าสู่ระบบ?')) return;
+      run(() => call('importThaiHolidays', token, 'ALL'), (res) => {
+        const added = res && res.added != null ? res.added : 0;
+        return `ดึงวันหยุดราชการไทยทุกปีแล้ว (เพิ่มใหม่ ${added} รายการ)`;
+      });
+    };
+  }
+
   host.querySelectorAll('[data-calendar-edit]').forEach(button => button.onclick=() => { const selected=entries.find(x=>x.id===button.dataset.calendarEdit); if (selected) { calendar122Render(host,entries,selected); $('calendar122Title').focus(); } });
-  host.querySelectorAll('[data-calendar-delete]').forEach(button => button.onclick=() => { const selected=entries.find(x=>x.id===button.dataset.calendarDelete); if (selected && confirm('ลบรายการ “' + selected.title + '” ออกจากปฏิทิน? ประวัติการแก้ไขยังคงเก็บไว้')) run(() => call('deleteCalendarEntry',token,selected.id,selected.revision)); });
+  host.querySelectorAll('[data-calendar-delete]').forEach(button => button.onclick=() => { const selected=entries.find(x=>x.id===button.dataset.calendarDelete); if (selected && confirm('ลบรายการ “' + selected.title + '” ออกจากปฏิทิน? ประวัติการแก้ไขยังคงเก็บไว้')) run(() => call('deleteCalendarEntry',token,selected.id,selected.revision), 'ลบรายการวันหยุดแล้ว'); });
 }
 
 function project70Save(button, messageId) {

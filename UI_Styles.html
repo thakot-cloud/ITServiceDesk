@@ -6953,7 +6953,8 @@ body.ux8-manage-modal-open .ux8-manage-actions {
   background: #fff0d9;
   color: #d98314;
 }
-.admin36-role-pill.role-technician {
+.admin36-role-pill.role-technician,
+.admin36-role-pill.role-itsupport {
   background: #eeeaff;
   color: #674ed8;
 }
@@ -10021,7 +10022,8 @@ html[data-theme='light'] .ui-side-tabs button.active {
     .admin39-section-head .tone-purple,
     .admin39-info-card.tone-purple .admin39-info-icon,
     .admin36-matrix-role.tone-purple,
-    .admin36-role-pill.role-technician
+    .admin36-role-pill.role-technician,
+    .admin36-role-pill.role-itsupport
   ) {
   background: var(--theme-purple-bg);
   color: var(--theme-purple);
@@ -12979,6 +12981,14 @@ html[data-theme='dark'] .pm122-day-note.pm122-announcement { color: #aedaff; }
 .calendar122-table-wrap td small { display: block; max-width: 380px; white-space: pre-wrap; overflow-wrap: anywhere; }
 .calendar122-actions { display: flex; gap: 6px; }
 .calendar122-actions button { min-height: 44px; white-space: nowrap; }
+.calendar122-import-box { background: var(--ui-card, #ffffff); border: 1px solid var(--ui-border, #cbd5e1); border-radius: 10px; padding: 16px 18px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); }
+html[data-theme='dark'] .calendar122-import-box { background: var(--ui-card, #1e293b); border-color: var(--ui-border, #334155); }
+.calendar122-import-box .import-row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+.calendar122-import-box .import-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 15px; font-weight: 700; color: var(--theme-primary, #0284c7); }
+.calendar122-import-box .import-desc { margin: 0; font-size: 13px; color: var(--ui-muted, #64748b); line-height: 1.4; }
+.calendar122-import-box .import-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.calendar122-import-box select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--ui-border, #cbd5e1); font-weight: 600; background: var(--ui-card, #ffffff); color: inherit; min-height: 40px; }
+.calendar122-import-box button { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
 @media(max-width:600px) { .calendar122-settings .project70-grid { grid-template-columns: minmax(0,1fr); } }
 
 /* V1.1.25: LINE asset selection uses four-column clickable rows. */

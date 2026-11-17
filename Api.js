@@ -117,6 +117,7 @@ function pmSavePlanning(token, input) { return itsdImpl_pmSavePlanning_.apply(th
 function pmSetupCandidate(token) { return itsdImpl_pmSetupCandidate_.apply(this, arguments); }
 function pmGetCalendar(token, month) { return itsdImpl_pmGetCalendar_.apply(this, arguments); }
 function getCalendarEntries(token) { return itsdImpl_getCalendarEntries_.apply(this, arguments); }
+function importThaiHolidays(token, year) { return itsdImpl_importThaiHolidays_.apply(this, arguments); }
 function saveCalendarEntry(token, input) { return itsdImpl_saveCalendarEntry_.apply(this, arguments); }
 function deleteCalendarEntry(token, id, revision) { return itsdImpl_deleteCalendarEntry_.apply(this, arguments); }
 function pmSavePlan(token, input) { return itsdImpl_pmSavePlan_.apply(this, arguments); }
