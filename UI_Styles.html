@@ -11069,9 +11069,9 @@ html[data-theme='light'] .ui-side-tabs button.active {
   gap: 16px;
   align-items: flex-start;
   flex-wrap: wrap;
-  padding: 10px;
-  background: var(--theme-surface);
-  border: 1px solid var(--theme-border);
+  padding: 12px;
+  background: var(--theme-panel, #ffffff);
+  border: 1px solid var(--theme-border, #cbd5e1);
   border-radius: 8px;
 }
 .sticker-batch-toolbar {
@@ -11079,8 +11079,8 @@ html[data-theme='light'] .ui-side-tabs button.active {
   gap: 12px;
   margin: 14px 0 10px;
   padding: 12px;
-  background: var(--theme-surface);
-  border: 1px solid var(--theme-border);
+  background: var(--theme-panel, #ffffff);
+  border: 1px solid var(--theme-border, #cbd5e1);
   border-radius: 8px;
 }
 .stk-filters {
@@ -11095,6 +11095,7 @@ html[data-theme='light'] .ui-side-tabs button.active {
   gap: 4px;
   font-size: 12px;
   font-weight: 500;
+  color: var(--theme-heading, #1e293b);
 }
 .stk-search-label {
   flex: 1;
@@ -11107,7 +11108,7 @@ html[data-theme='light'] .ui-side-tabs button.active {
   flex-wrap: wrap;
   gap: 10px;
   padding-top: 10px;
-  border-top: 1px dashed var(--theme-border);
+  border-top: 1px dashed var(--theme-border, #cbd5e1);
 }
 .stk-btn-group {
   display: flex;
@@ -11121,14 +11122,14 @@ html[data-theme='light'] .ui-side-tabs button.active {
 .stk-count-badge {
   font-size: 13px;
   font-weight: 600;
-  color: var(--theme-primary, #3b82f6);
+  color: var(--theme-primary, #0284c7);
 }
 .sticker-inventory-table-wrap {
   max-height: 480px;
   overflow-y: auto;
-  border: 1px solid var(--theme-border);
+  border: 1px solid var(--theme-border, #cbd5e1);
   border-radius: 8px;
-  background: var(--theme-card, #111827);
+  background: var(--theme-panel, #ffffff);
   margin-top: 10px;
 }
 .sticker-inventory-table {
@@ -11140,24 +11141,54 @@ html[data-theme='light'] .ui-side-tabs button.active {
 .sticker-inventory-table th {
   position: sticky;
   top: 0;
-  background: var(--theme-surface, #1e293b);
-  color: var(--theme-text);
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--theme-border);
+  background: #f1f5f9;
+  color: #0f172a;
+  padding: 9px 12px;
+  border-bottom: 1px solid #cbd5e1;
   z-index: 2;
   white-space: nowrap;
+  font-weight: 600;
 }
 .sticker-inventory-table td {
-  padding: 7px 10px;
-  border-bottom: 1px solid var(--theme-border);
-  color: var(--theme-text);
+  padding: 8px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #1e293b;
+  background: #ffffff;
 }
-.sticker-inventory-table tr:hover {
-  background: var(--theme-surface-hover, rgba(255, 255, 255, 0.05));
+.sticker-inventory-table tr:hover td {
+  background: #f0f7ff;
   cursor: pointer;
 }
-.sticker-inventory-table tr.selected {
-  background: rgba(59, 130, 246, 0.12);
+.sticker-inventory-table tr.selected td {
+  background: #e0f2fe !important;
+}
+html[data-theme='dark'] .sticker-batch-toolbar,
+html[data-theme='dark'] .project70-sticker-logo-row,
+html[data-theme='dark'] .sticker-inventory-table-wrap {
+  background: #111827;
+  border-color: #374151;
+}
+html[data-theme='dark'] .stk-filters label {
+  color: #f3f4f6;
+}
+html[data-theme='dark'] .stk-selection-bar {
+  border-top-color: #374151;
+}
+html[data-theme='dark'] .sticker-inventory-table th {
+  background: #1f2937;
+  color: #f9fafb;
+  border-bottom-color: #374151;
+}
+html[data-theme='dark'] .sticker-inventory-table td {
+  background: #111827;
+  color: #e5e7eb;
+  border-bottom-color: #1f2937;
+}
+html[data-theme='dark'] .sticker-inventory-table tr:hover td {
+  background: #1f2937;
+}
+html[data-theme='dark'] .sticker-inventory-table tr.selected td {
+  background: rgba(59, 130, 246, 0.25) !important;
 }
 .line78-prefill-notice {
   display: flex;
