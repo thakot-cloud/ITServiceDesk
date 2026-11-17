@@ -8379,7 +8379,7 @@ function project70RenderSticker(mount, d) {
 
       <div class="project70-actions">
         <button type="button" class="primary" id="project70SaveSticker">บันทึกแม่แบบสติ๊กเกอร์</button>
-        <button type="button" class="outline" id="project70FillDefaultSticker">เติมค่ามาตรฐาน</button>
+        <button type="button" class="outline" id="project70FillDefaultSticker">เติมค่ามาตรฐานสติ๊กเกอร์</button>
         <button type="button" class="outline" id="project70PreviewStickerPrint"><span class="material-symbols-rounded">print</span> พิมพ์ตัวอย่าง 1 แผ่น (A4 PDF)</button>
       </div>
       <div class="project70-status" id="project70StickerResult" role="status"></div>
@@ -8477,7 +8477,7 @@ function project70RenderSticker(mount, d) {
     if (batchPrefixEl) batchPrefixEl.value = STICKER_DEFAULTS.sticker_seq_prefix;
     project70UpdateStickerPreview();
     stickerUpdateCount();
-    project70Message('project70StickerResult', 'เติมค่ามาตรฐานแล้ว กดบันทึกเพื่อใช้งานจริง');
+    project70Message('project70StickerResult', 'เติมค่ามาตรฐานสติ๊กเกอร์แล้ว กดบันทึกเพื่อใช้งานจริง');
   });
   bind('project70PreviewStickerPrint', (button) => project70PreviewStickerPrint(button));
 
