@@ -7810,8 +7810,8 @@ function project70StickerData() {
   };
 }
 
-function project70StickerSampleData() {
-  return [
+function project70StickerSampleData(count = 15) {
+  const base = [
     { brand: 'HP', model: 'HP P204V', serial: '3CQ42104X5', asset_no: '7440-001-05-0014/68', asset_code: '110000000395' },
     { brand: 'HP', model: 'ProDesk 400 G7', serial: '4CE12345AB', asset_no: '7440-001-05-0015/68', asset_code: '110000000396' },
     { brand: 'Lenovo', model: 'ThinkCentre M70q', serial: 'MJ09XYZ1', asset_no: '7440-001-05-0016/68', asset_code: '110000000397' },
@@ -7822,7 +7822,13 @@ function project70StickerSampleData() {
     { brand: 'HP', model: 'EliteBook 640 G9', serial: '5CD2345XYZ', asset_no: '7440-001-05-0021/68', asset_code: '110000000402' },
     { brand: 'Samsung', model: 'Curved 24" F390', serial: 'ZX891234PQ', asset_no: '7440-001-05-0022/68', asset_code: '110000000403' },
     { brand: 'APC', model: 'Smart-UPS 1000VA', serial: 'AS19283746', asset_no: '7440-001-05-0023/68', asset_code: '110000000404' },
+    { brand: 'Cisco', model: 'Catalyst 2960X', serial: 'FOC2134Y56', asset_no: '7440-001-05-0024/68', asset_code: '110000000405' },
+    { brand: 'Epson', model: 'EcoTank L3250', serial: 'X7YK901234', asset_no: '7440-001-05-0025/68', asset_code: '110000000406' },
+    { brand: 'Dell', model: 'Latitude 3420', serial: '9JK7MN1', asset_no: '7440-001-05-0026/68', asset_code: '110000000407' },
+    { brand: 'Asus', model: 'ExpertCenter D5', serial: 'N8R0CV001', asset_no: '7440-001-05-0027/68', asset_code: '110000000408' },
+    { brand: 'Canon', model: 'imageRUNNER 2625i', serial: 'QWE8912345', asset_no: '7440-001-05-0028/68', asset_code: '110000000409' },
   ];
+  return base.slice(0, count);
 }
 
 function stickerCardHtml(item, template, seq) {
@@ -7867,12 +7873,159 @@ function stickerCardHtml(item, template, seq) {
     </div>`;
 }
 
+function getStickerPerPage(layoutStr) {
+  const l = String(layoutStr || '10');
+  if (l === '15') return 15;
+  if (l === '12' || l === '12_3x4') return 12;
+  if (l === '8') return 8;
+  return 10;
+}
+
+function getStickerLayoutParams(layoutStr) {
+  const layout = String(layoutStr || '10');
+  switch (layout) {
+    case '12':
+      /* 2 คอลัมน์ x 6 แถว = 12 ดวง (95 x 44.5 mm) */
+      return {
+        perPage: 12,
+        cardWidth: '95mm',
+        cardHeight: '44.5mm',
+        gridCols: '95mm 95mm',
+        gridRows: 'repeat(6, 44.5mm)',
+        colGap: '6mm',
+        rowGap: '2.5mm',
+        sheetWidth: '198mm',
+        pageMargin: '6mm 6mm',
+        headerPadding: '0.8mm 1.8mm',
+        logoSize: '9.5mm',
+        titleFontSize: '5.5pt',
+        orgFontSize: '6.5pt',
+        orgMargin: '0.5mm 0 0.3mm',
+        bodyFontSize: '5.5pt',
+        lineHeight: '1.22',
+        splitGap: '1.5mm',
+        dividerMargin: '0.4mm 2mm 0.2mm',
+        footerPadding: '0.2mm 2mm 0.6mm',
+        providerLogoHeight: '4.8mm',
+        providerLogoMaxWidth: '16mm',
+        providerFontSize: '4.4pt',
+        seqFontSize: '6.8pt',
+      };
+    case '12_3x4':
+      /* 3 คอลัมน์ x 4 แถว = 12 ดวง (63.5 x 68 mm) */
+      return {
+        perPage: 12,
+        cardWidth: '63.5mm',
+        cardHeight: '68mm',
+        gridCols: '63.5mm 63.5mm 63.5mm',
+        gridRows: 'repeat(4, 68mm)',
+        colGap: '3.5mm',
+        rowGap: '3.5mm',
+        sheetWidth: '198mm',
+        pageMargin: '6.5mm 6mm',
+        headerPadding: '1mm 1.5mm',
+        logoSize: '10mm',
+        titleFontSize: '5.2pt',
+        orgFontSize: '6.4pt',
+        orgMargin: '0.8mm 0 0.5mm',
+        bodyFontSize: '5.6pt',
+        lineHeight: '1.28',
+        splitGap: '1.2mm',
+        dividerMargin: '0.5mm 1.8mm 0.3mm',
+        footerPadding: '0.3mm 1.8mm 0.8mm',
+        providerLogoHeight: '5mm',
+        providerLogoMaxWidth: '14mm',
+        providerFontSize: '4.4pt',
+        seqFontSize: '6.8pt',
+      };
+    case '15':
+      /* 3 คอลัมน์ x 5 แถว = 15 ดวง (63.5 x 53.5 mm) */
+      return {
+        perPage: 15,
+        cardWidth: '63.5mm',
+        cardHeight: '53.5mm',
+        gridCols: '63.5mm 63.5mm 63.5mm',
+        gridRows: 'repeat(5, 53.5mm)',
+        colGap: '3.5mm',
+        rowGap: '2.5mm',
+        sheetWidth: '198mm',
+        pageMargin: '6.5mm 6mm',
+        headerPadding: '0.8mm 1.5mm',
+        logoSize: '8.5mm',
+        titleFontSize: '4.8pt',
+        orgFontSize: '5.8pt',
+        orgMargin: '0.5mm 0 0.3mm',
+        bodyFontSize: '5.1pt',
+        lineHeight: '1.2',
+        splitGap: '1mm',
+        dividerMargin: '0.4mm 1.6mm 0.2mm',
+        footerPadding: '0.2mm 1.6mm 0.6mm',
+        providerLogoHeight: '4.5mm',
+        providerLogoMaxWidth: '13mm',
+        providerFontSize: '4.2pt',
+        seqFontSize: '6.5pt',
+      };
+    case '8':
+      /* 2 คอลัมน์ x 4 แถว = 8 ดวง (95 x 66 mm) */
+      return {
+        perPage: 8,
+        cardWidth: '95mm',
+        cardHeight: '66mm',
+        gridCols: '95mm 95mm',
+        gridRows: 'repeat(4, 66mm)',
+        colGap: '6mm',
+        rowGap: '4.5mm',
+        sheetWidth: '198mm',
+        pageMargin: '7mm 6mm',
+        headerPadding: '1.5mm 2.2mm',
+        logoSize: '12mm',
+        titleFontSize: '6.8pt',
+        orgFontSize: '7.8pt',
+        orgMargin: '1.2mm 0 0.8mm',
+        bodyFontSize: '6.5pt',
+        lineHeight: '1.4',
+        splitGap: '2mm',
+        dividerMargin: '0.6mm 2.2mm 0.4mm',
+        footerPadding: '0.4mm 2.2mm 1mm',
+        providerLogoHeight: '5.8mm',
+        providerLogoMaxWidth: '18mm',
+        providerFontSize: '5pt',
+        seqFontSize: '7.8pt',
+      };
+    case '10':
+    default:
+      /* 2 คอลัมน์ x 5 แถว = 10 ดวง (95 x 53.5 mm) */
+      return {
+        perPage: 10,
+        cardWidth: '95mm',
+        cardHeight: '53.5mm',
+        gridCols: '95mm 95mm',
+        gridRows: 'repeat(5, 53.5mm)',
+        colGap: '6mm',
+        rowGap: '3.5mm',
+        sheetWidth: '198mm',
+        pageMargin: '7mm 6mm',
+        headerPadding: '1.2mm 2mm',
+        logoSize: '11mm',
+        titleFontSize: '6.2pt',
+        orgFontSize: '7.2pt',
+        orgMargin: '1mm 0 0.6mm',
+        bodyFontSize: '6.1pt',
+        lineHeight: '1.35',
+        splitGap: '2mm',
+        dividerMargin: '0.6mm 2.2mm 0.4mm',
+        footerPadding: '0.4mm 2.2mm 1mm',
+        providerLogoHeight: '5.5mm',
+        providerLogoMaxWidth: '18mm',
+        providerFontSize: '4.8pt',
+        seqFontSize: '7.5pt',
+      };
+  }
+}
+
 function sticker70Html(items, template, startSeq = 1) {
-  const layout = String(template.layout || '10');
-  const perPage = layout === '8' ? 8 : 10;
-  const cardHeight = layout === '8' ? '66mm' : '53.5mm';
-  const gridRows = layout === '8' ? 'repeat(4, 66mm)' : 'repeat(5, 53.5mm)';
-  const rowGap = layout === '8' ? '4.5mm' : '3.5mm';
+  const lp = getStickerLayoutParams(template.layout);
+  const perPage = lp.perPage;
 
   let pagesHtml = '';
   for (let i = 0; i < items.length; i += perPage) {
@@ -7895,7 +8048,7 @@ function sticker70Html(items, template, startSeq = 1) {
 * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 @page {
   size: A4 portrait;
-  margin: 7mm 6mm;
+  margin: ${lp.pageMargin};
 }
 html, body {
   margin: 0;
@@ -7905,15 +8058,15 @@ html, body {
   color: #111;
 }
 .stk-sheet {
-  width: 198mm;
+  width: ${lp.sheetWidth};
   min-height: 282mm;
   margin: 0 auto 12mm;
   background: #fff;
   display: grid;
-  grid-template-columns: 95mm 95mm;
-  grid-template-rows: ${gridRows};
-  column-gap: 6mm;
-  row-gap: ${rowGap};
+  grid-template-columns: ${lp.gridCols};
+  grid-template-rows: ${lp.gridRows};
+  column-gap: ${lp.colGap};
+  row-gap: ${lp.rowGap};
   page-break-after: always;
   break-after: page;
   padding: 1mm 1mm;
@@ -7923,8 +8076,8 @@ html, body {
   break-after: avoid;
 }
 .stk-card {
-  width: 95mm;
-  height: ${cardHeight};
+  width: ${lp.cardWidth};
+  height: ${lp.cardHeight};
   border: 1px solid #778899;
   border-radius: 4px;
   overflow: hidden;
@@ -7936,39 +8089,39 @@ html, body {
 }
 .stk-header {
   background: #dde6f8;
-  padding: 1.2mm 2mm;
+  padding: ${lp.headerPadding};
   display: flex;
   align-items: center;
-  gap: 2mm;
+  gap: 1.5mm;
   border-bottom: 0.5pt solid #c5d4ed;
 }
 .stk-logo img {
-  width: 11mm;
-  height: 11mm;
+  width: ${lp.logoSize};
+  height: ${lp.logoSize};
   object-fit: contain;
   display: block;
 }
 .stk-title {
   flex: 1;
-  font-size: 6.2pt;
+  font-size: ${lp.titleFontSize};
   font-weight: 700;
   color: #0f274a;
   line-height: 1.25;
   text-align: center;
 }
 .stk-org {
-  font-size: 7.2pt;
+  font-size: ${lp.orgFontSize};
   font-weight: 700;
   color: #000;
   text-align: center;
-  margin: 1mm 0 0.6mm;
+  margin: ${lp.orgMargin};
   line-height: 1.2;
 }
 .stk-body {
   flex: 1;
-  padding: 0 2.2mm;
-  font-size: 6.1pt;
-  line-height: 1.35;
+  padding: 0 2mm;
+  font-size: ${lp.bodyFontSize};
+  line-height: ${lp.lineHeight};
   color: #111;
   display: flex;
   flex-direction: column;
@@ -7986,7 +8139,7 @@ html, body {
 .stk-split {
   display: flex;
   justify-content: space-between;
-  gap: 2mm;
+  gap: ${lp.splitGap};
 }
 .stk-split > div {
   white-space: nowrap;
@@ -7996,29 +8149,29 @@ html, body {
 }
 .stk-divider {
   border-top: 0.5pt solid #778899;
-  margin: 0.6mm 2.2mm 0.4mm;
+  margin: ${lp.dividerMargin};
 }
 .stk-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.4mm 2.2mm 1mm;
+  padding: ${lp.footerPadding};
 }
 .stk-provider {
   display: flex;
   align-items: center;
-  gap: 1.5mm;
+  gap: 1.2mm;
   flex: 1;
   min-width: 0;
 }
 .stk-provider-logo img {
-  height: 5.5mm;
-  max-width: 18mm;
+  height: ${lp.providerLogoHeight};
+  max-width: ${lp.providerLogoMaxWidth};
   object-fit: contain;
   display: block;
 }
 .stk-provider-info {
-  font-size: 4.8pt;
+  font-size: ${lp.providerFontSize};
   line-height: 1.15;
   color: #111;
   overflow: hidden;
@@ -8034,12 +8187,12 @@ html, body {
   text-overflow: ellipsis;
 }
 .stk-seq {
-  font-size: 7.5pt;
+  font-size: ${lp.seqFontSize};
   font-weight: 700;
   color: #111;
   font-family: 'Courier New', Courier, monospace;
   white-space: nowrap;
-  padding-left: 2mm;
+  padding-left: 1.5mm;
 }
 @media print {
   html, body {
@@ -8062,7 +8215,8 @@ function project70UpdateStickerPreview() {
   const frame = $('project70StickerPreview');
   if (!frame) return;
   const template = project70StickerData();
-  const sampleItems = project70StickerSampleData();
+  const perPage = getStickerPerPage(template.layout);
+  const sampleItems = project70StickerSampleData(perPage);
   frame.srcdoc = sticker70Html(sampleItems, template, 1);
 }
 
@@ -8071,7 +8225,8 @@ async function project70PreviewStickerPrint(button) {
   if (button) button.disabled = true;
   try {
     const template = project70StickerData();
-    const sampleItems = project70StickerSampleData();
+    const perPage = getStickerPerPage(template.layout);
+    const sampleItems = project70StickerSampleData(perPage);
     await service70PrintHtml(sticker70Html(sampleItems, template, 1));
   } finally {
     if (button?.isConnected) button.disabled = false;
@@ -8164,7 +8319,7 @@ function project70RenderSticker(mount, d) {
   mount.innerHTML = `
     <section>
       <h2>แม่แบบสติ๊กเกอร์ติดอุปกรณ์ (Equipment Maintenance Sticker)</h2>
-      <p>จัดรูปแบบสติ๊กเกอร์มาตรฐาน สคบ. / ผู้ดูแลระบบ พิมพ์เป็นชุดลงกระดาษ A4 (10 ดวง/แผ่น รูปแบบ 2x5 หรือ 8 ดวง/แผ่น 2x4) จากทะเบียนครุภัณฑ์จริง</p>
+      <p>จัดรูปแบบสติ๊กเกอร์มาตรฐาน สคบ. / ผู้ดูแลระบบ พิมพ์เป็นชุดลงกระดาษ A4 เลือกได้ทั้งแบบ 10 ดวง, 12 ดวง หรือ 15 ดวงต่อแผ่น จากทะเบียนครุภัณฑ์จริง</p>
       
       <div class="project70-sticker-logo-row">
         <div class="project70-report-logo-box">
@@ -8215,8 +8370,11 @@ function project70RenderSticker(mount, d) {
         ${project70Input('project70StickerSeqPrefix', 'คำนำหน้าลำดับ (Sequence Prefix)', stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix, 'กำหนดรูปแบบอิสระ เช่น open-, 17_, IT- (ระบบจะต่อด้วยตัวเลขรันลำดับอัตโนมัติ เช่น open-1, open-2, ...)')}
         <label>การจัดหน้ากระดาษ A4
           <select id="project70StickerLayout">
-            <option value="10" ${(stk.sticker_layout || '10') === '10' ? 'selected' : ''}>10 ดวง / แผ่น A4 (2 คอลัมน์ x 5 แถว · 95x53.5 mm มาตรฐาน)</option>
-            <option value="8" ${(stk.sticker_layout || '10') === '8' ? 'selected' : ''}>8 ดวง / แผ่น A4 (2 คอลัมน์ x 4 แถว · 95x66 mm)</option>
+            <option value="10" ${(stk.sticker_layout || '10') === '10' ? 'selected' : ''}>รูปแบบ 1 : 10 ดวง / แผ่น A4 (2 คอลัมน์ x 5 แถว · 95 x 53.5 mm · มาตรฐานแนะนำ)</option>
+            <option value="12" ${(stk.sticker_layout || '10') === '12' ? 'selected' : ''}>รูปแบบ 2 : 12 ดวง / แผ่น A4 (2 คอลัมน์ x 6 แถว · 95 x 44.5 mm · ประหยัดกระดาษ 20%)</option>
+            <option value="15" ${(stk.sticker_layout || '10') === '15' ? 'selected' : ''}>รูปแบบ 3 : 15 ดวง / แผ่น A4 (3 คอลัมน์ x 5 แถว · 63.5 x 53.5 mm · บรรจุสูงสุด 15 ดวง)</option>
+            <option value="12_3x4" ${(stk.sticker_layout || '10') === '12_3x4' ? 'selected' : ''}>รูปแบบเสริม : 12 ดวง / แผ่น A4 (3 คอลัมน์ x 4 แถว · 63.5 x 68 mm · ทรงสูง 3 คอลัมน์)</option>
+            <option value="8" ${(stk.sticker_layout || '10') === '8' ? 'selected' : ''}>รูปแบบเสริม : 8 ดวง / แผ่น A4 (2 คอลัมน์ x 4 แถว · 95 x 66 mm · ตัวอักษรใหญ่พิเศษ)</option>
           </select>
         </label>
       </div>
@@ -8236,7 +8394,7 @@ function project70RenderSticker(mount, d) {
 
     <section id="stickerInventorySection" style="margin-top:24px;">
       <h2>พิมพ์สติ๊กเกอร์เป็นชุดจากทะเบียนครุภัณฑ์ (Batch Print)</h2>
-      <p>เลือกรายการอุปกรณ์จากทะเบียนครุภัณฑ์ที่ต้องการพิมพ์สติ๊กเกอร์ ระบบจะจัดเรียงลงขนาดกระดาษ A4 หน้าละ 10 ดวง อัตโนมัติ</p>
+      <p>เลือกรายการอุปกรณ์จากทะเบียนครุภัณฑ์ที่ต้องการพิมพ์สติ๊กเกอร์ ระบบจะจัดเรียงลงขนาดกระดาษ A4 ตามรูปแบบที่เลือก (10 / 12 / 15 ดวง/แผ่น) อัตโนมัติ</p>
 
       <div class="sticker-batch-toolbar">
         <div class="stk-filters">
@@ -8266,8 +8424,8 @@ function project70RenderSticker(mount, d) {
         <div class="stk-selection-bar">
           <div class="stk-btn-group">
             <button type="button" class="outline small" onclick="stickerSelectAll(true)">เลือกทั้งหมด</button>
-            <button type="button" class="outline small" onclick="stickerSelectFirstN(10)">เลือก 10 รายการ (1 แผ่น)</button>
-            <button type="button" class="outline small" onclick="stickerSelectFirstN(20)">เลือก 20 รายการ (2 แผ่น)</button>
+            <button type="button" class="outline small" onclick="stickerSelectPages(1)" id="stkBtnPage1">เลือก 1 แผ่น</button>
+            <button type="button" class="outline small" onclick="stickerSelectPages(2)" id="stkBtnPage2">เลือก 2 แผ่น</button>
             <button type="button" class="outline small" onclick="stickerSelectAll(false)">ล้างการเลือก</button>
           </div>
           <div class="stk-count-badge" id="stkSelectedCount">เลือกแล้ว 0 รายการ (0 แผ่น A4)</div>
@@ -8337,7 +8495,16 @@ function project70RenderSticker(mount, d) {
     'project70StickerLayout',
   ].forEach((fid) => {
     const el = $(fid);
-    if (el) el.addEventListener('input', project70UpdateStickerPreview);
+    if (el) {
+      el.addEventListener('input', () => {
+        project70UpdateStickerPreview();
+        stickerUpdateCount();
+      });
+      el.addEventListener('change', () => {
+        project70UpdateStickerPreview();
+        stickerUpdateCount();
+      });
+    }
   });
   const seqEl = $('project70StickerSeqPrefix');
   if (seqEl) {
@@ -8442,6 +8609,12 @@ function stickerSelectFirstN(n) {
   stickerUpdateCount();
 }
 
+function stickerSelectPages(pages) {
+  const layout = uiValue('project70StickerLayout') || '10';
+  const perPage = getStickerPerPage(layout);
+  stickerSelectFirstN(pages * perPage);
+}
+
 function stickerUpdateCount() {
   const checks = Array.from(document.querySelectorAll('.stk-item-check'));
   const checked = checks.filter((c) => c.checked);
@@ -8451,7 +8624,7 @@ function stickerUpdateCount() {
     if (row) row.classList.toggle('selected', c.checked);
   });
   const layout = uiValue('project70StickerLayout') || '10';
-  const perPage = layout === '8' ? 8 : 10;
+  const perPage = getStickerPerPage(layout);
   const pages = Math.ceil(count / perPage);
   const badge = $('stkSelectedCount');
   if (badge) {
@@ -8463,6 +8636,10 @@ function stickerUpdateCount() {
     const rangeText = count > 0 ? ` · ลำดับ ${formatStickerSeq(prefix, startSeq)} ถึง ${formatStickerSeq(prefix, startSeq + count - 1)}` : '';
     badge.textContent = `เลือกแล้ว ${count} รายการ (พิมพ์ ${pages} แผ่น A4${rangeText})`;
   }
+  const page1Btn = $('stkBtnPage1');
+  if (page1Btn) page1Btn.textContent = `เลือก 1 แผ่น (${perPage} รายการ)`;
+  const page2Btn = $('stkBtnPage2');
+  if (page2Btn) page2Btn.textContent = `เลือก 2 แผ่น (${perPage * 2} รายการ)`;
   const btn = $('stkPrintBatchBtn');
   if (btn) btn.disabled = count === 0;
 }
