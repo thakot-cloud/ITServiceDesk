@@ -7776,8 +7776,25 @@ const STICKER_DEFAULTS = {
   sticker_layout: '10',
 };
 
+function formatStickerSeq(prefix, seqIndex) {
+  prefix = prefix == null ? '' : String(prefix);
+  if (/\{[0-9a-zA-Z#_-]+\}/i.test(prefix)) {
+    return prefix.replace(/\{([0-9a-zA-Z#_-]+)\}/i, (_, token) => {
+      if (/^0+$/.test(token)) return String(seqIndex).padStart(token.length, '0');
+      const numMatch = token.match(/^(?:n|num|seq|pad)?(\d+)$/i);
+      if (numMatch) return String(seqIndex).padStart(parseInt(numMatch[1], 10), '0');
+      return String(seqIndex);
+    });
+  }
+  return prefix + seqIndex;
+}
+
 function project70StickerData() {
   const stk = project70UI?.data?.sticker || {};
+  const prefixEl = $('project70StickerSeqPrefix');
+  const seqPrefix = prefixEl != null
+    ? prefixEl.value.trim()
+    : (stk.sticker_seq_prefix !== undefined && stk.sticker_seq_prefix !== null ? stk.sticker_seq_prefix : STICKER_DEFAULTS.sticker_seq_prefix);
   return {
     project: uiValue('project70StickerProject', true) || stk.sticker_project_title || STICKER_DEFAULTS.sticker_project_title,
     org: uiValue('project70StickerOrg', true) || stk.sticker_org_subtitle || STICKER_DEFAULTS.sticker_org_subtitle,
@@ -7786,7 +7803,7 @@ function project70StickerData() {
     phone: uiValue('project70StickerPhone', true) || stk.sticker_contact_phone || STICKER_DEFAULTS.sticker_contact_phone,
     provider: uiValue('project70StickerProvider', true) || stk.sticker_provider_name || STICKER_DEFAULTS.sticker_provider_name,
     address: uiValue('project70StickerAddress', true) || stk.sticker_provider_address || STICKER_DEFAULTS.sticker_provider_address,
-    seq_prefix: uiValue('project70StickerSeqPrefix', true) || stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix,
+    seq_prefix: seqPrefix,
     layout: uiValue('project70StickerLayout', true) || stk.sticker_layout || STICKER_DEFAULTS.sticker_layout,
     logo_data_url: stk.sticker_logo_data_url || STICKER_DEFAULT_OCPB_LOGO,
     provider_logo_data_url: stk.sticker_provider_logo_data_url || STICKER_DEFAULT_NTI_LOGO,
@@ -7863,7 +7880,7 @@ function sticker70Html(items, template, startSeq = 1) {
     let cardsHtml = '';
     for (let j = 0; j < chunk.length; j++) {
       const seqIndex = startSeq + i + j;
-      const seq = (template.seq_prefix || '') + seqIndex;
+      const seq = formatStickerSeq(template.seq_prefix, seqIndex);
       cardsHtml += stickerCardHtml(chunk[j], template, seq);
     }
     pagesHtml += `<div class="stk-sheet">${cardsHtml}</div>`;
@@ -8195,7 +8212,7 @@ function project70RenderSticker(mount, d) {
         <label class="project70-full">ที่อยู่ผู้ให้บริการ
           <textarea id="project70StickerAddress" rows="2" maxlength="300">${esc(stk.sticker_provider_address || STICKER_DEFAULTS.sticker_provider_address)}</textarea>
         </label>
-        ${project70Input('project70StickerSeqPrefix', 'คำนำหน้าลำดับ (Sequence Prefix)', stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix, 'เช่น 17_ (จะสร้างเป็น 17_1, 17_2, ...)')}
+        ${project70Input('project70StickerSeqPrefix', 'คำนำหน้าลำดับ (Sequence Prefix)', stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix, 'กำหนดรูปแบบอิสระ เช่น open-, 17_, IT- (ระบบจะต่อด้วยตัวเลขรันลำดับอัตโนมัติ เช่น open-1, open-2, ...)')}
         <label>การจัดหน้ากระดาษ A4
           <select id="project70StickerLayout">
             <option value="10" ${(stk.sticker_layout || '10') === '10' ? 'selected' : ''}>10 ดวง / แผ่น A4 (2 คอลัมน์ x 5 แถว · 95x53.5 mm มาตรฐาน)</option>
@@ -8238,8 +8255,11 @@ function project70RenderSticker(mount, d) {
           <label class="stk-search-label">ค้นหา
             <input id="stkFilterSearch" type="search" placeholder="เลขครุภัณฑ์, Serial, ยี่ห้อ, รุ่น, สินทรัพย์..." oninput="stickerFilterInventory()">
           </label>
-          <label style="max-width:120px;">เริ่มลำดับที่
-            <input id="stkStartSeq" type="number" min="1" value="1" style="width:100%;" onchange="stickerUpdateCount()">
+          <label style="max-width:180px;">คำนำหน้าลำดับ (Prefix)
+            <input id="stkBatchSeqPrefix" type="text" value="${escAttr(stk.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix)}" placeholder="เช่น open-, 17_" style="width:100%;" oninput="stickerUpdateCount()">
+          </label>
+          <label style="max-width:110px;">เริ่มลำดับที่
+            <input id="stkStartSeq" type="number" min="1" value="1" style="width:100%;" onchange="stickerUpdateCount()" oninput="stickerUpdateCount()">
           </label>
         </div>
 
@@ -8297,7 +8317,10 @@ function project70RenderSticker(mount, d) {
     uiSetValue('project70StickerAddress', STICKER_DEFAULTS.sticker_provider_address);
     uiSetValue('project70StickerSeqPrefix', STICKER_DEFAULTS.sticker_seq_prefix);
     uiSetValue('project70StickerLayout', STICKER_DEFAULTS.sticker_layout);
+    const batchPrefixEl = $('stkBatchSeqPrefix');
+    if (batchPrefixEl) batchPrefixEl.value = STICKER_DEFAULTS.sticker_seq_prefix;
     project70UpdateStickerPreview();
+    stickerUpdateCount();
     project70Message('project70StickerResult', 'เติมค่ามาตรฐาน สคบ. / NTi แล้ว กดบันทึกเพื่อใช้งานจริง');
   });
   bind('project70PreviewStickerPrint', (button) => project70PreviewStickerPrint(button));
@@ -8316,6 +8339,16 @@ function project70RenderSticker(mount, d) {
     const el = $(fid);
     if (el) el.addEventListener('input', project70UpdateStickerPreview);
   });
+  const seqEl = $('project70StickerSeqPrefix');
+  if (seqEl) {
+    seqEl.addEventListener('input', () => {
+      const batchEl = $('stkBatchSeqPrefix');
+      if (batchEl && document.activeElement === seqEl) {
+        batchEl.value = seqEl.value;
+        stickerUpdateCount();
+      }
+    });
+  }
   project70UpdateStickerPreview();
   stickerFilterInventory();
 }
@@ -8421,7 +8454,15 @@ function stickerUpdateCount() {
   const perPage = layout === '8' ? 8 : 10;
   const pages = Math.ceil(count / perPage);
   const badge = $('stkSelectedCount');
-  if (badge) badge.textContent = `เลือกแล้ว ${count} รายการ (พิมพ์ ${pages} แผ่น A4)`;
+  if (badge) {
+    const batchPrefixInput = $('stkBatchSeqPrefix');
+    const prefix = batchPrefixInput != null
+      ? batchPrefixInput.value.trim()
+      : (uiValue('project70StickerSeqPrefix', true) || project70UI?.data?.sticker?.sticker_seq_prefix || STICKER_DEFAULTS.sticker_seq_prefix);
+    const startSeq = Math.max(1, parseInt(uiValue('stkStartSeq') || '1', 10));
+    const rangeText = count > 0 ? ` · ลำดับ ${formatStickerSeq(prefix, startSeq)} ถึง ${formatStickerSeq(prefix, startSeq + count - 1)}` : '';
+    badge.textContent = `เลือกแล้ว ${count} รายการ (พิมพ์ ${pages} แผ่น A4${rangeText})`;
+  }
   const btn = $('stkPrintBatchBtn');
   if (btn) btn.disabled = count === 0;
 }
@@ -8437,6 +8478,10 @@ async function stickerBatchPrint(button) {
     const selectedItems = inventory.filter((item) => selectedIds.has(item.id));
     if (!selectedItems.length) return toast('ไม่พบข้อมูลอุปกรณ์ที่เลือก');
     const template = project70StickerData();
+    const batchPrefixEl = $('stkBatchSeqPrefix');
+    if (batchPrefixEl != null) {
+      template.seq_prefix = batchPrefixEl.value.trim();
+    }
     const startSeq = Math.max(1, parseInt(uiValue('stkStartSeq') || '1', 10));
     const html = sticker70Html(selectedItems, template, startSeq);
     await service70PrintHtml(html);
