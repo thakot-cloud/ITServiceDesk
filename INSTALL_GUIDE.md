@@ -25,8 +25,8 @@
 | :--- | :--- | :--- |
 | **GitHub Repository** | `ITServiceDesk` | `https://github.com/thakot-cloud/ITServiceDesk` |
 | **Local Workspace** | `ITSD` | `/Users/chaloem/Apps_Script/ITSD_CLASP_STAGING/SERVER_2026` (Source Deploy อยู่ในโฟลเดอร์ `src/`) |
-| **Google Drive Root** | `ITSD` | ID: `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`<br>`https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` |
-| **Google Sheets (26 ตาราง)** | `DBS_ITSD` | ID: `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`<br>`https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit` |
+| **Google Drive Root** | `005_ITServiceDesk` | ID: `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`<br>`https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` |
+| **Google Sheets (26 ตาราง)** | `ITServiceDesk — DBS` | ID: `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`<br>`https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk` |
 | **Google Apps Script** | `ITServiceDesk` | Script ID: `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`<br>`https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit` |
 | **Web App Production URL** | `ITSD Web App` | `https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec` |
 
@@ -34,12 +34,12 @@
 
 ## 2. โครงสร้างโฟลเดอร์ Google Drive ที่ต้องใช้
 
-ระบบต้องการโครงสร้างโฟลเดอร์ย่อย 4 โฟลเดอร์ที่อยู่ **ภายใต้ Google Drive Root Folder (`ITSD`) โดยตรง** เพื่อให้เมนู **ตั้งค่าระบบ (Settings)** ตรวจสอบผ่าน `admin44ValidateFolderStructure_()` ได้อย่างสมบูรณ์:
+ระบบต้องการโครงสร้างโฟลเดอร์ย่อย 4 โฟลเดอร์ที่อยู่ **ภายใต้ Google Drive Root Folder (`005_ITServiceDesk`) โดยตรง** เพื่อให้เมนู **ตั้งค่าระบบ (Settings)** ตรวจสอบผ่าน `admin44ValidateFolderStructure_()` ได้อย่างสมบูรณ์:
 
 | Key ใน `APP_SETTINGS` | ชื่อโฟลเดอร์บน Google Drive | Folder ID ปัจจุบัน | หน้าที่ |
 | :--- | :--- | :--- | :--- |
-| `service_folder_id` | `ITSD` (Root Folder) | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | โฟลเดอร์แม่หลักของโครงการ |
-| `backup_folder_id` | `Backup Files` | `1ktb53nRIHmjQL0cdd0QIgsjA3BvtslUj` | เก็บไฟล์สำรองฐานข้อมูล `DBS_ITSD` |
+| `service_folder_id` | `005_ITServiceDesk` (Root Folder) | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | โฟลเดอร์แม่หลักของโครงการ |
+| `backup_folder_id` | `Backup Files` | `1ktb53nRIHmjQL0cdd0QIgsjA3BvtslUj` | เก็บไฟล์สำรองฐานข้อมูล `ITServiceDesk — DBS` |
 | `documents_folder_id` | `Documents` | `15w-DCPUL09HetfwsVzaWo6-5lxUH3xqZ` | เก็บเอกสารแนบ/PDF ใบงาน |
 | `pictures_folder_id` | `Pictures` | `10b1umrMgj70LRKdw8bFcZzdEZ3r_96mV` | เก็บภาพถ่ายอาการเสียและผลการซ่อม |
 | `system_assets_folder_id` | `System Assets` | `1Y3V-YsmPBZyRDHPEZoJW3Y-jn32Vq_et` | เก็บไอคอนระบบและไฟล์ Branding |

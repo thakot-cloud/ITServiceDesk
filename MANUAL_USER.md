@@ -17,7 +17,7 @@
    - [5.4 ระบบจัดการข้อความแจ้งซ่อมจาก LINE (LINE Inbox Review)](#54-ระบบจัดการข้อความแจ้งซ่อมจาก-line-line-inbox-review)
    - [5.5 แดชบอร์ดสถิติ KPI และการส่งออกรายงาน (Dashboard & Exports)](#55-แดชบอร์ดสถิติ-kpi-และการส่งออกรายงาน-dashboard--exports)
    - [5.6 การตั้งค่าระบบ แก้ไขชื่อโครงการ Branding และ Google Drive โดย ADMIN](#56-การตั้งค่าระบบ-แก้ไขชื่อโครงการ-branding-และ-google-drive-โดย-admin)
-6. [สรุปตารางฐานข้อมูล Google Sheets (`DBS_ITSD` — 26 ตาราง)](#6-สรุปตารางฐานข้อมูล-google-sheets-dbs_itsd--26-ตาราง)
+6. [สรุปตารางฐานข้อมูล Google Sheets (`ITServiceDesk — DBS` — 26 ตาราง)](#6-สรุปตารางฐานข้อมูล-google-sheets-itservicedesk--dbs--26-ตาราง)
 7. [คำถามที่พบบ่อย (FAQ)](#7-คำถามที่พบบ่อย-faq)
 
 ---
@@ -30,15 +30,15 @@
 | องค์ประกอบ | ชื่อ / ID | ลิงก์เข้าถึง |
 | :--- | :--- | :--- |
 | **GitHub Repository** | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
-| **Google Drive Root** | `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
-| **Google Sheets Database** | `DBS_ITSD` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit |
+| **Google Drive Root** | `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
+| **Google Sheets Database** | `ITServiceDesk — DBS` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Editor** | `ITServiceDesk` (`1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`) | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
 | **Web App Production URL** | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 - **Frontend**: Web App SPA รองรับทั้ง Desktop, Tablet และ Mobile พร้อมระบบเปลี่ยน Light/Dark Mode และ 12 ชุดสี (ค่าหลักคือ **Clay and Sea**)
 - **Backend**: Google Apps Script V8 พร้อมระบบสิทธิ์ RBAC, เข้ารหัสรหัสผ่าน SHA-256 + Salt และ Audit Log ทุกการเปลี่ยนแปลง
-- **Database**: Google Sheets `DBS_ITSD` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) จำนวน 26 ตาราง
-- **Storage**: Google Drive โฟลเดอร์หลัก `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) แยกเก็บ Backup, Documents, Pictures และ System Assets
+- **Database**: Google Sheets `ITServiceDesk — DBS` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) จำนวน 26 ตาราง
+- **Storage**: Google Drive โฟลเดอร์หลัก `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) แยกเก็บ Backup, Documents, Pictures และ System Assets
 
 **🌐 URL เข้าใช้งานระบบจริง (Web App Production):**  
 👉 [https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec](https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec)
@@ -142,17 +142,17 @@
 1. เข้าเมนู **"ตั้งค่าระบบ"** (แท็บ **ตั้งค่าทั่วไป**)
 2. ในกล่อง **การตั้งค่าทั่วไป**:
    - แก้ไขช่อง **ชื่อโครงการ / ชื่อระบบ (ADMIN แก้ไขได้)** ตามที่ต้องการ (สูงสุด 120 ตัวอักษร เช่น `ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)`)
-   - ตรวจสอบ Folder ID ทั้ง 4 โฟลเดอร์ (`Pictures`, `Documents`, `Backup Files`, `System Assets`) ที่อยู่ภายใต้โฟลเดอร์แม่ `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`)
+   - ตรวจสอบ Folder ID ทั้ง 4 โฟลเดอร์ (`Pictures`, `Documents`, `Backup Files`, `System Assets`) ที่อยู่ภายใต้โฟลเดอร์แม่ `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`)
 3. ในกล่อง **Branding / ไอคอนระบบ**:
    - แก้ไข **ชื่อย่อ** (แสดงที่ Sidebar Header, Breadcrumb และ Title เบราว์เซอร์)
    - แก้ไข **คำอธิบาย** (แสดงใต้ชื่อระบบในหน้า Login และ Sidebar)
    - อัปโหลด **ไอคอนระบบ** (PNG/JPG อัตราส่วน 1:1 ขั้นต่ำ 250×250 px แนะนำ 512×512 px)
 4. คลิกปุ่ม **บันทึกการตั้งค่า** หรือ **บันทึก Branding** ระบบจะอัปเดตลง `APP_SETTINGS` และเปลี่ยนการแสดงผลทั้งระบบให้ทันที
-5. ในกล่อง **สำรองข้อมูล**: สามารถกด **"สำรองข้อมูลตอนนี้"** เพื่อสำเนาฐานข้อมูล `DBS_ITSD` เก็บเข้าโฟลเดอร์ `Backup Files` บน Google Drive ได้ตลอดเวลา
+5. ในกล่อง **สำรองข้อมูล**: สามารถกด **"สำรองข้อมูลตอนนี้"** เพื่อสำเนาฐานข้อมูล `ITServiceDesk — DBS` เก็บเข้าโฟลเดอร์ `Backup Files` บน Google Drive ได้ตลอดเวลา
 
 ---
 
-## 6. สรุปตารางฐานข้อมูล Google Sheets (`DBS_ITSD` — 26 ตาราง)
+## 6. สรุปตารางฐานข้อมูล Google Sheets (`ITServiceDesk — DBS` — 26 ตาราง)
 
 ฐานข้อมูลหลัก ID: `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` ([ดูความสัมพันธ์เชิงลึกใน `DATA_DIAGRAM_AND_WORKFLOW.md`](./DATA_DIAGRAM_AND_WORKFLOW.md))
 - **ผู้ใช้และความปลอดภัย (7 ชีต)**: `APP_USERS`, `APP_USER_PROFILE`, `APP_ROLES`, `APP_ROLE_PERMISSIONS`, `APP_ROLE_ACTION_PERMISSIONS`, `APP_SESSIONS`, `APP_AUDIT_LOG`
@@ -170,9 +170,9 @@
 - **Q2: แก้ไขข้อมูลทั่วไปของอุปกรณ์แล้ว ข้อมูล CPU/RAM จะหายไหม?**  
   ไม่หายครับ ตั้งแต่เวอร์ชัน V1.1.54+ เป็นต้นไป ระบบแยกบันทึกแต่ละแท็บเป็นอิสระ (`details_only`, `specs_only`, `survey_only`)
 - **Q3: ภาพถ่ายและไฟล์แนบเก็บไว้ที่ไหน?**  
-  จัดเก็บบน Google Drive ภายใต้โฟลเดอร์ `Pictures` (`10b1umrMgj70LRKdw8bFcZzdEZ3r_96mV`) และ `Documents` (`15w-DCPUL09HetfwsVzaWo6-5lxUH3xqZ`) ภายในโฟลเดอร์ `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`)
+  จัดเก็บบน Google Drive ภายใต้โฟลเดอร์ `Pictures` (`10b1umrMgj70LRKdw8bFcZzdEZ3r_96mV`) และ `Documents` (`15w-DCPUL09HetfwsVzaWo6-5lxUH3xqZ`) ภายในโฟลเดอร์ `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`)
 
 ---
 <div align="center">
-  <sub>ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที) — Version ITSD V1.1.59 | Create by : LongZe Design © 2026</sub>
+  <sub>IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์ — Version ITSD V1.2.08 | Thakot Cloud © 2026</sub>
 </div>

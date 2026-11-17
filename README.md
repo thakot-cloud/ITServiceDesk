@@ -8,7 +8,7 @@
 [![Theme](https://img.shields.io/badge/Theme-Dark%20Theme%20Admin%20Dashboard-0D0D0D?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
 [![Developer](https://img.shields.io/badge/Developer-Thakot%20Cloud-purple?style=flat-square)](https://github.com/thakot-cloud)
 [![Platform](https://img.shields.io/badge/Platform-Google%20Apps%20Script%20%7C%20Web%20App-34A853?style=flat-square&logo=google)](https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit)
-[![Database](https://img.shields.io/badge/Database-Google%20Sheets%20(DBS__ITSD%2026%20Tables)-0F9D58?style=flat-square&logo=googlesheets)](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit)
+[![Database](https://img.shields.io/badge/Database-Google%20Sheets%20(ITServiceDesk%20—%20DBS)-0F9D58?style=flat-square&logo=googlesheets)](https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 **🌐 URL ใช้งานระบบจริง (Web App Production URL):**  
@@ -23,8 +23,8 @@
 | องค์ประกอบ | ชื่อ / ID | ลิงก์เข้าถึง |
 | :--- | :--- | :--- |
 | **GitHub Repository** | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
-| **Google Drive Root** | `ITSD` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
-| **Google Sheets Database** | `DBS_ITSD` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit |
+| **Google Drive Root** | `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
+| **Google Sheets Database** | `ITServiceDesk — DBS` (`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`) | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Project (Edit)** | `ITServiceDesk` (`1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7`) | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
 | **Web App Deploy (Exec)** | `AKfycbxPnpvv...` (`ITSD V1.2.08` · Production Deployment) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
@@ -34,16 +34,16 @@
 1. [ภาพรวมของระบบ (Overview)](#-ภาพรวมของระบบ-overview)
 2. [ผังสถาปัตยกรรมและ Workflow หลัก](#-ผังสถาปัตยกรรมและ-workflow-หลัก)
 3. [ความสามารถหลักของระบบ (Key Features)](#-ความสามารถหลักของระบบ-key-features)
-4. [โครงสร้างฐานข้อมูล Google Sheets (`DBS_ITSD` — 26 ตาราง)](#-โครงสร้างฐานข้อมูล-google-sheets-dbs_itsd--26-ตาราง)
+4. [โครงสร้างฐานข้อมูล Google Sheets (`ITServiceDesk — DBS` — 26 ตาราง)](#-โครงสร้างฐานข้อมูล-google-sheets-itservicedesk--dbs--26-ตาราง)
 5. [โครงสร้างไฟล์โค้ดของระบบ (Codebase Architecture)](#-โครงสร้างไฟล์โค้ดของระบบ-codebase-architecture)
-6. [บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ (Default Accounts)](#-บัญชีผู้ใช้เริ่มต้นสำหรับการทดสอบ-default-accounts)
+6. [บัญชีผู้ใช้ในระบบจริง (System Accounts)](#-บัญชีผู้ใช้ในระบบจริง-system-accounts)
 7. [เอกสารคู่มือฉบับสมบูรณ์ (Full Documentation)](#-เอกสารคู่มือฉบับสมบูรณ์-full-documentation)
 
 ---
 
 ## 🌟 ภาพรวมของระบบ (Overview)
 
-**ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)** พัฒนาขึ้นด้วยสถาปัตยกรรม **100% Serverless** บน Google Workspace โดยใช้ **Google Apps Script (V8)** ขับเคลื่อน Single Page Application (SPA) เชื่อมต่อกับ **Google Sheets (`DBS_ITSD`)** เป็นฐานข้อมูลหลัก และจัดเก็บเอกสาร/รูปภาพ/ไฟล์สำรองข้อมูลบน **Google Drive (`ITSD`)**
+**IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์** พัฒนาขึ้นด้วยสถาปัตยกรรม **100% Serverless** บน Google Workspace โดยใช้ **Google Apps Script (V8)** ขับเคลื่อน Single Page Application (SPA) เชื่อมต่อกับ **Google Sheets (`ITServiceDesk — DBS`)** เป็นฐานข้อมูลหลัก และจัดเก็บเอกสาร/รูปภาพ/ไฟล์สำรองข้อมูลบน **Google Drive (`005_ITServiceDesk`)**
 
 **จุดเด่นสำคัญใน V1.2.08:**
 - **Thai Official Holidays Auto-Import & PM Calendar Integration (V1.2.08)**: ฟังก์ชันดึงวันหยุดราชการไทยอัตโนมัติในเมนูตั้งค่าระบบ > จัดการวันหยุด เลือกล่วงหน้าได้ 3–5 ปี (พ.ศ. 2569–2573) และนำไปไฮไลต์บนปฏิทินแผน PM อัตโนมัติ
@@ -54,7 +54,7 @@
 - **CM Service Report A4 & Modal Refinement (V1.1.64–V1.1.67)**: ปรับระยะขอบพิมพ์ A4 (`1 cm`), แสดง `JOB NO.` และชื่อหน่วยงานครบถ้วน, จัดตำแหน่งช่อง `โทร.` / `ชั้น`, ค้นหาครุภัณฑ์จาก Inventory และจัดปุ่ม `บันทึก`, `พิมพ์ใบงาน (PDF)`
 - **Customizable Project Branding**: ชื่อโครงการ ชื่อย่อ คำอธิบาย และไอคอนระบบ **สามารถแก้ไขได้เองผ่านเมนูตั้งค่าระบบโดย `ADMIN`** (จัดเก็บใน `APP_SETTINGS` และอัปเดตทันทีโดยไม่ต้องแก้โค้ด)
 - **Modular 4-Tab Equipment Editing**: จัดเรียงแท็บทะเบียนครุภัณฑ์ (`ข้อมูลทั่วไป` ➔ `คุณลักษณะ` ➔ `การสำรวจ` ➔ `ประวัติแจ้งซ่อม`) พร้อม Modal แก้ไขและบันทึกแยกส่วนอิสระ
-- **Unified Google Drive Integration**: เชื่อมโยงโครงสร้างโฟลเดอร์ (`Backup Files`, `Documents`, `Pictures`, `System Assets`) ภายใต้ `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` ครบถ้วน
+- **Unified Google Drive Integration**: เชื่อมโยงโครงสร้างโฟลเดอร์ (`Backup Files`, `Documents`, `Pictures`, `System Assets`) ภายใต้ `005_ITServiceDesk` (`13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe`) ครบถ้วน
 
 ---
 
@@ -71,8 +71,8 @@ flowchart TD
     subgraph Google["Google Workspace Cloud"]
         Core <-->|Session & Icon Cache| Cache[("CacheService")]
         Core <-->|Concurrency Lock| Lock[("LockService")]
-        Core <-->|26 Sheets CRUD| Sheets[("DBS_ITSD Google Sheets")]
-        Core -->|Backup / Docs / Pics / Assets| Drive[("Google Drive Folder: ITSD")]
+        Core <-->|26 Sheets CRUD| Sheets[("ITServiceDesk — DBS Google Sheets")]
+        Core -->|Backup / Docs / Pics / Assets| Drive[("Google Drive Folder: 005_ITServiceDesk")]
     end
 
     LINE["LINE Official Account Webhook"] -->|Signed POST| Facade
@@ -86,7 +86,7 @@ sequenceDiagram
     actor User as ผู้แจ้งซ่อม
     participant System as ระบบ ITSD (Server.js)
     actor Tech as เจ้าหน้าที่ IT / ช่าง
-    participant DB as DBS_ITSD (INCIDENT + EVENTS)
+    participant DB as ITServiceDesk — DBS (INCIDENT + EVENTS)
     participant Drive as Google Drive (Pictures / Documents)
 
     User->>System: เลือกครุภัณฑ์ + กรอกอาการเสีย + แนบภาพ
@@ -119,7 +119,7 @@ sequenceDiagram
 
 ---
 
-## 🗄️ โครงสร้างฐานข้อมูล Google Sheets (`DBS_ITSD` — 26 ตาราง)
+## 🗄️ โครงสร้างฐานข้อมูล Google Sheets (`ITServiceDesk — DBS` — 26 ตาราง)
 
 Database ID: **`1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c`**
 

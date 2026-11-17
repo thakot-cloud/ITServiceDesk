@@ -1,8 +1,8 @@
 # 🗂️ Data Diagram & System Workflows
-### ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที)
-**Version: ITSD V1.1.59 | Create by : LongZe Design**
+### IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
+**Version: ITSD V1.2.08 | Thakot Cloud © 2026**
 
-เอกสารนี้อธิบายโครงสร้างความสัมพันธ์ของฐานข้อมูล (**Entity Relationship Diagram — 26 ตารางใน `DBS_ITSD`**), โครงสร้างการจัดเก็บไฟล์บน **Google Drive**, สถาปัตยกรรมระบบ (**System Architecture**) และผังกระบวนการทำงานหลัก (**Workflows**) ทั้งหมดของระบบ **ITSD : ITServiceDesk**
+เอกสารนี้อธิบายโครงสร้างความสัมพันธ์ของฐานข้อมูล (**Entity Relationship Diagram — 26 ตารางใน `ITServiceDesk — DBS`**), โครงสร้างการจัดเก็บไฟล์บน **Google Drive**, สถาปัตยกรรมระบบ (**System Architecture**) และผังกระบวนการทำงานหลัก (**Workflows**) ทั้งหมดของระบบ **IT Service Desk**
 
 ---
 
@@ -11,8 +11,8 @@
 | องค์ประกอบ | รหัสอ้างอิง (ID) | ลิงก์เข้าถึง |
 | :--- | :--- | :--- |
 | **GitHub Repository** | `thakot-cloud/ITServiceDesk` | https://github.com/thakot-cloud/ITServiceDesk |
-| **Google Drive Root (`ITSD`)** | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
-| **Google Sheets (`DBS_ITSD`)** | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit |
+| **Google Drive Root (`005_ITServiceDesk`)** | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
+| **Google Sheets (`ITServiceDesk — DBS`)** | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Editor** | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
 | **Web App Production URL** | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
@@ -27,18 +27,18 @@ flowchart TB
         L["LINE Official Account (LINE Group / Webhook)"]
     end
 
-    subgraph GAS["Google Apps Script Project (1G24xk...)"]
+    subgraph GAS["Google Apps Script Project (1drKyOpXXRBkf...)"]
         EP["Entrypoints.js (doGet / doPost)"]
         API["Api.js (Public RPC Facade)"]
-        CORE["Server.js (Core Business & Security Engine V1.1.59)"]
+        CORE["Server.js (Core Business & Security Engine V1.2.08)"]
         UI["Index.html + UI_Client.html + UI_Styles.html + UI_Templates.html"]
     end
 
     subgraph Storage["Google Workspace Data & Storage"]
         CACHE["CacheService (Session / Icon Cache)"]
         LOCK["LockService (Concurrency Control)"]
-        SHEET["Google Sheets: DBS_ITSD (26 Sheets)"]
-        subgraph DRIVE["Google Drive Root: ITSD (1fy0Th9...)"]
+        SHEET["Google Sheets: ITServiceDesk — DBS (26 Sheets)"]
+        subgraph DRIVE["Google Drive Root: 005_ITServiceDesk (13LSPwX...)"]
             D_BAK["Backup Files (1ktb53...)"]
             D_DOC["Documents (15w-DC...)"]
             D_PIC["Pictures (10b1um...)"]
@@ -292,7 +292,7 @@ sequenceDiagram
     actor User as ผู้ใช้งาน
     participant Client as Web App SPA (UI_Client.html)
     participant API as Backend Engine (Server.js)
-    participant Sheet as DBS_ITSD (APP_USERS / APP_SESSIONS)
+    participant Sheet as ITServiceDesk — DBS (APP_USERS / APP_SESSIONS)
     participant Cache as CacheService
 
     User->>Client: กรอก Username และ Password
@@ -376,7 +376,7 @@ flowchart TD
     Tab --> Edit["แก้ไข ชื่อโครงการ (project_name) / ชื่อย่อ (short_name) / คำอธิบาย / โฟลเดอร์ Drive"]
     Edit --> Save["คลิก บันทึกการตั้งค่า หรือ บันทึก Branding"]
     Save --> Validate["Server.js ตรวจสอบสิทธิ์ ADMIN + admin44ValidateFolderStructure_()"]
-    Validate --> Write["บันทึกลงชีต APP_SETTINGS ใน DBS_ITSD + บันทึก APP_AUDIT_LOG"]
+    Validate --> Write["บันทึกลงชีต APP_SETTINGS ใน ITServiceDesk — DBS + บันทึก APP_AUDIT_LOG"]
     Write --> Apply["Client เรียก applySystemBranding() อัปเดต Header, Sidebar, Login และ Title ทันที"]
 ```
 
