@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.2.07
+ * Version: V1.2.10
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-17
+ * Modified: 2026-11-18
  * Change History:
+ * - V1.2.10: Add responsive social accounts binding styles (.ux-social-box) in profile modal for Light & Dark mode.
  * - V1.2.07: Add Sticker Template styling and batch equipment inventory print sheets.
  * - V1.2.06: Bright green background for form section step numbers (1, 2, 3).
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
@@ -2336,6 +2337,181 @@ html[data-theme] .ui-side-tabs button.active,
 }
 .ux-profile-actions {
   flex-wrap: wrap;
+}
+
+/* Social Accounts Binding in Profile Modal */
+.ux-social-box {
+  padding: 14px;
+  border: 1px solid #e3edf6;
+  border-radius: 10px;
+  background: #fff;
+}
+.ux-social-box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ux-social-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #183b63;
+}
+.ux-social-box-title .material-symbols-rounded {
+  color: #0284c7;
+  font-size: 20px;
+}
+.ux-social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ux-social-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ux-social-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+.ux-social-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ux-social-line {
+  background: #06c755;
+  box-shadow: 0 2px 6px rgba(6, 199, 85, 0.25);
+}
+.ux-social-google {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.ux-social-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.ux-social-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1e293b;
+}
+.ux-social-subtext {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ux-badge-bound {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ux-badge-bound .material-symbols-rounded {
+  font-size: 13px;
+}
+.ux-badge-unbound {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+}
+.ux-social-action {
+  flex-shrink: 0;
+}
+.ux-social-btn {
+  height: 36px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.ux-btn-line {
+  background: #06c755;
+  color: #ffffff;
+  border: 1px solid #05b34c;
+}
+.ux-btn-line:hover {
+  background: #05b34c;
+}
+.ux-btn-google {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+.ux-btn-google:hover {
+  background: #f9fafb;
+}
+
+html[data-theme='dark'] .ux-social-box {
+  background: var(--dark-bg-card, #1e293b);
+  border-color: var(--dark-border-default, #334155);
+}
+html[data-theme='dark'] .ux-social-box-title {
+  color: #f1f5f9;
+}
+html[data-theme='dark'] .ux-social-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: #334155;
+}
+html[data-theme='dark'] .ux-social-name {
+  color: #f1f5f9;
+}
+html[data-theme='dark'] .ux-social-subtext {
+  color: #94a3b8;
+}
+html[data-theme='dark'] .ux-badge-unbound {
+  background: #334155;
+  color: #94a3b8;
+}
+html[data-theme='dark'] .ux-btn-google {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+html[data-theme='dark'] .ux-btn-google:hover {
+  background: #334155;
 }
 
 /* Dark theme */

@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.09
+ * Version: V1.2.10
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-17
+ * Modified: 2026-11-18
  * Change History:
+ * - V1.2.10: Add LINE and Google social account binding/unbinding services in profile, return social bind status in publicUser_.
  * - V1.2.09: Add LINE Login OAuth 2.0 integration (Channel 2012663665), user auto-matching via email/profile binding, and popup/redirect login handler.
  * - V1.2.08: Add Thai official holidays auto-import (2569-2573), PM calendar holiday auto-seed, and ITSUPPORT purple role pill badge.
  * - V1.2.07: Add Sticker Template (แม่แบบสติ๊กเกอร์) tab and batch A4 sheet printing for equipment maintenance labels.
@@ -67,7 +68,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.09';
+const APP_VERSION = 'V1.2.10';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -2242,34 +2243,48 @@ function itsdImpl_handleLineLoginCallback_(code, state) {
     } catch (_) {}
   }
 
+  const isBindMode = state && String(state).startsWith('bind_');
+  let bindActor = null;
+  let bindToken = '';
+  if (isBindMode) {
+    bindToken = String(state).slice(5);
+    try {
+      bindActor = require_(bindToken);
+    } catch (_) {}
+  }
+
   return lock_(() => {
     let matchedUser = null;
 
-    // Check binding first from APP_SETTINGS
-    if (lineUserId) {
-      const bindRow = find_('APP_SETTINGS', 'key', 'LINE_BIND_' + lineUserId);
-      if (bindRow && bindRow.value) {
-        matchedUser = find_('APP_USERS', 'user_id', bindRow.value);
-      }
-    }
-
-    // Match by email if not yet bound
-    if (!matchedUser && lineEmail) {
-      const profiles = rows_('APP_USER_PROFILE');
-      for (let i = 0; i < profiles.length; i++) {
-        const pr = profiles[i];
-        if (String(pr.email || '').trim().toLowerCase() === lineEmail) {
-          matchedUser = find_('APP_USERS', 'user_id', pr.user_id);
-          if (matchedUser) break;
+    if (bindActor) {
+      matchedUser = bindActor;
+    } else {
+      // Check binding first from APP_SETTINGS
+      if (lineUserId) {
+        const bindRow = find_('APP_SETTINGS', 'key', 'LINE_BIND_' + lineUserId);
+        if (bindRow && bindRow.value) {
+          matchedUser = find_('APP_USERS', 'user_id', bindRow.value);
         }
       }
-      if (!matchedUser) {
-        const allUsers = rows_('APP_USERS');
-        for (let i = 0; i < allUsers.length; i++) {
-          const u = allUsers[i];
-          if (String(u.username || '').trim().toLowerCase() === lineEmail) {
-            matchedUser = u;
-            break;
+
+      // Match by email if not yet bound
+      if (!matchedUser && lineEmail) {
+        const profiles = rows_('APP_USER_PROFILE');
+        for (let i = 0; i < profiles.length; i++) {
+          const pr = profiles[i];
+          if (String(pr.email || '').trim().toLowerCase() === lineEmail) {
+            matchedUser = find_('APP_USERS', 'user_id', pr.user_id);
+            if (matchedUser) break;
+          }
+        }
+        if (!matchedUser) {
+          const allUsers = rows_('APP_USERS');
+          for (let i = 0; i < allUsers.length; i++) {
+            const u = allUsers[i];
+            if (String(u.username || '').trim().toLowerCase() === lineEmail) {
+              matchedUser = u;
+              break;
+            }
           }
         }
       }
@@ -2293,6 +2308,14 @@ function itsdImpl_handleLineLoginCallback_(code, state) {
       } else {
         append_('APP_SETTINGS', { key: bindKey, value: matchedUser.user_id });
       }
+
+      const userLineKey = 'USER_LINE_' + matchedUser.user_id;
+      const existingUserLine = find_('APP_SETTINGS', 'key', userLineKey);
+      if (existingUserLine) {
+        update_('APP_SETTINGS', existingUserLine.__row, { value: lineUserId });
+      } else {
+        append_('APP_SETTINGS', { key: userLineKey, value: lineUserId });
+      }
     }
 
     // If user profile has no picture yet, use LINE profile picture
@@ -2302,6 +2325,21 @@ function itsdImpl_handleLineLoginCallback_(code, state) {
         update_('APP_USER_PROFILE', profRow.__row, { picture_url: linePictureUrl });
       }
     } catch (_) {}
+
+    if (isBindMode && bindActor) {
+      auditAuth_(matchedUser, 'BIND_LINE_SUCCESS', 'SUCCESS', 'ผูกบัญชี LINE สำเร็จ (' + (lineDisplayName || lineUserId) + ')', '');
+      return {
+        action: 'bind_line_success',
+        token: bindToken,
+        user: publicUser_(matchedUser),
+        line_profile: {
+          userId: lineUserId,
+          displayName: lineDisplayName,
+          pictureUrl: linePictureUrl,
+          email: lineEmail,
+        },
+      };
+    }
 
     // Create session in APP_SESSIONS
     const token = random_(),
@@ -2315,6 +2353,7 @@ function itsdImpl_handleLineLoginCallback_(code, state) {
     auditAuth_(matchedUser, 'LOGIN_SUCCESS_LINE', 'SUCCESS', 'เข้าสู่ระบบด้วย LINE สำเร็จ (' + (lineDisplayName || matchedUser.username) + ')', digest_(token).slice(0, 16));
 
     return {
+      action: 'login_success',
       token,
       user: publicUser_(matchedUser),
       line_profile: {
@@ -2339,20 +2378,104 @@ function itsdImpl_bindLineAccount_(token, lineUserId) {
     } else {
       append_('APP_SETTINGS', { key: bindKey, value: actor.user_id });
     }
-    return { success: true };
+    const userLineKey = 'USER_LINE_' + actor.user_id;
+    const existingUser = find_('APP_SETTINGS', 'key', userLineKey);
+    if (existingUser) {
+      update_('APP_SETTINGS', existingUser.__row, { value: lineUserId });
+    } else {
+      append_('APP_SETTINGS', { key: userLineKey, value: lineUserId });
+    }
+    resetRows_('APP_SETTINGS');
+    auditAuth_(actor, 'BIND_LINE_SUCCESS', 'SUCCESS', 'ผูกบัญชี LINE สำเร็จ (' + lineUserId + ')', '');
+    return { success: true, user: publicUser_(actor) };
   });
 }
 
-function itsdImpl_unbindLineAccount_(token, lineUserId) {
+function itsdImpl_unbindLineAccount_(token, optLineUserId) {
   const actor = require_(token);
-  if (!lineUserId) throw Error('ไม่พบรหัสผู้ใช้ LINE');
   return lock_(() => {
-    const bindKey = 'LINE_BIND_' + lineUserId;
-    const existing = find_('APP_SETTINGS', 'key', bindKey);
-    if (existing && existing.value === actor.user_id) {
-      update_('APP_SETTINGS', existing.__row, { value: '' });
+    const userLineKey = 'USER_LINE_' + actor.user_id;
+    const userLineRow = find_('APP_SETTINGS', 'key', userLineKey);
+    let boundId = optLineUserId || (userLineRow ? userLineRow.value : '');
+    if (userLineRow) {
+      update_('APP_SETTINGS', userLineRow.__row, { value: '' });
     }
-    return { success: true };
+    if (boundId) {
+      const bindRow = find_('APP_SETTINGS', 'key', 'LINE_BIND_' + boundId);
+      if (bindRow && bindRow.value === actor.user_id) {
+        update_('APP_SETTINGS', bindRow.__row, { value: '' });
+      }
+    }
+    const settings = rows_('APP_SETTINGS');
+    for (let i = 0; i < settings.length; i++) {
+      const s = settings[i];
+      if (String(s.key || '').startsWith('LINE_BIND_') && s.value === actor.user_id) {
+        update_('APP_SETTINGS', s.__row, { value: '' });
+      }
+    }
+    resetRows_('APP_SETTINGS');
+    auditAuth_(actor, 'UNBIND_LINE_SUCCESS', 'SUCCESS', 'ยกเลิกผูกบัญชี LINE สำเร็จ', '');
+    return { success: true, user: publicUser_(actor) };
+  });
+}
+
+function itsdImpl_bindGoogleAccount_(token, email) {
+  const actor = require_(token);
+  const emailClean = String(email || '').trim().toLowerCase();
+  if (!emailClean) throw Error('กรุณาระบุอีเมล Google');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClean)) throw Error('รูปแบบอีเมลไม่ถูกต้อง');
+
+  return lock_(() => {
+    ensureAdminModuleSchema_();
+    const profiles = rows_('APP_USER_PROFILE');
+    for (let i = 0; i < profiles.length; i++) {
+      const p = profiles[i];
+      if (p.user_id !== actor.user_id && String(p.email || '').trim().toLowerCase() === emailClean) {
+        throw Error('อีเมลนี้ถูกผูกไว้กับบัญชีผู้ใช้อื่นแล้ว (' + p.user_id + ')');
+      }
+    }
+    const profRow = find_('APP_USER_PROFILE', 'user_id', actor.user_id);
+    if (profRow) {
+      update_('APP_USER_PROFILE', profRow.__row, {
+        email: emailClean,
+        updated_at: now_(),
+        updated_by: actor.user_id,
+      });
+    } else {
+      append_('APP_USER_PROFILE', {
+        profile_id: 'PRF-' + Utilities.getUuid().slice(0, 8).toUpperCase(),
+        user_id: actor.user_id,
+        email: emailClean,
+        telephone: '',
+        position: '',
+        org_unit_id: '',
+        picture_file_id: '',
+        picture_url: '',
+        updated_at: now_(),
+        updated_by: actor.user_id,
+      });
+    }
+    resetRows_('APP_USER_PROFILE');
+    auditAuth_(actor, 'BIND_GOOGLE_SUCCESS', 'SUCCESS', 'ผูกบัญชี Google สำเร็จ (' + emailClean + ')', '');
+    return { success: true, email: emailClean, user: publicUser_(actor) };
+  });
+}
+
+function itsdImpl_unbindGoogleAccount_(token) {
+  const actor = require_(token);
+  return lock_(() => {
+    ensureAdminModuleSchema_();
+    const profRow = find_('APP_USER_PROFILE', 'user_id', actor.user_id);
+    if (profRow) {
+      update_('APP_USER_PROFILE', profRow.__row, {
+        email: '',
+        updated_at: now_(),
+        updated_by: actor.user_id,
+      });
+      resetRows_('APP_USER_PROFILE');
+    }
+    auditAuth_(actor, 'UNBIND_GOOGLE_SUCCESS', 'SUCCESS', 'ยกเลิกผูกบัญชี Google สำเร็จ', '');
+    return { success: true, user: publicUser_(actor) };
   });
 }
 
@@ -3206,12 +3329,33 @@ function dashboardAnalyticsFor_(incidents, reportedRaw, scope) {
 function publicUser_(u) {
   let pictureUrl = '';
   let pictureFileId = '';
+  let email = '';
+  let lineBound = false;
+  let lineUserId = '';
   try {
     if (book_().getSheetByName('APP_USER_PROFILE')) {
       const profile = find_('APP_USER_PROFILE', 'user_id', u.user_id);
       if (profile) {
         pictureUrl = profile.picture_url || '';
         pictureFileId = profile.picture_file_id || '';
+        email = profile.email || '';
+      }
+    }
+    if (book_().getSheetByName('APP_SETTINGS')) {
+      const userLine = find_('APP_SETTINGS', 'key', 'USER_LINE_' + u.user_id);
+      if (userLine && userLine.value) {
+        lineBound = true;
+        lineUserId = String(userLine.value).trim();
+      } else {
+        const settings = rows_('APP_SETTINGS');
+        for (let i = 0; i < settings.length; i++) {
+          const s = settings[i];
+          if (String(s.key || '').startsWith('LINE_BIND_') && s.value === u.user_id) {
+            lineBound = true;
+            lineUserId = s.key.replace('LINE_BIND_', '');
+            break;
+          }
+        }
       }
     }
   } catch (_) {}
@@ -3223,6 +3367,10 @@ function publicUser_(u) {
     active: itsdActiveBool_(u.active),
     picture_url: pictureUrl,
     picture_file_id: pictureFileId,
+    email: email,
+    google_bound: !!(email && email.includes('@')),
+    line_bound: lineBound,
+    line_user_id: lineUserId,
   };
 }
 
@@ -3319,11 +3467,13 @@ function itsdImpl_doGet_(e) {
     let isSuccess = false;
     let errorMessage = '';
 
+    let isBindAction = false;
     if (e.parameter.error) {
       errorMessage = e.parameter.error_description || e.parameter.error || 'การเข้าสู่ระบบด้วย LINE ถูกยกเลิก';
     } else {
       try {
         const authResult = itsdImpl_handleLineLoginCallback_(e.parameter.code, e.parameter.state);
+        isBindAction = !!(authResult && authResult.action === 'bind_line_success');
         resultJson = JSON.stringify(authResult);
         isSuccess = true;
       } catch (err) {
@@ -3336,11 +3486,12 @@ function itsdImpl_doGet_(e) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LINE Login - IT Service Desk</title>
+  <title>${isBindAction ? 'ผูกบัญชี LINE' : 'LINE Login'} - IT Service Desk</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #0d0d0d; color: #fff; text-align: center; }
     .box { padding: 32px 28px; border-radius: 16px; background: #161616; border: 1px solid #333; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     .spinner { width: 44px; height: 44px; border: 3px solid #333; border-top-color: #06c755; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+    .ok-icon { font-size: 40px; margin-bottom: 12px; }
     .err-icon { font-size: 40px; color: #f87171; margin-bottom: 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
     h2 { font-size: 18px; margin: 0 0 8px; font-weight: 600; }
@@ -3353,9 +3504,9 @@ function itsdImpl_doGet_(e) {
 <body>
   <div class="box">
     ${isSuccess ? `
-      <div class="spinner"></div>
-      <h2>เข้าสู่ระบบสำเร็จ</h2>
-      <p>กำลังเชื่อมต่อระบบ IT Service Desk...</p>
+      <div class="ok-icon">✅</div>
+      <h2>${isBindAction ? 'ผูกบัญชี LINE สำเร็จ' : 'เข้าสู่ระบบสำเร็จ'}</h2>
+      <p>${isBindAction ? 'เชื่อมต่อบัญชี LINE กับระบบ IT Service Desk แล้ว...' : 'กำลังเชื่อมต่อระบบ IT Service Desk...'}</p>
     ` : `
       <div class="err-icon">⚠️</div>
       <h2>เข้าสู่ระบบไม่สำเร็จ</h2>
@@ -3368,20 +3519,22 @@ function itsdImpl_doGet_(e) {
       var success = ${isSuccess};
       var payload = ${isSuccess ? resultJson : 'null'};
       var error = ${JSON.stringify(errorMessage)};
+      var isBind = ${isBindAction};
 
       if (window.opener && !window.opener.closed) {
         try {
           if (success) {
-            window.opener.postMessage({ type: 'ITSD_LINE_LOGIN_SUCCESS', payload: payload }, '*');
+            var msgType = isBind ? 'ITSD_LINE_BIND_SUCCESS' : 'ITSD_LINE_LOGIN_SUCCESS';
+            window.opener.postMessage({ type: msgType, payload: payload }, '*');
           } else {
             window.opener.postMessage({ type: 'ITSD_LINE_LOGIN_ERROR', error: error }, '*');
           }
-          setTimeout(function() { window.close(); }, 600);
+          setTimeout(function() { window.close(); }, 800);
           return;
         } catch(e) {}
       }
 
-      if (success && payload && payload.token) {
+      if (success && payload && payload.token && !isBind) {
         try {
           sessionStorage.setItem('ocpb_token', payload.token);
           localStorage.setItem('ocpb_token', payload.token);

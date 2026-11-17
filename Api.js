@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.09
+ * Version: V1.2.10
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-17
+ * Modified: 2026-11-18
  * Change History:
+ * - V1.2.10: Expose bindGoogleAccount and unbindGoogleAccount for social profile account management.
  * - V1.2.09: Expose getLineLoginUrl, bindLineAccount, and unbindLineAccount for LINE OAuth 2.0.
  * - V1.2.08: Expose importThaiHolidays endpoint for Thai official holidays management.
  * - V1.2.07: Expose upload/clear endpoints for sticker template logos.
@@ -150,6 +151,8 @@ function deactivateDeviceModel(token, id) { return itsdImpl_deactivateDeviceMode
 function getLineLoginUrl(state) { return itsdImpl_getLineLoginUrl_.apply(this, arguments); }
 function bindLineAccount(token, lineUserId) { return itsdImpl_bindLineAccount_.apply(this, arguments); }
 function unbindLineAccount(token, lineUserId) { return itsdImpl_unbindLineAccount_.apply(this, arguments); }
+function bindGoogleAccount(token, email) { return itsdImpl_bindGoogleAccount_.apply(this, arguments); }
+function unbindGoogleAccount(token) { return itsdImpl_unbindGoogleAccount_.apply(this, arguments); }
 function authorizeUrlFetch() {
   UrlFetchApp.fetch('https://api.line.me', { muteHttpExceptions: true });
   return 'อนุญาตสิทธิ์สำเร็จเรียบร้อยแล้ว';
