@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.07
+ * Version: V1.2.08
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-17
  * Change History:
+ * - V1.2.08: Add Thai official holidays auto-import (2569-2573), PM calendar holiday auto-seed, and ITSUPPORT purple role pill badge.
  * - V1.2.07: Add Sticker Template (แม่แบบสติ๊กเกอร์) tab and batch A4 sheet printing for equipment maintenance labels.
  * - V1.2.06: Bright green background for form section step numbers (1, 2, 3).
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
@@ -65,7 +66,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.07';
+const APP_VERSION = 'V1.2.08';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =

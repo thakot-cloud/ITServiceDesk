@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.07
+ * Version: V1.2.08
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-17
  * Change History:
+ * - V1.2.08: Expose importThaiHolidays endpoint for Thai official holidays management.
  * - V1.2.07: Expose upload/clear endpoints for sticker template logos.
  * - V1.2.06: Version bump for step numbers bright green styling.
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
