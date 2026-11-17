@@ -150,3 +150,7 @@ function deactivateDeviceModel(token, id) { return itsdImpl_deactivateDeviceMode
 function getLineLoginUrl(state) { return itsdImpl_getLineLoginUrl_.apply(this, arguments); }
 function bindLineAccount(token, lineUserId) { return itsdImpl_bindLineAccount_.apply(this, arguments); }
 function unbindLineAccount(token, lineUserId) { return itsdImpl_unbindLineAccount_.apply(this, arguments); }
+function authorizeUrlFetch() {
+  UrlFetchApp.fetch('https://api.line.me', { muteHttpExceptions: true });
+  return 'อนุญาตสิทธิ์สำเร็จเรียบร้อยแล้ว';
+}
