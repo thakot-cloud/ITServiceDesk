@@ -8422,9 +8422,10 @@ function project70RenderSticker(mount, d) {
 
         <div class="stk-selection-bar">
           <div class="stk-btn-group">
-            <button type="button" class="outline small" onclick="stickerSelectAll(true)">เลือกทั้งหมด</button>
+            <button type="button" class="outline small" onclick="stickerSelectAll(true)" id="stkBtnAll">เลือกทั้งหมด</button>
             <button type="button" class="outline small" onclick="stickerSelectPages(1)" id="stkBtnPage1">เลือก 1 แผ่น</button>
             <button type="button" class="outline small" onclick="stickerSelectPages(2)" id="stkBtnPage2">เลือก 2 แผ่น</button>
+            <button type="button" class="outline small" onclick="stickerSelectPages(5)" id="stkBtnPage5">เลือก 5 แผ่น</button>
             <button type="button" class="outline small" onclick="stickerSelectAll(false)">ล้างการเลือก</button>
           </div>
           <div class="stk-count-badge" id="stkSelectedCount">เลือกแล้ว 0 รายการ (0 แผ่น A4)</div>
@@ -8547,12 +8548,16 @@ function stickerFilterInventory() {
 
   if (!stickerFilteredItems.length) {
     tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--theme-muted);">ไม่พบรายการครุภัณฑ์ที่ตรงกับเงื่อนไขการค้นหา</td></tr>';
+    const allBtn = $('stkBtnAll');
+    if (allBtn) allBtn.textContent = 'เลือกทั้งหมด (0)';
     stickerUpdateCount();
     return;
   }
 
+  const allBtn = $('stkBtnAll');
+  if (allBtn) allBtn.textContent = `เลือกทั้งหมด (${stickerFilteredItems.length.toLocaleString('th-TH')} รายการ)`;
+
   tbody.innerHTML = stickerFilteredItems
-    .slice(0, 300)
     .map((item, idx) => {
       const assetNo = esc(item.asset_no || item.id || '-');
       const assetCode = esc(item.asset_code || item.asset_id || '-');
@@ -8639,6 +8644,8 @@ function stickerUpdateCount() {
   if (page1Btn) page1Btn.textContent = `เลือก 1 แผ่น (${perPage} รายการ)`;
   const page2Btn = $('stkBtnPage2');
   if (page2Btn) page2Btn.textContent = `เลือก 2 แผ่น (${perPage * 2} รายการ)`;
+  const page5Btn = $('stkBtnPage5');
+  if (page5Btn) page5Btn.textContent = `เลือก 5 แผ่น (${perPage * 5} รายการ)`;
   const btn = $('stkPrintBatchBtn');
   if (btn) btn.disabled = count === 0;
 }
