@@ -4,7 +4,7 @@
 
 ### Next-Gen Serverless IT Service Desk, Asset Inventory Management & Automated Workflow Suite
 
-[![Version](https://img.shields.io/badge/Version-ITSD%20V1.2.08-F97316?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
+[![Version](https://img.shields.io/badge/Version-ITSD%20V1.2.09-F97316?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
 [![Theme](https://img.shields.io/badge/Theme-Dark%20Theme%20Admin%20Dashboard-0D0D0D?style=flat-square)](https://github.com/thakot-cloud/ITServiceDesk)
 [![Developer](https://img.shields.io/badge/Developer-Thakot%20Cloud-purple?style=flat-square)](https://github.com/thakot-cloud)
 [![Platform](https://img.shields.io/badge/Platform-Google%20Apps%20Script%20%7C%20Web%20App-34A853?style=flat-square&logo=google)](https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit)
@@ -26,7 +26,7 @@
 | **Google Drive Root** | `005_ITServiceDesk` | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
 | **Google Sheets Database** | `ITServiceDesk — DBS` | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Project (Edit)** | `ITServiceDesk` | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
-| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.09`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 ---
 
@@ -45,7 +45,8 @@
 
 **IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์** พัฒนาขึ้นด้วยสถาปัตยกรรม **100% Serverless** บน Google Workspace โดยใช้ **Google Apps Script (V8)** ขับเคลื่อน Single Page Application (SPA) เชื่อมต่อกับ **Google Sheets (`ITServiceDesk — DBS`)** เป็นฐานข้อมูลหลัก และจัดเก็บเอกสาร/รูปภาพ/ไฟล์สำรองข้อมูลบน **Google Drive (`005_ITServiceDesk`)**
 
-**จุดเด่นสำคัญใน V1.2.08:**
+**จุดเด่นสำคัญใน V1.2.09:**
+- **LINE Login OAuth 2.0 Integration (V1.2.09)**: เข้าสู่ระบบสะดวกรวดเร็วผ่านปุ่ม LINE วงกลมมาตรฐาน เชื่อมต่อ LINE Developers Channel ID `2012663665` พร้อมระบบจับคู่บัญชีอัตโนมัติด้วยอีเมลหรือ LINE User ID และรองรับทั้งหน้าต่าง Popup และ Full-page Redirect
 - **Thai Official Holidays Auto-Import & PM Calendar Integration (V1.2.08)**: ฟังก์ชันดึงวันหยุดราชการไทยอัตโนมัติในเมนูตั้งค่าระบบ > จัดการวันหยุด เลือกล่วงหน้าได้ 3–5 ปี (พ.ศ. 2569–2573) และนำไปไฮไลต์บนปฏิทินแผน PM อัตโนมัติ
 - **Sticker Template & Batch A4 Printing (V1.2.07–V1.2.08)**: แท็บแม่แบบสติ๊กเกอร์และการพิมพ์สติ๊กเกอร์เป็นชุด A4 มาตรฐาน (12/15 ดวง) รองรับการเลือกพิมพ์ครุภัณฑ์ทั้งหมดโดยไม่จำกัดจำนวนรายการ พร้อมระบบพรีวิวสด
 - **Role Badge Styling for ITSUPPORT (V1.2.08)**: ปรับสีพื้นหลังบทบาท "ฝ่ายสนับสนุน IT" (ITSUPPORT) ให้เป็นแถบสีม่วงเข้าชุดกับ "เจ้าหน้าที่ IT" (TECHNICIAN) ชัดเจนทั้ง Light และ Dark Mode

@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Entrypoints.js
- * Version: V1.2.07
+ * Version: V1.2.09
  * Stage: production
  * Purpose: Web application and LINE HTTP entrypoints
  * Notes:
@@ -10,7 +10,8 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-17
  * Change History:
- * - V1.2.07: Add Sticker Template tab and batch A4 sheet printing for equipment maintenance labels.
+ * - V1.2.09: Support LINE Login OAuth callback handling in doGet(e).
+ * - V1.2.08: Version bump for Thai holidays and ITSUPPORT role badge.
  * - V1.2.06: Version bump for step numbers bright green styling.
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
  * - V1.2.04: Version bump for Google Sites iframe embedding support.
@@ -27,5 +28,5 @@
  * - V1.0.77: Inventory dropdowns and automatic asset-number formats.
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
-function doGet() { return itsdImpl_doGet_.apply(this, arguments); }
+function doGet(e) { return itsdImpl_doGet_.apply(this, arguments); }
 function doPost(e) { return itsdImpl_doPost_.apply(this, arguments); }

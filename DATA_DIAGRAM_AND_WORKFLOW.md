@@ -1,6 +1,6 @@
 # 🗂️ Data Diagram & System Workflows
 ### IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
-**Version: ITSD V1.2.08 | Thakot Cloud © 2026**
+**Version: ITSD V1.2.09 | Thakot Cloud © 2026**
 
 เอกสารนี้อธิบายโครงสร้างความสัมพันธ์ของฐานข้อมูล (**Entity Relationship Diagram — 26 ตารางใน `ITServiceDesk — DBS`**), โครงสร้างการจัดเก็บไฟล์บน **Google Drive**, สถาปัตยกรรมระบบ (**System Architecture**) และผังกระบวนการทำงานหลัก (**Workflows**) ทั้งหมดของระบบ **IT Service Desk**
 
@@ -14,7 +14,7 @@
 | **Google Drive Root** | `005_ITServiceDesk` | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
 | **Google Sheets Database** | `ITServiceDesk — DBS` | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Project (Edit)** | `ITServiceDesk` | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
-| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.09`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 ---
 
@@ -30,7 +30,7 @@ flowchart TB
     subgraph GAS["Google Apps Script Project (1drKyOpXXRBkf...)"]
         EP["Entrypoints.js (doGet / doPost)"]
         API["Api.js (Public RPC Facade)"]
-        CORE["Server.js (Core Business & Security Engine V1.2.08)"]
+        CORE["Server.js (Core Business & Security Engine V1.2.09)"]
         UI["Index.html + UI_Client.html + UI_Styles.html + UI_Templates.html"]
     end
 

@@ -33,7 +33,7 @@
 | **Google Drive Root** | `005_ITServiceDesk` | `13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe` | https://drive.google.com/drive/folders/13LSPwXw4tEkw-F4wGJO9Q2qbn9RZx5Oe |
 | **Google Sheets Database** | `ITServiceDesk — DBS` | `1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c` | https://docs.google.com/spreadsheets/d/1i-yE0Lg2gILkLENEpk8t1Q9OSVlGpOoximunZwbxF4c/edit?usp=drivesdk |
 | **Apps Script Project (Edit)** | `ITServiceDesk` | `1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7` | https://script.google.com/home/projects/1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7/edit |
-| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.08`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
+| **Web App Production (Exec)** | `ITServiceDesk Web App` | `AKfycbxPnpvv...` (`ITSD V1.2.09`) | https://script.google.com/macros/s/AKfycbxPnpvvQqmD5FrkHhLIqEdGsX-mCpV5R57G5SrTVPNQ87zxViX_4ObmRvsL0fayTps/exec |
 
 - **Frontend**: Web App SPA รองรับทั้ง Desktop, Tablet และ Mobile พร้อมระบบเปลี่ยน Light/Dark Mode และ 12 ชุดสี (ค่าหลักคือ **Clay and Sea**)
 - **Backend**: Google Apps Script V8 พร้อมระบบสิทธิ์ RBAC, เข้ารหัสรหัสผ่าน SHA-256 + Salt และ Audit Log ทุกการเปลี่ยนแปลง
@@ -50,7 +50,7 @@
 ### 2.1 หน้าจอเข้าสู่ระบบ (Login)
 1. กรอก **ชื่อผู้ใช้ (Username)** และ **รหัสผ่าน (Password)**
 2. สามารถกดปุ่ม **รูปตา (👁️ `visibility_off` / `visibility`)** ด้านขวาของช่องรหัสผ่านเพื่อสลับดูหรือซ่อนตัวอักษรได้
-3. ด้านล่างบัตร Login แสดงเวอร์ชันระบบปัจจุบัน (`ITSD V1.2.08`) และข้อมูลลิขสิทธิ์ระบบ
+3. ด้านล่างบัตร Login แสดงเวอร์ชันระบบปัจจุบัน (`ITSD V1.2.09`) และข้อมูลลิขสิทธิ์ระบบ
 
 ### 2.2 บัญชีผู้ใช้ในระบบจริง (System Accounts)
 | ลำดับ | Username | บทบาท (Role) | ชื่อแสดง | อีเมลที่ผูกกับบัญชี | ขอบเขตสิทธิ์การใช้งาน |
@@ -174,5 +174,5 @@
 
 ---
 <div align="center">
-  <sub>IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์ — Version ITSD V1.2.08 | Thakot Cloud © 2026</sub>
+  <sub>IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์ — Version ITSD V1.2.09 | Thakot Cloud © 2026</sub>
 </div>

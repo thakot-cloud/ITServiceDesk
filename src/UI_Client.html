@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.2.08
+  Version: V1.2.09
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-17
   Change History:
+  - V1.2.09: Add loginWithLine OAuth 2.0 integration, popup postMessage listener, and session sync.
   - V1.2.08: Add Thai official holidays import UI (2569-2573), PM calendar holiday integration, and ITSUPPORT role badge purple styling.
   - V1.2.07: Add Sticker Template tab and batch A4 sheet printing for equipment maintenance labels.
   - V1.2.06: Version bump for step numbers bright green styling.
@@ -1085,21 +1086,68 @@ function showLoginFutureNotice(feature) {
     ' เตรียม UI รองรับไว้แล้ว และยังไม่เปิดใช้งานการยืนยันตัวตนจริง';
 }
 
-function loginWithLine() {
+async function loginWithLine() {
+  const errEl = $('loginError');
+  if (errEl) errEl.textContent = '';
+  setLoginUiState('loading', 'กำลังเชื่อมต่อ LINE...', 'กำลังเปิดหน้าต่างเข้าสู่ระบบด้วย LINE', 'กรุณารอสักครู่');
+  
   const width = 500;
   const height = 650;
   const left = Math.max(0, Math.round(window.screenX + (window.outerWidth - width) / 2));
   const top = Math.max(0, Math.round(window.screenY + (window.outerHeight - height) / 2));
-  const url = 'https://access.line.me/oauth2/v2.1/login';
-  const popup = window.open(
-    url,
-    'itsd_line_login',
-    `width=${width},height=${height},left=${left},top=${top},status=no,resizable=yes,scrollbars=yes`
-  );
-  if (!popup || popup.closed || typeof popup.closed === 'undefined') {
-    window.open(url, '_blank');
+
+  try {
+    const authUrl = await call('getLineLoginUrl');
+    const popup = window.open(
+      authUrl,
+      'itsd_line_login',
+      `width=${width},height=${height},left=${left},top=${top},status=no,resizable=yes,scrollbars=yes`
+    );
+    if (!popup || popup.closed || typeof popup.closed === 'undefined') {
+      window.location.href = authUrl;
+    }
+  } catch (e) {
+    const errText = normalizeUiError(e);
+    if (errEl) errEl.textContent = errText;
+    toast(errText, 'error');
+    setLoginUiState('error', 'เข้าสู่ระบบไม่สำเร็จ', errText, '');
   }
 }
+
+// Global listener for OAuth callbacks (popup postMessage)
+window.addEventListener('message', async (event) => {
+  if (!event || !event.data) return;
+  if (event.data.type === 'ITSD_LINE_LOGIN_SUCCESS') {
+    const payload = event.data.payload;
+    if (payload && payload.token) {
+      token = payload.token;
+      if (typeof ui !== 'undefined') ui.dashboardRange = 'month';
+      try {
+        sessionStorage.setItem('ocpb_token', token);
+        localStorage.setItem('ocpb_token', token);
+      } catch (_) {}
+      const name = (payload.user && (payload.user.display_name || payload.user.username)) ||
+                   (payload.line_profile && payload.line_profile.displayName) || '';
+      setLoginUiState('success', 'เข้าสู่ระบบด้วย LINE สำเร็จ', name ? 'ยินดีต้อนรับ ' + name : 'ยืนยันตัวตนเรียบร้อยแล้ว', 'กำลังเปิดระบบ...');
+      loading(true);
+      try {
+        await refresh();
+      } catch (err) {
+        toast(normalizeUiError(err), 'error');
+      } finally {
+        loading(false);
+      }
+    }
+  } else if (event.data.type === 'ITSD_LINE_LOGIN_ERROR') {
+    const errText = event.data.error || 'เข้าสู่ระบบด้วย LINE ไม่สำเร็จ';
+    const errEl = $('loginError');
+    if (errEl) errEl.textContent = errText;
+    toast(errText, 'error');
+    setLoginUiState('error', 'เข้าสู่ระบบไม่สำเร็จ', errText, '');
+  } else if (event.data.type === 'ITSD_LINE_BIND_SUCCESS') {
+    toast('ผูกบัญชี LINE กับระบบเรียบร้อยแล้ว', 'success');
+  }
+});
 
 function loginWithGoogle() {
   const width = 500;
@@ -7108,16 +7156,13 @@ function calendar122Render(host, entries, entry = null) {
       </p>
     </div>
     <div class="import-controls">
-      <label style="margin:0;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
-        เลือกปี พ.ศ.
-        <select id="calendar122ImportYearSelect">
-          <option value="2569">พ.ศ. 2569 (2026)</option>
-          <option value="2570" selected>พ.ศ. 2570 (2027)</option>
-          <option value="2571">พ.ศ. 2571 (2028)</option>
-          <option value="2572">พ.ศ. 2572 (2029)</option>
-          <option value="2573">พ.ศ. 2573 (2030)</option>
-        </select>
-      </label>
+      <select id="calendar122ImportYearSelect" aria-label="เลือกปี พ.ศ.">
+        <option value="2569">พ.ศ. 2569 (2026)</option>
+        <option value="2570" selected>พ.ศ. 2570 (2027)</option>
+        <option value="2571">พ.ศ. 2571 (2028)</option>
+        <option value="2572">พ.ศ. 2572 (2029)</option>
+        <option value="2573">พ.ศ. 2573 (2030)</option>
+      </select>
       <button type="button" class="primary" id="calendar122ImportYearBtn">
         <span class="material-symbols-rounded">cloud_download</span>
         ดึงวันหยุดตามปีที่เลือก
@@ -8873,7 +8918,20 @@ if (document.readyState === 'loading')
   document.addEventListener('DOMContentLoaded', loadPublicSystemBranding, { once: true });
 else setTimeout(loadPublicSystemBranding, 0);
 
-let token = sessionStorage.getItem('ocpb_token') || '',
+let token = (function() {
+  var t = '';
+  try {
+    t = sessionStorage.getItem('ocpb_token') || '';
+    if (!t && window.localStorage) {
+      t = localStorage.getItem('ocpb_token') || '';
+      if (t) {
+        sessionStorage.setItem('ocpb_token', t);
+        localStorage.removeItem('ocpb_token');
+      }
+    }
+  } catch (_) {}
+  return t;
+})(),
   state = null,
   page = 'overview',
   selected = '',

@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.08
+ * Version: V1.2.09
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-17
  * Change History:
+ * - V1.2.09: Expose getLineLoginUrl, bindLineAccount, and unbindLineAccount for LINE OAuth 2.0.
  * - V1.2.08: Expose importThaiHolidays endpoint for Thai official holidays management.
  * - V1.2.07: Expose upload/clear endpoints for sticker template logos.
  * - V1.2.06: Version bump for step numbers bright green styling.
@@ -146,3 +147,6 @@ function clearStickerProviderLogo(token) { return itsdImpl_clearStickerProviderL
 function lineLegacyReviewInbox(token, input) { return itsdImpl_lineLegacyReviewInbox_.apply(this, arguments); }
 function saveDeviceModel(token, data) { return itsdImpl_saveDeviceModel_.apply(this, arguments); }
 function deactivateDeviceModel(token, id) { return itsdImpl_deactivateDeviceModel_.apply(this, arguments); }
+function getLineLoginUrl(state) { return itsdImpl_getLineLoginUrl_.apply(this, arguments); }
+function bindLineAccount(token, lineUserId) { return itsdImpl_bindLineAccount_.apply(this, arguments); }
+function unbindLineAccount(token, lineUserId) { return itsdImpl_unbindLineAccount_.apply(this, arguments); }
