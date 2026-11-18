@@ -11303,62 +11303,51 @@ html[data-theme='light'] .ui-side-tabs button.active {
   font-weight: 600;
   color: var(--theme-primary, #0284c7);
 }
-/* V1.2.11: Equipment maintenance sticker font scale controls (80% - 130%) */
-.stk-font-scale-section {
-  background: var(--theme-raised, #f8fafc);
-  border: 1px solid var(--theme-border, #cbd5e1);
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-top: 6px;
-}
-.stk-font-scale-header {
+/* V1.2.11: Equipment maintenance sticker font scale controls (100% - 150%) placed inline in action bar */
+.stk-actions-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-.stk-font-scale-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--theme-heading, #1e293b);
-  display: flex;
-  align-items: center;
-}
-.stk-font-scale-badge {
-  font-size: 13px;
-  font-weight: 700;
-  padding: 2px 10px;
-  background: var(--theme-primary, #0284c7);
-  color: #ffffff;
-  border-radius: 999px;
-  letter-spacing: 0.5px;
-}
-.stk-font-scale-body {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   flex-wrap: wrap;
+  gap: 8px;
 }
-.stk-font-range-input {
-  flex: 1;
-  min-width: 140px;
-  cursor: pointer;
+.stk-font-scale-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 4px;
+  padding: 3px 8px 3px 10px;
+  background: var(--theme-raised, #f1f5f9);
+  border: 1px solid var(--theme-border, #cbd5e1);
+  border-radius: 6px;
+  height: 40px;
+  box-sizing: border-box;
+}
+.stk-scale-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--theme-heading, #1e293b);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
 }
 .stk-font-pill-group {
   display: inline-flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
 }
 .stk-font-pill-btn {
-  padding: 4px 10px;
+  padding: 3px 8px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: 6px;
+  border-radius: 5px;
   border: 1px solid var(--theme-border, #cbd5e1);
   background: var(--theme-panel, #ffffff);
   color: var(--theme-text, #334155);
   cursor: pointer;
   transition: all 0.15s ease;
+  line-height: 1.4;
+  white-space: nowrap;
 }
 .stk-font-pill-btn:hover {
   border-color: var(--theme-primary, #0284c7);
@@ -11369,18 +11358,11 @@ html[data-theme='light'] .ui-side-tabs button.active {
   border-color: var(--theme-primary, #0284c7);
   color: #ffffff;
 }
-.stk-font-hint {
-  display: block;
-  margin-top: 8px;
-  font-size: 11.5px;
-  color: var(--theme-muted, #64748b);
-  line-height: 1.4;
-}
-html[data-theme='dark'] .stk-font-scale-section {
+html[data-theme='dark'] .stk-font-scale-inline {
   background: #1e293b;
   border-color: #334155;
 }
-html[data-theme='dark'] .stk-font-scale-title {
+html[data-theme='dark'] .stk-scale-label {
   color: #f1f5f9;
 }
 html[data-theme='dark'] .stk-font-pill-btn {
@@ -11392,9 +11374,6 @@ html[data-theme='dark'] .stk-font-pill-btn.active {
   background: var(--theme-primary, #0284c7);
   border-color: var(--theme-primary, #0284c7);
   color: #ffffff;
-}
-html[data-theme='dark'] .stk-font-hint {
-  color: #94a3b8;
 }
 .sticker-inventory-table-wrap {
   max-height: 480px;

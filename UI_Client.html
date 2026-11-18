@@ -8331,7 +8331,7 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
       break;
   }
 
-  const scale = Math.max(0.6, Math.min(1.6, (parseInt(fontScaleStr || '100', 10) || 100) / 100));
+  const scale = Math.max(0.8, Math.min(1.8, (parseInt(fontScaleStr || '100', 10) || 100) / 100));
   if (scale !== 1) {
     const scalePt = (val) => {
       const n = parseFloat(val);
@@ -8701,33 +8701,23 @@ function project70RenderSticker(mount, d) {
             <option value="8" ${(stk.sticker_layout || '10') === '8' ? 'selected' : ''}>รูปแบบเสริม : 8 ดวง / แผ่น A4 (2 คอลัมน์ x 4 แถว · 95 x 66 mm · ตัวอักษรใหญ่พิเศษ)</option>
           </select>
         </label>
-        <div class="project70-full stk-font-scale-section">
-          <div class="stk-font-scale-header">
-            <span class="stk-font-scale-title">
-              <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">format_size</span>
-              แถบปรับขนาดตัวอักษรสติ๊กเกอร์ (Sticker Font Scale)
-            </span>
-            <span class="stk-font-scale-badge" id="stkFontScaleBadge">${stk.sticker_font_scale || '100'}%</span>
-          </div>
-          <div class="stk-font-scale-body">
-            <input type="range" id="project70StickerFontScaleRange" class="stk-font-range-input" min="80" max="130" step="10" value="${stk.sticker_font_scale || '100'}" aria-label="แถบปรับขนาดตัวอักษร">
-            <div class="stk-font-pill-group" role="group" aria-label="เลือกระดับขนาดตัวอักษร">
-              ${[80, 90, 100, 110, 120, 130].map(pct => `
-                <button type="button" class="stk-font-pill-btn ${String(stk.sticker_font_scale || '100') === String(pct) ? 'active' : ''}" data-scale="${pct}">
-                  ${pct}%${pct === 100 ? ' (ปกติ)' : ''}
-                </button>
-              `).join('')}
-            </div>
-            <input type="hidden" id="project70StickerFontScale" value="${stk.sticker_font_scale || '100'}">
-          </div>
-          <small class="stk-font-hint">ปรับขยายหรือย่อขนาดตัวอักษรทุกช่องบนดวงสติ๊กเกอร์ (ชื่อโครงการ, หน่วยงาน, เลขที่สัญญา, เบอร์โทร, ผู้ให้บริการ) ให้พอดีกับกรอบฉลาก รองรับ 80% ถึง 130%</small>
-        </div>
       </div>
 
-      <div class="project70-actions">
+      <div class="project70-actions stk-actions-bar">
         <button type="button" class="primary" id="project70SaveSticker">บันทึกแม่แบบสติ๊กเกอร์</button>
         <button type="button" class="outline" id="project70FillDefaultSticker">เติมค่ามาตรฐานสติ๊กเกอร์</button>
         <button type="button" class="outline" id="project70PreviewStickerPrint"><span class="material-symbols-rounded">print</span> พิมพ์ตัวอย่าง 1 แผ่น (A4 PDF)</button>
+        <div class="stk-font-scale-inline" title="ปรับขนาดตัวอักษรสติ๊กเกอร์ 100% - 150%">
+          <span class="stk-scale-label"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:middle;">format_size</span> ขนาด:</span>
+          <div class="stk-font-pill-group" role="group" aria-label="เลือกระดับขนาดตัวอักษร">
+            ${[100, 110, 120, 130, 140, 150].map(pct => `
+              <button type="button" class="stk-font-pill-btn ${String(stk.sticker_font_scale || '100') === String(pct) ? 'active' : ''}" data-scale="${pct}">
+                ${pct}%
+              </button>
+            `).join('')}
+          </div>
+          <input type="hidden" id="project70StickerFontScale" value="${stk.sticker_font_scale || '100'}">
+        </div>
       </div>
       <div class="project70-status" id="project70StickerResult" role="status"></div>
 
@@ -8822,8 +8812,6 @@ function project70RenderSticker(mount, d) {
     uiSetValue('project70StickerSeqPrefix', STICKER_DEFAULTS.sticker_seq_prefix);
     uiSetValue('project70StickerLayout', STICKER_DEFAULTS.sticker_layout);
     uiSetValue('project70StickerFontScale', STICKER_DEFAULTS.sticker_font_scale || '100');
-    if ($('project70StickerFontScaleRange')) $('project70StickerFontScaleRange').value = STICKER_DEFAULTS.sticker_font_scale || '100';
-    if ($('stkFontScaleBadge')) $('stkFontScaleBadge').textContent = (STICKER_DEFAULTS.sticker_font_scale || '100') + '%';
     mount.querySelectorAll('.stk-font-pill-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.scale === String(STICKER_DEFAULTS.sticker_font_scale || '100'));
     });
@@ -8869,25 +8857,18 @@ function project70RenderSticker(mount, d) {
     });
   }
 
-  const fontScaleRange = $('project70StickerFontScaleRange');
   const fontScaleHidden = $('project70StickerFontScale');
-  const fontScaleBadge = $('stkFontScaleBadge');
   const fontPillBtns = mount.querySelectorAll('.stk-font-pill-btn');
 
   function updateFontScaleUi(val) {
     const scaleStr = String(val || '100');
     if (fontScaleHidden) fontScaleHidden.value = scaleStr;
-    if (fontScaleRange) fontScaleRange.value = scaleStr;
-    if (fontScaleBadge) fontScaleBadge.textContent = scaleStr + '%';
     fontPillBtns.forEach(btn => {
       btn.classList.toggle('active', btn.dataset.scale === scaleStr);
     });
     project70UpdateStickerPreview();
   }
 
-  if (fontScaleRange) {
-    fontScaleRange.addEventListener('input', (e) => updateFontScaleUi(e.target.value));
-  }
   fontPillBtns.forEach(btn => {
     btn.onclick = () => updateFontScaleUi(btn.dataset.scale);
   });
