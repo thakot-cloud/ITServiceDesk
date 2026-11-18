@@ -11204,22 +11204,29 @@ html[data-theme='light'] .ui-side-tabs button.active {
   color: var(--theme-muted);
 }
 .project70-report-preview-wrap {
-  margin: 8px 0 14px;
-  padding: 10px;
+  margin: 12px 0 16px;
+  padding: 16px;
   border-radius: 12px;
   border: 1px solid var(--theme-border);
-  background: var(--theme-surface);
-  overflow-x: auto;
+  background: var(--theme-surface, #e2e8f0);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .project70-report-preview {
   display: block;
-  width: 794px;
-  max-width: 100%;
-  height: 1123px;
+  width: 100%;
+  max-width: 650px;
+  height: 920px;
+  aspect-ratio: 210 / 297;
   margin: 0 auto;
   border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  background: #fff;
+  border-radius: 4px;
+  background: #ffffff;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  box-sizing: border-box;
 }
 .service70-summary {
   display: grid;

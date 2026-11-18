@@ -8189,14 +8189,14 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
   let p;
   switch (layout) {
     case '12':
-      /* 2 คอลัมน์ x 6 แถว = 12 ดวง (95 x 44.5 mm) */
+      /* 2 คอลัมน์ x 6 แถว = 12 ดวง (97.5 x 44.5 mm · ระยะห่างคอลัมน์ 0.5 cm) */
       p = {
         perPage: 12,
-        cardWidth: '95mm',
+        cardWidth: '97.5mm',
         cardHeight: '44.5mm',
-        gridCols: '95mm 95mm',
+        gridCols: '97.5mm 97.5mm',
         gridRows: 'repeat(6, 44.5mm)',
-        colGap: '10mm',
+        colGap: '0.5cm',
         rowGap: '3.5mm',
         sheetWidth: '210mm',
         pageMargin: '0',
@@ -8218,14 +8218,14 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
       };
       break;
     case '12_3x4':
-      /* 3 คอลัมน์ x 4 แถว = 12 ดวง (63.5 x 68 mm) */
+      /* 3 คอลัมน์ x 4 แถว = 12 ดวง (63.3 x 68 mm · ระยะห่างคอลัมน์ 0.5 cm) */
       p = {
         perPage: 12,
-        cardWidth: '63.5mm',
+        cardWidth: '63.3mm',
         cardHeight: '68mm',
-        gridCols: '63.5mm 63.5mm 63.5mm',
+        gridCols: 'repeat(3, 63.3mm)',
         gridRows: 'repeat(4, 68mm)',
-        colGap: '4.5mm',
+        colGap: '0.5cm',
         rowGap: '4.5mm',
         sheetWidth: '210mm',
         pageMargin: '0',
@@ -8247,14 +8247,14 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
       };
       break;
     case '15':
-      /* 3 คอลัมน์ x 5 แถว = 15 ดวง (63.5 x 53.5 mm) */
+      /* 3 คอลัมน์ x 5 แถว = 15 ดวง (63.3 x 53.5 mm · ระยะห่างคอลัมน์ 0.5 cm) */
       p = {
         perPage: 15,
-        cardWidth: '63.5mm',
+        cardWidth: '63.3mm',
         cardHeight: '53.5mm',
-        gridCols: '63.5mm 63.5mm 63.5mm',
+        gridCols: 'repeat(3, 63.3mm)',
         gridRows: 'repeat(5, 53.5mm)',
-        colGap: '4.5mm',
+        colGap: '0.5cm',
         rowGap: '4.5mm',
         sheetWidth: '210mm',
         pageMargin: '0',
@@ -8276,14 +8276,14 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
       };
       break;
     case '8':
-      /* 2 คอลัมน์ x 4 แถว = 8 ดวง (95 x 66 mm) */
+      /* 2 คอลัมน์ x 4 แถว = 8 ดวง (97.5 x 66 mm · ระยะห่างคอลัมน์ 0.5 cm) */
       p = {
         perPage: 8,
-        cardWidth: '95mm',
+        cardWidth: '97.5mm',
         cardHeight: '66mm',
-        gridCols: '95mm 95mm',
+        gridCols: '97.5mm 97.5mm',
         gridRows: 'repeat(4, 66mm)',
-        colGap: '10mm',
+        colGap: '0.5cm',
         rowGap: '7mm',
         sheetWidth: '210mm',
         pageMargin: '0',
@@ -8306,14 +8306,14 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
       break;
     case '10':
     default:
-      /* 2 คอลัมน์ x 5 แถว = 10 ดวง (95 x 53.5 mm) */
+      /* 2 คอลัมน์ x 5 แถว = 10 ดวง (97.5 x 53.5 mm · ระยะห่างคอลัมน์ 0.5 cm) */
       p = {
         perPage: 10,
-        cardWidth: '95mm',
+        cardWidth: '97.5mm',
         cardHeight: '53.5mm',
-        gridCols: '95mm 95mm',
+        gridCols: '97.5mm 97.5mm',
         gridRows: 'repeat(5, 53.5mm)',
-        colGap: '10mm',
+        colGap: '0.5cm',
         rowGap: '4.5mm',
         sheetWidth: '210mm',
         pageMargin: '0',
@@ -8382,13 +8382,22 @@ function sticker70Html(items, template, startSeq = 1) {
 html, body {
   margin: 0;
   padding: 0;
-  background: #f1f5f9;
+  width: 100%;
+  height: 100%;
+  overflow: hidden !important;
+  background: #ffffff;
   font-family: 'Sarabun', 'Noto Sans Thai', Arial, sans-serif;
   color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
 }
 .stk-sheet {
   width: ${lp.sheetWidth};
+  height: 297mm;
+  min-width: 210mm;
   min-height: 297mm;
+  box-sizing: border-box;
   margin: 0 auto;
   background: #fff;
   display: grid;
@@ -8400,11 +8409,8 @@ html, body {
   align-content: start;
   page-break-after: always;
   break-after: page;
-  padding-top: 0.5cm;
-  padding-bottom: 0.5cm;
-  padding-left: 0.5cm;
-  padding-right: 0.5cm;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 0.5cm;
+  flex-shrink: 0;
 }
 .stk-sheet:last-child {
   page-break-after: avoid;
@@ -8531,17 +8537,23 @@ html, body {
 }
 @media print {
   html, body {
-    background: #fff;
-    margin: 0;
-    padding: 0;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    background: #fff !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .stk-sheet {
-    margin: 0;
-    box-shadow: none;
-    padding-top: 0.5cm;
-    padding-bottom: 0.5cm;
-    padding-left: 0.5cm;
-    padding-right: 0.5cm;
+    transform: none !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    padding: 0.5cm !important;
     page-break-after: always;
     break-after: page;
   }
@@ -8554,6 +8566,28 @@ html, body {
 </head>
 <body>
 ${pagesHtml}
+<script>
+function fitSheet() {
+  if (window.self !== window.top) {
+    const sheet = document.querySelector('.stk-sheet');
+    if (!sheet) return;
+    const vw = document.documentElement.clientWidth || window.innerWidth;
+    const vh = document.documentElement.clientHeight || window.innerHeight;
+    const baseW = 794;
+    const baseH = 1123;
+    const scale = Math.min(vw / baseW, vh / baseH);
+    if (scale > 0) {
+      sheet.style.transform = 'scale(' + scale + ')';
+      sheet.style.transformOrigin = 'top center';
+    }
+  }
+}
+window.addEventListener('resize', fitSheet);
+window.addEventListener('DOMContentLoaded', fitSheet);
+window.addEventListener('load', fitSheet);
+setTimeout(fitSheet, 30);
+setTimeout(fitSheet, 120);
+</script>
 </body>
 </html>`;
 }
@@ -8746,7 +8780,7 @@ function project70RenderSticker(mount, d) {
 
       <h3>ตัวอย่างแม่แบบสติ๊กเกอร์ A4 แบบเรียลไทม์</h3>
       <div class="project70-report-preview-wrap">
-        <iframe id="project70StickerPreview" class="project70-report-preview" title="ตัวอย่างแม่แบบสติ๊กเกอร์ A4"></iframe>
+        <iframe id="project70StickerPreview" class="project70-report-preview" title="ตัวอย่างแม่แบบสติ๊กเกอร์ A4" scrolling="no"></iframe>
       </div>
     </section>
 
