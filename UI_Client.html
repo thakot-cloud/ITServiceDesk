@@ -1,7 +1,7 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.2.10
+  Version: V1.2.11
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
@@ -10,6 +10,7 @@
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
   Modified: 2026-11-18
   Change History:
+  - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
   - V1.2.10: Add LINE and Google social account binding cards and action buttons in user profile modal.
   - V1.2.09: Add loginWithLine OAuth 2.0 integration, popup postMessage listener, and session sync.
   - V1.2.08: Add Thai official holidays import UI (2569-2573), PM calendar holiday integration, and ITSUPPORT role badge purple styling.
@@ -7435,6 +7436,7 @@ function project70Save(button, messageId) {
         sticker_provider_address: uiValue('project70StickerAddress', true),
         sticker_seq_prefix: uiValue('project70StickerSeqPrefix', true),
         sticker_layout: uiValue('project70StickerLayout', true),
+        sticker_font_scale: uiValue('project70StickerFontScale', true) || '100',
       };
       project70UI.data = await call('saveProjectConfiguration', token, input);
       project70Render();
@@ -8072,6 +8074,7 @@ const STICKER_DEFAULTS = {
     'เลขที่ 110/42 หมู่ 3 ถนนรัตนาธิเบศร์ ตำบลไทรมา้ อำเภอเมืองนนทบุรี จังหวัดนนทบุรี 11000',
   sticker_seq_prefix: '',
   sticker_layout: '10',
+  sticker_font_scale: '100',
 };
 
 function formatStickerSeq(prefix, seqIndex) {
@@ -8104,6 +8107,7 @@ function project70StickerData() {
     address: uiValue('project70StickerAddress', true) || stk.sticker_provider_address || STICKER_DEFAULTS.sticker_provider_address,
     seq_prefix: seqPrefix,
     layout: uiValue('project70StickerLayout', true) || stk.sticker_layout || STICKER_DEFAULTS.sticker_layout,
+    font_scale: uiValue('project70StickerFontScale', true) || stk.sticker_font_scale || STICKER_DEFAULTS.sticker_font_scale,
     logo_data_url: stk.sticker_logo_data_url || STICKER_DEFAULT_OCPB_LOGO,
     provider_logo_data_url: stk.sticker_provider_logo_data_url || STICKER_DEFAULT_NTI_LOGO,
   };
@@ -8180,12 +8184,13 @@ function getStickerPerPage(layoutStr) {
   return 10;
 }
 
-function getStickerLayoutParams(layoutStr) {
+function getStickerLayoutParams(layoutStr, fontScaleStr) {
   const layout = String(layoutStr || '10');
+  let p;
   switch (layout) {
     case '12':
       /* 2 คอลัมน์ x 6 แถว = 12 ดวง (95 x 44.5 mm) */
-      return {
+      p = {
         perPage: 12,
         cardWidth: '95mm',
         cardHeight: '44.5mm',
@@ -8210,9 +8215,10 @@ function getStickerLayoutParams(layoutStr) {
         providerFontSize: '4.4pt',
         seqFontSize: '6.8pt',
       };
+      break;
     case '12_3x4':
       /* 3 คอลัมน์ x 4 แถว = 12 ดวง (63.5 x 68 mm) */
-      return {
+      p = {
         perPage: 12,
         cardWidth: '63.5mm',
         cardHeight: '68mm',
@@ -8237,9 +8243,10 @@ function getStickerLayoutParams(layoutStr) {
         providerFontSize: '4.4pt',
         seqFontSize: '6.8pt',
       };
+      break;
     case '15':
       /* 3 คอลัมน์ x 5 แถว = 15 ดวง (63.5 x 53.5 mm) */
-      return {
+      p = {
         perPage: 15,
         cardWidth: '63.5mm',
         cardHeight: '53.5mm',
@@ -8264,9 +8271,10 @@ function getStickerLayoutParams(layoutStr) {
         providerFontSize: '4.2pt',
         seqFontSize: '6.5pt',
       };
+      break;
     case '8':
       /* 2 คอลัมน์ x 4 แถว = 8 ดวง (95 x 66 mm) */
-      return {
+      p = {
         perPage: 8,
         cardWidth: '95mm',
         cardHeight: '66mm',
@@ -8291,10 +8299,11 @@ function getStickerLayoutParams(layoutStr) {
         providerFontSize: '5pt',
         seqFontSize: '7.8pt',
       };
+      break;
     case '10':
     default:
       /* 2 คอลัมน์ x 5 แถว = 10 ดวง (95 x 53.5 mm) */
-      return {
+      p = {
         perPage: 10,
         cardWidth: '95mm',
         cardHeight: '53.5mm',
@@ -8319,11 +8328,27 @@ function getStickerLayoutParams(layoutStr) {
         providerFontSize: '4.8pt',
         seqFontSize: '7.5pt',
       };
+      break;
   }
+
+  const scale = Math.max(0.6, Math.min(1.6, (parseInt(fontScaleStr || '100', 10) || 100) / 100));
+  if (scale !== 1) {
+    const scalePt = (val) => {
+      const n = parseFloat(val);
+      if (isNaN(n)) return val;
+      return (Math.round(n * scale * 10) / 10) + 'pt';
+    };
+    p.titleFontSize = scalePt(p.titleFontSize);
+    p.orgFontSize = scalePt(p.orgFontSize);
+    p.bodyFontSize = scalePt(p.bodyFontSize);
+    p.providerFontSize = scalePt(p.providerFontSize);
+    p.seqFontSize = scalePt(p.seqFontSize);
+  }
+  return p;
 }
 
 function sticker70Html(items, template, startSeq = 1) {
-  const lp = getStickerLayoutParams(template.layout);
+  const lp = getStickerLayoutParams(template.layout, template.font_scale);
   const perPage = lp.perPage;
 
   let pagesHtml = '';
@@ -8676,6 +8701,27 @@ function project70RenderSticker(mount, d) {
             <option value="8" ${(stk.sticker_layout || '10') === '8' ? 'selected' : ''}>รูปแบบเสริม : 8 ดวง / แผ่น A4 (2 คอลัมน์ x 4 แถว · 95 x 66 mm · ตัวอักษรใหญ่พิเศษ)</option>
           </select>
         </label>
+        <div class="project70-full stk-font-scale-section">
+          <div class="stk-font-scale-header">
+            <span class="stk-font-scale-title">
+              <span class="material-symbols-rounded" style="font-size:18px;vertical-align:middle;margin-right:4px;">format_size</span>
+              แถบปรับขนาดตัวอักษรสติ๊กเกอร์ (Sticker Font Scale)
+            </span>
+            <span class="stk-font-scale-badge" id="stkFontScaleBadge">${stk.sticker_font_scale || '100'}%</span>
+          </div>
+          <div class="stk-font-scale-body">
+            <input type="range" id="project70StickerFontScaleRange" class="stk-font-range-input" min="80" max="130" step="10" value="${stk.sticker_font_scale || '100'}" aria-label="แถบปรับขนาดตัวอักษร">
+            <div class="stk-font-pill-group" role="group" aria-label="เลือกระดับขนาดตัวอักษร">
+              ${[80, 90, 100, 110, 120, 130].map(pct => `
+                <button type="button" class="stk-font-pill-btn ${String(stk.sticker_font_scale || '100') === String(pct) ? 'active' : ''}" data-scale="${pct}">
+                  ${pct}%${pct === 100 ? ' (ปกติ)' : ''}
+                </button>
+              `).join('')}
+            </div>
+            <input type="hidden" id="project70StickerFontScale" value="${stk.sticker_font_scale || '100'}">
+          </div>
+          <small class="stk-font-hint">ปรับขยายหรือย่อขนาดตัวอักษรทุกช่องบนดวงสติ๊กเกอร์ (ชื่อโครงการ, หน่วยงาน, เลขที่สัญญา, เบอร์โทร, ผู้ให้บริการ) ให้พอดีกับกรอบฉลาก รองรับ 80% ถึง 130%</small>
+        </div>
       </div>
 
       <div class="project70-actions">
@@ -8775,6 +8821,12 @@ function project70RenderSticker(mount, d) {
     uiSetValue('project70StickerAddress', STICKER_DEFAULTS.sticker_provider_address);
     uiSetValue('project70StickerSeqPrefix', STICKER_DEFAULTS.sticker_seq_prefix);
     uiSetValue('project70StickerLayout', STICKER_DEFAULTS.sticker_layout);
+    uiSetValue('project70StickerFontScale', STICKER_DEFAULTS.sticker_font_scale || '100');
+    if ($('project70StickerFontScaleRange')) $('project70StickerFontScaleRange').value = STICKER_DEFAULTS.sticker_font_scale || '100';
+    if ($('stkFontScaleBadge')) $('stkFontScaleBadge').textContent = (STICKER_DEFAULTS.sticker_font_scale || '100') + '%';
+    mount.querySelectorAll('.stk-font-pill-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.scale === String(STICKER_DEFAULTS.sticker_font_scale || '100'));
+    });
     const batchPrefixEl = $('stkBatchSeqPrefix');
     if (batchPrefixEl) batchPrefixEl.value = STICKER_DEFAULTS.sticker_seq_prefix;
     project70UpdateStickerPreview();
@@ -8816,6 +8868,30 @@ function project70RenderSticker(mount, d) {
       }
     });
   }
+
+  const fontScaleRange = $('project70StickerFontScaleRange');
+  const fontScaleHidden = $('project70StickerFontScale');
+  const fontScaleBadge = $('stkFontScaleBadge');
+  const fontPillBtns = mount.querySelectorAll('.stk-font-pill-btn');
+
+  function updateFontScaleUi(val) {
+    const scaleStr = String(val || '100');
+    if (fontScaleHidden) fontScaleHidden.value = scaleStr;
+    if (fontScaleRange) fontScaleRange.value = scaleStr;
+    if (fontScaleBadge) fontScaleBadge.textContent = scaleStr + '%';
+    fontPillBtns.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.scale === scaleStr);
+    });
+    project70UpdateStickerPreview();
+  }
+
+  if (fontScaleRange) {
+    fontScaleRange.addEventListener('input', (e) => updateFontScaleUi(e.target.value));
+  }
+  fontPillBtns.forEach(btn => {
+    btn.onclick = () => updateFontScaleUi(btn.dataset.scale);
+  });
+
   project70UpdateStickerPreview();
   stickerFilterInventory();
 }

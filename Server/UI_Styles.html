@@ -1,15 +1,17 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Styles.html
- * Version: V1.2.07
+ * Version: V1.2.11
  * Stage: production
  * Purpose: Unified # Dark design-system stylesheet and print-safe report overrides
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-17
+ * Modified: 2026-11-18
  * Change History:
+ * - V1.2.11: Add sticker font size scaling controls (.stk-font-scale-section, range & pills 80%-130%) for Light & Dark mode.
+ * - V1.2.10: Add responsive social accounts binding styles (.ux-social-box) in profile modal for Light & Dark mode.
  * - V1.2.07: Add Sticker Template styling and batch equipment inventory print sheets.
  * - V1.2.06: Bright green background for form section step numbers (1, 2, 3).
  * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
@@ -2336,6 +2338,181 @@ html[data-theme] .ui-side-tabs button.active,
 }
 .ux-profile-actions {
   flex-wrap: wrap;
+}
+
+/* Social Accounts Binding in Profile Modal */
+.ux-social-box {
+  padding: 14px;
+  border: 1px solid #e3edf6;
+  border-radius: 10px;
+  background: #fff;
+}
+.ux-social-box-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ux-social-box-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #183b63;
+}
+.ux-social-box-title .material-symbols-rounded {
+  color: #0284c7;
+  font-size: 20px;
+}
+.ux-social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ux-social-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-radius: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ux-social-item-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1 1 200px;
+}
+.ux-social-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ux-social-line {
+  background: #06c755;
+  box-shadow: 0 2px 6px rgba(6, 199, 85, 0.25);
+}
+.ux-social-google {
+  background: #ffffff;
+  border: 1px solid #dadce0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+.ux-social-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 2px;
+}
+.ux-social-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #1e293b;
+}
+.ux-social-subtext {
+  font-size: 12px;
+  color: #64748b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ux-badge-bound {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 11px;
+  font-weight: 600;
+}
+.ux-badge-bound .material-symbols-rounded {
+  font-size: 13px;
+}
+.ux-badge-unbound {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+}
+.ux-social-action {
+  flex-shrink: 0;
+}
+.ux-social-btn {
+  height: 36px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+.ux-btn-line {
+  background: #06c755;
+  color: #ffffff;
+  border: 1px solid #05b34c;
+}
+.ux-btn-line:hover {
+  background: #05b34c;
+}
+.ux-btn-google {
+  background: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+.ux-btn-google:hover {
+  background: #f9fafb;
+}
+
+html[data-theme='dark'] .ux-social-box {
+  background: var(--dark-bg-card, #1e293b);
+  border-color: var(--dark-border-default, #334155);
+}
+html[data-theme='dark'] .ux-social-box-title {
+  color: #f1f5f9;
+}
+html[data-theme='dark'] .ux-social-item {
+  background: rgba(15, 23, 42, 0.6);
+  border-color: #334155;
+}
+html[data-theme='dark'] .ux-social-name {
+  color: #f1f5f9;
+}
+html[data-theme='dark'] .ux-social-subtext {
+  color: #94a3b8;
+}
+html[data-theme='dark'] .ux-badge-unbound {
+  background: #334155;
+  color: #94a3b8;
+}
+html[data-theme='dark'] .ux-btn-google {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-color: #475569;
+}
+html[data-theme='dark'] .ux-btn-google:hover {
+  background: #334155;
 }
 
 /* Dark theme */
@@ -11126,6 +11303,99 @@ html[data-theme='light'] .ui-side-tabs button.active {
   font-weight: 600;
   color: var(--theme-primary, #0284c7);
 }
+/* V1.2.11: Equipment maintenance sticker font scale controls (80% - 130%) */
+.stk-font-scale-section {
+  background: var(--theme-raised, #f8fafc);
+  border: 1px solid var(--theme-border, #cbd5e1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 6px;
+}
+.stk-font-scale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.stk-font-scale-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--theme-heading, #1e293b);
+  display: flex;
+  align-items: center;
+}
+.stk-font-scale-badge {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 2px 10px;
+  background: var(--theme-primary, #0284c7);
+  color: #ffffff;
+  border-radius: 999px;
+  letter-spacing: 0.5px;
+}
+.stk-font-scale-body {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.stk-font-range-input {
+  flex: 1;
+  min-width: 140px;
+  cursor: pointer;
+}
+.stk-font-pill-group {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.stk-font-pill-btn {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid var(--theme-border, #cbd5e1);
+  background: var(--theme-panel, #ffffff);
+  color: var(--theme-text, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.stk-font-pill-btn:hover {
+  border-color: var(--theme-primary, #0284c7);
+  color: var(--theme-primary, #0284c7);
+}
+.stk-font-pill-btn.active {
+  background: var(--theme-primary, #0284c7);
+  border-color: var(--theme-primary, #0284c7);
+  color: #ffffff;
+}
+.stk-font-hint {
+  display: block;
+  margin-top: 8px;
+  font-size: 11.5px;
+  color: var(--theme-muted, #64748b);
+  line-height: 1.4;
+}
+html[data-theme='dark'] .stk-font-scale-section {
+  background: #1e293b;
+  border-color: #334155;
+}
+html[data-theme='dark'] .stk-font-scale-title {
+  color: #f1f5f9;
+}
+html[data-theme='dark'] .stk-font-pill-btn {
+  background: #0f172a;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+html[data-theme='dark'] .stk-font-pill-btn.active {
+  background: var(--theme-primary, #0284c7);
+  border-color: var(--theme-primary, #0284c7);
+  color: #ffffff;
+}
+html[data-theme='dark'] .stk-font-hint {
+  color: #94a3b8;
+}
 .sticker-inventory-table-wrap {
   max-height: 480px;
   overflow-y: auto;
@@ -12987,8 +13257,8 @@ html[data-theme='dark'] .calendar122-import-box { background: var(--ui-card, #1e
 .calendar122-import-box .import-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: 15px; font-weight: 700; color: var(--theme-primary, #0284c7); }
 .calendar122-import-box .import-desc { margin: 0; font-size: 13px; color: var(--ui-muted, #64748b); line-height: 1.4; }
 .calendar122-import-box .import-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.calendar122-import-box select { padding: 8px 12px; border-radius: 6px; border: 1px solid var(--ui-border, #cbd5e1); font-weight: 600; background: var(--ui-card, #ffffff); color: inherit; min-height: 40px; }
-.calendar122-import-box button { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; }
+.calendar122-import-box select { padding: 0 12px; border-radius: 6px; border: 1px solid var(--ui-border, #cbd5e1); font-weight: 600; background: var(--ui-card, #ffffff); color: inherit; height: 40px; min-height: 40px; box-sizing: border-box; vertical-align: middle; }
+.calendar122-import-box button { height: 40px; min-height: 40px; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; white-space: nowrap; box-sizing: border-box; vertical-align: middle; }
 @media(max-width:600px) { .calendar122-settings .project70-grid { grid-template-columns: minmax(0,1fr); } }
 
 /* V1.1.25: LINE asset selection uses four-column clickable rows. */

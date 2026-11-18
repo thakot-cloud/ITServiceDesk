@@ -1,7 +1,7 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.10
+ * Version: V1.2.11
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
@@ -10,6 +10,7 @@
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
  * Modified: 2026-11-18
  * Change History:
+ * - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
  * - V1.2.10: Add LINE and Google social account binding/unbinding services in profile, return social bind status in publicUser_.
  * - V1.2.09: Add LINE Login OAuth 2.0 integration (Channel 2012663665), user auto-matching via email/profile binding, and popup/redirect login handler.
  * - V1.2.08: Add Thai official holidays auto-import (2569-2573), PM calendar holiday auto-seed, and ITSUPPORT purple role pill badge.
@@ -68,7 +69,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.10';
+const APP_VERSION = 'V1.2.11';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -11399,6 +11400,7 @@ function project70Configuration_() {
           'sticker_provider_address',
           'sticker_seq_prefix',
           'sticker_layout',
+          'sticker_font_scale',
           'sticker_logo_file_id',
           'sticker_provider_logo_file_id',
         ].map((k) => [k, settings[k] || '']),
@@ -11443,6 +11445,7 @@ function itsdImpl_saveProjectConfiguration_(token, input) {
     'sticker_provider_address',
     'sticker_seq_prefix',
     'sticker_layout',
+    'sticker_font_scale',
   ].forEach(
     (k) =>
       (settings[k] = boundedText_(
