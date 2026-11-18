@@ -8707,15 +8707,15 @@ function project70RenderSticker(mount, d) {
         <button type="button" class="primary" id="project70SaveSticker">บันทึกแม่แบบสติ๊กเกอร์</button>
         <button type="button" class="outline" id="project70FillDefaultSticker">เติมค่ามาตรฐานสติ๊กเกอร์</button>
         <button type="button" class="outline" id="project70PreviewStickerPrint"><span class="material-symbols-rounded">print</span> พิมพ์ตัวอย่าง 1 แผ่น (A4 PDF)</button>
-        <div class="stk-font-scale-inline" title="ปรับขนาดตัวอักษรสติ๊กเกอร์ 100% - 150%">
-          <span class="stk-scale-label"><span class="material-symbols-rounded" style="font-size:17px;vertical-align:middle;">format_size</span> ขนาด:</span>
-          <div class="stk-font-pill-group" role="group" aria-label="เลือกระดับขนาดตัวอักษร">
-            ${[100, 110, 120, 130, 140, 150].map(pct => `
-              <button type="button" class="stk-font-pill-btn ${String(stk.sticker_font_scale || '100') === String(pct) ? 'active' : ''}" data-scale="${pct}">
-                ${pct}%
-              </button>
-            `).join('')}
+        <div class="stk-font-slider-capsule" title="ปรับขนาดตัวอักษรสติ๊กเกอร์">
+          <span class="stk-slider-a-sm" aria-hidden="true">A</span>
+          <div class="stk-slider-track-wrap">
+            <input type="range" id="project70StickerFontScaleRange" class="stk-slider-input" min="100" max="150" step="10" value="${stk.sticker_font_scale || '100'}" aria-label="ปรับขนาดตัวอักษร">
+            <div class="stk-slider-dots" aria-hidden="true">
+              <span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
           </div>
+          <span class="stk-slider-a-lg" aria-hidden="true">A</span>
           <input type="hidden" id="project70StickerFontScale" value="${stk.sticker_font_scale || '100'}">
         </div>
       </div>
@@ -8812,9 +8812,7 @@ function project70RenderSticker(mount, d) {
     uiSetValue('project70StickerSeqPrefix', STICKER_DEFAULTS.sticker_seq_prefix);
     uiSetValue('project70StickerLayout', STICKER_DEFAULTS.sticker_layout);
     uiSetValue('project70StickerFontScale', STICKER_DEFAULTS.sticker_font_scale || '100');
-    mount.querySelectorAll('.stk-font-pill-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.scale === String(STICKER_DEFAULTS.sticker_font_scale || '100'));
-    });
+    if ($('project70StickerFontScaleRange')) $('project70StickerFontScaleRange').value = STICKER_DEFAULTS.sticker_font_scale || '100';
     const batchPrefixEl = $('stkBatchSeqPrefix');
     if (batchPrefixEl) batchPrefixEl.value = STICKER_DEFAULTS.sticker_seq_prefix;
     project70UpdateStickerPreview();
@@ -8857,21 +8855,20 @@ function project70RenderSticker(mount, d) {
     });
   }
 
+  const fontScaleRange = $('project70StickerFontScaleRange');
   const fontScaleHidden = $('project70StickerFontScale');
-  const fontPillBtns = mount.querySelectorAll('.stk-font-pill-btn');
 
-  function updateFontScaleUi(val) {
+  function updateFontScale(val) {
     const scaleStr = String(val || '100');
     if (fontScaleHidden) fontScaleHidden.value = scaleStr;
-    fontPillBtns.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.scale === scaleStr);
-    });
+    if (fontScaleRange && fontScaleRange.value !== scaleStr) fontScaleRange.value = scaleStr;
     project70UpdateStickerPreview();
   }
 
-  fontPillBtns.forEach(btn => {
-    btn.onclick = () => updateFontScaleUi(btn.dataset.scale);
-  });
+  if (fontScaleRange) {
+    fontScaleRange.addEventListener('input', (e) => updateFontScale(e.target.value));
+    fontScaleRange.addEventListener('change', (e) => updateFontScale(e.target.value));
+  }
 
   project70UpdateStickerPreview();
   stickerFilterInventory();

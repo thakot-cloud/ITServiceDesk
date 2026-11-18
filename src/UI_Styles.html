@@ -11303,77 +11303,141 @@ html[data-theme='light'] .ui-side-tabs button.active {
   font-weight: 600;
   color: var(--theme-primary, #0284c7);
 }
-/* V1.2.11: Equipment maintenance sticker font scale controls (100% - 150%) placed inline in action bar */
+/* V1.2.11: Equipment maintenance sticker font scale stepped slider capsule (A —●— A) */
 .stk-actions-bar {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
 }
-.stk-font-scale-inline {
+.stk-font-slider-capsule {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   margin-left: 4px;
-  padding: 3px 8px 3px 10px;
+  padding: 0 14px;
   background: var(--theme-raised, #f1f5f9);
   border: 1px solid var(--theme-border, #cbd5e1);
-  border-radius: 6px;
+  border-radius: 999px;
   height: 40px;
   box-sizing: border-box;
+  user-select: none;
 }
-.stk-scale-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--theme-heading, #1e293b);
-  display: inline-flex;
+.stk-slider-a-sm {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--theme-muted, #64748b);
+  line-height: 1;
+}
+.stk-slider-a-lg {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--theme-heading, #0f172a);
+  line-height: 1;
+}
+.stk-slider-track-wrap {
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 3px;
-  white-space: nowrap;
+  width: 110px;
+  height: 24px;
 }
-.stk-font-pill-group {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-}
-.stk-font-pill-btn {
-  padding: 3px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 5px;
-  border: 1px solid var(--theme-border, #cbd5e1);
-  background: var(--theme-panel, #ffffff);
-  color: var(--theme-text, #334155);
+.stk-slider-input {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
-  transition: all 0.15s ease;
-  line-height: 1.4;
-  white-space: nowrap;
 }
-.stk-font-pill-btn:hover {
-  border-color: var(--theme-primary, #0284c7);
-  color: var(--theme-primary, #0284c7);
+.stk-slider-input:focus {
+  outline: none;
 }
-.stk-font-pill-btn.active {
-  background: var(--theme-primary, #0284c7);
-  border-color: var(--theme-primary, #0284c7);
-  color: #ffffff;
+.stk-slider-input::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
 }
-html[data-theme='dark'] .stk-font-scale-inline {
+.stk-slider-input::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+.stk-slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0284c7;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  margin-top: -6px;
+  transition: transform 0.1s ease;
+}
+.stk-slider-input::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.stk-slider-input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #0284c7;
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+.stk-slider-dots {
+  position: absolute;
+  top: 50%;
+  left: 6px;
+  right: 6px;
+  transform: translateY(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+.stk-slider-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+
+html[data-theme='dark'] .stk-font-slider-capsule {
   background: #1e293b;
   border-color: #334155;
 }
-html[data-theme='dark'] .stk-scale-label {
+html[data-theme='dark'] .stk-slider-a-sm {
+  color: #94a3b8;
+}
+html[data-theme='dark'] .stk-slider-a-lg {
   color: #f1f5f9;
 }
-html[data-theme='dark'] .stk-font-pill-btn {
-  background: #0f172a;
-  border-color: #334155;
-  color: #cbd5e1;
+html[data-theme='dark'] .stk-slider-input::-webkit-slider-runnable-track {
+  background: #475569;
 }
-html[data-theme='dark'] .stk-font-pill-btn.active {
-  background: var(--theme-primary, #0284c7);
-  border-color: var(--theme-primary, #0284c7);
-  color: #ffffff;
+html[data-theme='dark'] .stk-slider-input::-moz-range-track {
+  background: #475569;
+}
+html[data-theme='dark'] .stk-slider-dots span {
+  background: #64748b;
+}
+html[data-theme='dark'] .stk-slider-input::-webkit-slider-thumb {
+  background: #38bdf8;
+  border-color: #0f172a;
+}
+html[data-theme='dark'] .stk-slider-input::-moz-range-thumb {
+  background: #38bdf8;
+  border-color: #0f172a;
 }
 .sticker-inventory-table-wrap {
   max-height: 480px;
