@@ -8566,28 +8566,6 @@ html, body {
 </head>
 <body>
 ${pagesHtml}
-<script>
-function fitSheet() {
-  if (window.self !== window.top) {
-    const sheet = document.querySelector('.stk-sheet');
-    if (!sheet) return;
-    const vw = document.documentElement.clientWidth || window.innerWidth;
-    const vh = document.documentElement.clientHeight || window.innerHeight;
-    const baseW = 794;
-    const baseH = 1123;
-    const scale = Math.min(vw / baseW, vh / baseH);
-    if (scale > 0) {
-      sheet.style.transform = 'scale(' + scale + ')';
-      sheet.style.transformOrigin = 'top center';
-    }
-  }
-}
-window.addEventListener('resize', fitSheet);
-window.addEventListener('DOMContentLoaded', fitSheet);
-window.addEventListener('load', fitSheet);
-setTimeout(fitSheet, 30);
-setTimeout(fitSheet, 120);
-</script>
 </body>
 </html>`;
 }
@@ -8599,6 +8577,24 @@ function project70UpdateStickerPreview() {
   const perPage = getStickerPerPage(template.layout);
   const sampleItems = project70StickerSampleData(perPage);
   frame.srcdoc = sticker70Html(sampleItems, template, 1);
+  const applyScale = () => {
+    try {
+      const doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      if (!doc) return;
+      const sheet = doc.querySelector('.stk-sheet');
+      if (!sheet) return;
+      const vw = frame.clientWidth || 650;
+      const vh = frame.clientHeight || 920;
+      const scale = Math.min(vw / 794, vh / 1123);
+      if (scale > 0 && scale < 2) {
+        sheet.style.transform = 'scale(' + scale + ')';
+        sheet.style.transformOrigin = 'top center';
+      }
+    } catch (_) {}
+  };
+  frame.onload = applyScale;
+  setTimeout(applyScale, 50);
+  setTimeout(applyScale, 200);
 }
 
 async function project70PreviewStickerPrint(button) {
