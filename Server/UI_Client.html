@@ -1,15 +1,16 @@
 <!--
   Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
   File: UI_Client.html
-  Version: V1.2.11
+  Version: V1.2.12
   Stage: production
   Purpose: Client controllers and explicit initialization order
   Notes:
   - No secrets in source code
   - Preserve existing data and backward compatibility
   - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
-  Modified: 2026-11-18
+  Modified: 2026-11-19
   Change History:
+  - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
   - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
   - V1.2.10: Add LINE and Google social account binding cards and action buttons in user profile modal.
   - V1.2.09: Add loginWithLine OAuth 2.0 integration, popup postMessage listener, and session sync.
@@ -9114,6 +9115,20 @@ const $ = (id) => document.getElementById(id),
 const INFLIGHT_RPC_ = Object.create(null);
 const READ_ONLY_RPCS_ = new Set([
   'getBootstrap',
+  'getPublicSystemBranding',
+  'getMasterData',
+  'getAdminUsers',
+  'getAdminPermissions',
+  'getAdminSettings',
+  'getCalendarEntries',
+  'getServiceReport',
+  'getActionPermissionMatrix',
+  'getPasswordPolicy',
+  'getProjectConfiguration',
+  'getSystemIconData',
+  'getPublicSystemIconData',
+  'getAssetLicenses',
+  'getTicketHistory',
   'lineLegacyListInbox',
   'admin35Overview',
   'admin35Users',
@@ -9122,6 +9137,9 @@ const READ_ONLY_RPCS_ = new Set([
   'admin35Audit',
   'admin39SystemData',
   'pmCalendarBootstrap_',
+  'pmGetCalendar',
+  'pmGetPlanning',
+  'pmGetPlanningDetail',
 ]);
 const DEBOUNCE_TIMERS_ = Object.create(null);
 function debounceCall_(key, fn, wait) {
@@ -9165,8 +9183,49 @@ function clearBootCache_() {
   } catch (_) {}
 }
 
+function masterCacheKey_() {
+  const t = String(typeof token !== 'undefined' ? token : '');
+  if (!t) return '';
+  let h = 2166136261;
+  for (let i = 0; i < t.length; i++) h = Math.imul(h ^ t.charCodeAt(i), 16777619);
+  return 'itsd_master_swr_' + (h >>> 0).toString(36);
+}
+function readMasterCache_() {
+  try {
+    const key = masterCacheKey_();
+    if (!key) return null;
+    const raw = sessionStorage.getItem(key);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.data || Date.now() - Number(parsed.ts || 0) > 180000) {
+      sessionStorage.removeItem(key);
+      return null;
+    }
+    return parsed.data;
+  } catch (_) {
+    return null;
+  }
+}
+function writeMasterCache_(data) {
+  try {
+    const key = masterCacheKey_();
+    if (!key || !data) return;
+    sessionStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  } catch (_) {}
+}
+function clearMasterCache_() {
+  try {
+    const key = masterCacheKey_();
+    if (key) sessionStorage.removeItem(key);
+  } catch (_) {}
+}
+
 const call = (name, ...args) => {
   const isRead = READ_ONLY_RPCS_.has(name);
+  if (name === 'getMasterData' && args.length <= 1) {
+    const cachedMaster = readMasterCache_();
+    if (cachedMaster) return Promise.resolve(cachedMaster);
+  }
   let rpcKey = '';
   if (isRead) {
     try {
@@ -9179,7 +9238,13 @@ const call = (name, ...args) => {
   const p = new Promise((resolve, reject) =>
     google.script.run
       .withSuccessHandler((res) => {
-        if (!isRead && name !== 'login' && name !== 'logout') clearBootCache_();
+        if (!isRead && name !== 'login' && name !== 'logout') {
+          clearBootCache_();
+          clearMasterCache_();
+        }
+        if (name === 'getMasterData' && res) {
+          writeMasterCache_(res);
+        }
         resolve(res);
       })
       .withFailureHandler((e) => reject(Error(normalizeUiError(e))))

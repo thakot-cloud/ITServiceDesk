@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Api.js
- * Version: V1.2.11
+ * Version: V1.2.12
  * Stage: production
  * Purpose: Compatibility facade for existing browser and maintenance callers
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-18
+ * Modified: 2026-11-19
  * Change History:
+ * - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
  * - V1.2.11: Version bump for sticker font scale adjustment controls.
  * - V1.2.10: Expose bindGoogleAccount and unbindGoogleAccount for social profile account management.
  * - V1.2.09: Expose getLineLoginUrl, bindLineAccount, and unbindLineAccount for LINE OAuth 2.0.

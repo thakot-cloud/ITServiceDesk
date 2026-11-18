@@ -1,15 +1,16 @@
 /**
  * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
  * File: Server.js
- * Version: V1.2.11
+ * Version: V1.2.12
  * Stage: production
  * Purpose: Private runtime, feature services and platform adapters
  * Notes:
  * - No secrets in source code
  * - Preserve existing data and backward compatibility
  * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-18
+ * Modified: 2026-11-19
  * Change History:
+ * - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
  * - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
  * - V1.2.10: Add LINE and Google social account binding/unbinding services in profile, return social bind status in publicUser_.
  * - V1.2.09: Add LINE Login OAuth 2.0 integration (Channel 2012663665), user auto-matching via email/profile binding, and popup/redirect login handler.
@@ -69,7 +70,7 @@
  * - V1.0.76: Modular production structure with compatible public APIs.
  */
 // apps/webapp/src/server/app/release.js
-const APP_VERSION = 'V1.2.11';
+const APP_VERSION = 'V1.2.12';
 
 // apps/webapp/src/server/platform/environment.js
 const DB_ID =
@@ -2756,8 +2757,11 @@ const SHEET_CACHEABLE_ = {
   APP_ROLES: true,
   APP_ROLE_PERMISSIONS: true,
   APP_ROLE_ACTION_PERMISSIONS: true,
+  APP_LOOKUPS: true,
   MST_LOOKUP: true,
   MST_DEVICE_MODELS: true,
+  APP_USER_PROFILE: true,
+  TICKET_SERVICE_REPORT: true,
 };
 
 function sheetCacheKey_(kind, name) {
@@ -3327,14 +3331,21 @@ function dashboardAnalyticsFor_(incidents, reportedRaw, scope) {
 }
 
 // apps/webapp/src/server/app/bootstrap-service.js
-function publicUser_(u) {
+function publicUser_(u, profileMap, settingsRows) {
   let pictureUrl = '';
   let pictureFileId = '';
   let email = '';
   let lineBound = false;
   let lineUserId = '';
   try {
-    if (book_().getSheetByName('APP_USER_PROFILE')) {
+    if (profileMap && profileMap.has(u.user_id)) {
+      const profile = profileMap.get(u.user_id);
+      if (profile) {
+        pictureUrl = profile.picture_url || '';
+        pictureFileId = profile.picture_file_id || '';
+        email = profile.email || '';
+      }
+    } else if (book_().getSheetByName('APP_USER_PROFILE')) {
       const profile = find_('APP_USER_PROFILE', 'user_id', u.user_id);
       if (profile) {
         pictureUrl = profile.picture_url || '';
@@ -3342,21 +3353,20 @@ function publicUser_(u) {
         email = profile.email || '';
       }
     }
-    if (book_().getSheetByName('APP_SETTINGS')) {
-      const userLine = find_('APP_SETTINGS', 'key', 'USER_LINE_' + u.user_id);
-      if (userLine && userLine.value) {
+    const settings = settingsRows || (book_().getSheetByName('APP_SETTINGS') ? rows_('APP_SETTINGS') : []);
+    const userLineKey = 'USER_LINE_' + u.user_id;
+    const bindKey = 'LINE_BIND_';
+    for (let i = 0; i < settings.length; i++) {
+      const s = settings[i];
+      if (s.key === userLineKey && s.value) {
         lineBound = true;
-        lineUserId = String(userLine.value).trim();
-      } else {
-        const settings = rows_('APP_SETTINGS');
-        for (let i = 0; i < settings.length; i++) {
-          const s = settings[i];
-          if (String(s.key || '').startsWith('LINE_BIND_') && s.value === u.user_id) {
-            lineBound = true;
-            lineUserId = s.key.replace('LINE_BIND_', '');
-            break;
-          }
-        }
+        lineUserId = String(s.value).trim();
+        break;
+      }
+      if (String(s.key || '').startsWith(bindKey) && s.value === u.user_id) {
+        lineBound = true;
+        lineUserId = s.key.slice(bindKey.length);
+        break;
       }
     }
   } catch (_) {}
@@ -3449,7 +3459,12 @@ function itsdImpl_getBootstrap_(token) {
     })),
     org,
     users: hasPermissionForUser_(u, 'USER_MANAGEMENT', 'VIEW')
-      ? rows_('APP_USERS').map(publicUser_)
+      ? (function () {
+          const profiles = book_().getSheetByName('APP_USER_PROFILE') ? rows_('APP_USER_PROFILE') : [];
+          const profMap = new Map(profiles.map((p) => [p.user_id, p]));
+          const setRows = rows_('APP_SETTINGS');
+          return rows_('APP_USERS').map((usr) => publicUser_(usr, profMap, setRows));
+        })()
       : [],
     types: lookupLabels_('PROBLEM', TYPES),
     devices: lookupLabels_('DEVICE', DEVICE_DEFAULTS),
@@ -4889,15 +4904,17 @@ function itsdImpl_getAdminPermissions_(token) {
       locked: false,
       user_count: counts[String(r.role_code || '').toUpperCase()] || 0,
     }));
+  // Performance Optimization: O(1) indexed Map lookup instead of O(R * M * P) nested find()
+  const permMap = new Map();
+  permissionRows.forEach((x) => {
+    const key = String(x.role_code || '').trim().toUpperCase() + ':' + String(x.module_code || '').trim().toUpperCase();
+    permMap.set(key, x);
+  });
   const matrix = {};
   roles.forEach((r) => {
     matrix[r.code] = {};
     ADMIN35_MODULES.forEach((m) => {
-      const p = permissionRows.find(
-        (x) =>
-          String(x.role_code || '').toUpperCase() === r.code &&
-          String(x.module_code || '').toUpperCase() === m.code,
-      );
+      const p = permMap.get(r.code + ':' + m.code);
       const fallback = admin55DefaultRights_(r.code, m.code);
       matrix[r.code][m.code] = {
         view: p ? admin35Bool_(p.can_view) : fallback.view,
@@ -4991,6 +5008,61 @@ function itsdImpl_saveAdminRole_(token, data) {
   });
 }
 
+// Performance Optimization: Batch upsert role permissions to eliminate cell/row roundtrips in loops
+function batchUpsertPermissions_(entries) {
+  if (!entries || !entries.length) return;
+  const s = sheet_('APP_ROLE_PERMISSIONS');
+  const h = header_('APP_ROLE_PERMISSIONS');
+  const roleIdx = h.indexOf('role_code');
+  const modIdx = h.indexOf('module_code');
+  const dataRange = s.getDataRange();
+  const allValues = dataRange.getValues();
+
+  // O(1) Map of existing rows by role:module
+  const existingMap = new Map();
+  for (let r = 1; r < allValues.length; r++) {
+    const k = String(allValues[r][roleIdx] || '').trim().toUpperCase() + ':' + String(allValues[r][modIdx] || '').trim().toUpperCase();
+    existingMap.set(k, r);
+  }
+
+  const toAppend = [];
+  let updatedExisting = false;
+
+  entries.forEach(({ role_code, module_code, patch }) => {
+    const k = String(role_code || '').trim().toUpperCase() + ':' + String(module_code || '').trim().toUpperCase();
+    const rowIdx = existingMap.get(k);
+    if (rowIdx !== undefined) {
+      Object.keys(patch).forEach((colKey) => {
+        const c = h.indexOf(colKey);
+        if (c >= 0) {
+          allValues[rowIdx][c] = safeSheetValue_(patch[colKey]);
+          updatedExisting = true;
+        }
+      });
+    } else {
+      const fullObj = Object.assign(
+        {
+          permission_id: 'PERM-' + role_code + '-' + module_code,
+          role_code,
+          module_code,
+        },
+        patch,
+      );
+      const rowArr = h.map((colKey) => safeSheetValue_(fullObj[colKey] === undefined ? '' : fullObj[colKey]));
+      toAppend.push(rowArr);
+      existingMap.set(k, allValues.length + toAppend.length - 1);
+    }
+  });
+
+  if (updatedExisting && allValues.length > 1) {
+    dataRange.setValues(allValues);
+  }
+  if (toAppend.length > 0) {
+    s.getRange(s.getLastRow() + 1, 1, toAppend.length, h.length).setValues(toAppend);
+  }
+  resetRows_('APP_ROLE_PERMISSIONS');
+}
+
 // apps/webapp/src/server/features/permissions/module-permissions.js
 function itsdImpl_saveAdminPermissions_(token, roleCode, matrix) {
   const actor = requirePermission_(token, 'PERMISSION_MANAGEMENT', 'MANAGE');
@@ -5021,19 +5093,13 @@ function itsdImpl_saveAdminPermissions_(token, roleCode, matrix) {
     throw Error('ADMIN ต้องคงสิทธิ์เข้าหน้ากำหนดสิทธิ์และบันทึกสิทธิ์ เพื่อกู้คืนระบบ');
   return lock_(() => {
     ensureAdminModuleSchema_();
-    updates.forEach(({ module, patch }) => {
-      const old = rows_('APP_ROLE_PERMISSIONS').find(
-        (x) =>
-          String(x.role_code || '').toUpperCase() === roleCode &&
-          String(x.module_code || '').toUpperCase() === module.code,
-      );
-      if (old) update_('APP_ROLE_PERMISSIONS', old.__row, patch);
-      else
-        append_(
-          'APP_ROLE_PERMISSIONS',
-          Object.assign({ permission_id: 'PERM-' + roleCode + '-' + module.code }, patch),
-        );
-    });
+    batchUpsertPermissions_(
+      updates.map(({ module, patch }) => ({
+        role_code: roleCode,
+        module_code: module.code,
+        patch,
+      })),
+    );
     writeAudit_(
       actor,
       'PERMISSION_CHANGE',
@@ -5080,40 +5146,34 @@ function itsdImpl_saveAdminPermissionChanges_(token, changes) {
   if (!writes.length) throw Error('ไม่มีรายการสิทธิ์ที่เปลี่ยนแปลง');
   return lock_(() => {
     ensureAdminModuleSchema_();
-    writes.forEach(({ role, module, entry }) => {
-      const patch = {
+    batchUpsertPermissions_(
+      writes.map(({ role, module, entry }) => ({
         role_code: role,
         module_code: module.code,
-        module_name: module.name,
-        can_view: entry.view,
-        can_create: entry.create,
-        can_edit: entry.edit,
-        can_delete: entry.delete,
-        can_export: entry.export,
-        can_manage: entry.manage,
-        active: true,
-        updated_at: now_(),
-        updated_by: actor.user_id,
-      };
-      const current = rows_('APP_ROLE_PERMISSIONS').find(
-        (x) =>
-          String(x.role_code || '').toUpperCase() === role &&
-          String(x.module_code || '').toUpperCase() === module.code,
-      );
-      if (current) update_('APP_ROLE_PERMISSIONS', current.__row, patch);
-      else
-        append_(
-          'APP_ROLE_PERMISSIONS',
-          Object.assign({ permission_id: 'PERM-' + role + '-' + module.code }, patch),
-        );
+        patch: {
+          role_code: role,
+          module_code: module.code,
+          module_name: module.name,
+          can_view: entry.view,
+          can_create: entry.create,
+          can_edit: entry.edit,
+          can_delete: entry.delete,
+          can_export: entry.export,
+          can_manage: entry.manage,
+          active: true,
+          updated_at: now_(),
+          updated_by: actor.user_id,
+        },
+      })),
+    );
+    // Read-back verification with O(1) indexed Map
+    const currentRows = rows_('APP_ROLE_PERMISSIONS');
+    const verifyMap = new Map();
+    currentRows.forEach((r) => {
+      verifyMap.set(String(r.role_code || '').toUpperCase() + ':' + String(r.module_code || '').toUpperCase(), r);
     });
-    // Read-back from the sheet (cache reset by update_/append_) before claiming success.
     writes.forEach(({ role, module, entry }) => {
-      const row = rows_('APP_ROLE_PERMISSIONS').find(
-        (x) =>
-          String(x.role_code || '').toUpperCase() === role &&
-          String(x.module_code || '').toUpperCase() === module.code,
-      );
+      const row = verifyMap.get(role + ':' + module.code);
       if (!row || fields.some((f) => admin35Bool_(row['can_' + f]) !== entry[f]))
         throw Error('ตรวจสอบข้อมูลสิทธิ์หลังบันทึกไม่สำเร็จ: ' + role + '/' + module.code);
     });
@@ -5915,33 +5975,42 @@ function ensureAdminModuleSchema_() {
         updated_by: 'SYSTEM',
       });
   });
+  // Performance Optimization: Batch check and insert missing permissions
+  const existingRows = rows_('APP_ROLE_PERMISSIONS');
+  const existingSet = new Set(
+    existingRows.map(
+      (x) => String(x.role_code || '').toUpperCase() + ':' + String(x.module_code || '').toUpperCase(),
+    ),
+  );
+  const missingPerms = [];
   ADMIN35_ROLE_CODES.forEach((role) =>
     ADMIN35_MODULES.forEach((module) => {
-      const existing = rows_('APP_ROLE_PERMISSIONS').find(
-        (x) =>
-          String(x.role_code || '').toUpperCase() === role &&
-          String(x.module_code || '').toUpperCase() === module.code,
-      );
-      if (!existing) {
+      const key = role + ':' + module.code;
+      if (!existingSet.has(key)) {
         const d = admin55DefaultRights_(role, module.code);
-        append_('APP_ROLE_PERMISSIONS', {
-          permission_id: 'PERM-' + role + '-' + module.code,
+        missingPerms.push({
           role_code: role,
           module_code: module.code,
-          module_name: module.name,
-          can_view: d.view,
-          can_create: d.create,
-          can_edit: d.edit,
-          can_delete: d.delete,
-          can_export: d.export,
-          can_manage: d.manage,
-          active: true,
-          updated_at: now_(),
-          updated_by: 'SYSTEM',
+          patch: {
+            module_name: module.name,
+            can_view: d.view,
+            can_create: d.create,
+            can_edit: d.edit,
+            can_delete: d.delete,
+            can_export: d.export,
+            can_manage: d.manage,
+            active: true,
+            updated_at: now_(),
+            updated_by: 'SYSTEM',
+          },
         });
+        existingSet.add(key);
       }
     }),
   );
+  if (missingPerms.length > 0) {
+    batchUpsertPermissions_(missingPerms);
+  }
   [
     ['system_icon_file_id', ''],
     ['system_icon_filename', ''],
@@ -6300,12 +6369,14 @@ function permission_seedActionPermissions_() {
     current.map((x) => String(x.role_key || '').toUpperCase() + '|' + String(x.action_key || '')),
   );
   const date = now_();
+  // Performance Optimization: Batch collect and insert action permissions
+  const toAppendActions = [];
   PERMISSION_ACTION_DEFAULTS_
     .concat(PERMISSION_LINE_ACTION_DEFAULTS_, PERMISSION_LICENSE_ACTION_DEFAULTS_)
     .forEach((x) => {
       const key = x[1] + '|' + x[3];
       if (used.has(key)) return;
-      append_('APP_ROLE_ACTION_PERMISSIONS', {
+      toAppendActions.push({
         permission_id: x[0],
         role_key: x[1],
         module_key: x[2],
@@ -6320,6 +6391,15 @@ function permission_seedActionPermissions_() {
       });
       used.add(key);
     });
+  if (toAppendActions.length > 0) {
+    const sActions = sheet_('APP_ROLE_ACTION_PERMISSIONS');
+    const hActions = header_('APP_ROLE_ACTION_PERMISSIONS');
+    const batchData = toAppendActions.map((o) =>
+      hActions.map((k) => safeSheetValue_(o[k] === undefined ? '' : o[k])),
+    );
+    sActions.getRange(sActions.getLastRow() + 1, 1, batchData.length, hActions.length).setValues(batchData);
+    resetRows_('APP_ROLE_ACTION_PERMISSIONS');
+  }
   PERMISSION_ACTION_SEEDED_ = true;
   return true;
 }
@@ -11139,20 +11219,34 @@ function itsdImpl_adoptCurrentProjectBinding_(token, input) {
 }
 
 // apps/webapp/src/server/features/projects/project-installer.js
+// Performance Optimization: Batch array operations (setValues) instead of loop setValue/appendRow
 function project70Stamp_(book, binding) {
   const sheet = book.getSheetByName('APP_SETTINGS'),
-    values = sheet.getDataRange().getDisplayValues();
+    range = sheet.getDataRange(),
+    values = range.getValues();
   const markers = {
     itsd_binding_project_id: binding.project_id,
     itsd_binding_script_id: binding.script_id,
     itsd_binding_environment: binding.environment,
     itsd_binding_timezone: binding.timezone,
   };
+  const toAppend = [];
+  let updatedExisting = false;
   Object.keys(markers).forEach((k) => {
-    const index = values.findIndex((r) => r[0] === k);
-    if (index > 0) sheet.getRange(index + 1, 2).setValue(markers[k]);
-    else sheet.appendRow([k, markers[k]]);
+    const index = values.findIndex((r) => String(r[0]) === k);
+    if (index >= 0) {
+      values[index][1] = markers[k];
+      updatedExisting = true;
+    } else {
+      toAppend.push([k, markers[k]]);
+    }
   });
+  if (updatedExisting && values.length > 0) {
+    range.setValues(values);
+  }
+  if (toAppend.length > 0) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, toAppend.length, 2).setValues(toAppend);
+  }
   resetRows_('APP_SETTINGS');
 }
 
