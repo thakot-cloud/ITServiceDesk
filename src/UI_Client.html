@@ -8196,10 +8196,11 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
         cardHeight: '44.5mm',
         gridCols: '95mm 95mm',
         gridRows: 'repeat(6, 44.5mm)',
-        colGap: '6mm',
-        rowGap: '2.5mm',
-        sheetWidth: '198mm',
-        pageMargin: '6mm 6mm',
+        colGap: '10mm',
+        rowGap: '3.5mm',
+        sheetWidth: '210mm',
+        pageMargin: '0',
+        sheetPadding: '0.5cm',
         headerPadding: '0.8mm 1.8mm',
         logoSize: '9.5mm',
         titleFontSize: '5.5pt',
@@ -8224,10 +8225,11 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
         cardHeight: '68mm',
         gridCols: '63.5mm 63.5mm 63.5mm',
         gridRows: 'repeat(4, 68mm)',
-        colGap: '3.5mm',
-        rowGap: '3.5mm',
-        sheetWidth: '198mm',
-        pageMargin: '6.5mm 6mm',
+        colGap: '4.5mm',
+        rowGap: '4.5mm',
+        sheetWidth: '210mm',
+        pageMargin: '0',
+        sheetPadding: '0.5cm',
         headerPadding: '1mm 1.5mm',
         logoSize: '10mm',
         titleFontSize: '5.2pt',
@@ -8252,10 +8254,11 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
         cardHeight: '53.5mm',
         gridCols: '63.5mm 63.5mm 63.5mm',
         gridRows: 'repeat(5, 53.5mm)',
-        colGap: '3.5mm',
-        rowGap: '2.5mm',
-        sheetWidth: '198mm',
-        pageMargin: '6.5mm 6mm',
+        colGap: '4.5mm',
+        rowGap: '4.5mm',
+        sheetWidth: '210mm',
+        pageMargin: '0',
+        sheetPadding: '0.5cm',
         headerPadding: '0.8mm 1.5mm',
         logoSize: '8.5mm',
         titleFontSize: '4.8pt',
@@ -8280,10 +8283,11 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
         cardHeight: '66mm',
         gridCols: '95mm 95mm',
         gridRows: 'repeat(4, 66mm)',
-        colGap: '6mm',
-        rowGap: '4.5mm',
-        sheetWidth: '198mm',
-        pageMargin: '7mm 6mm',
+        colGap: '10mm',
+        rowGap: '7mm',
+        sheetWidth: '210mm',
+        pageMargin: '0',
+        sheetPadding: '0.5cm',
         headerPadding: '1.5mm 2.2mm',
         logoSize: '12mm',
         titleFontSize: '6.8pt',
@@ -8309,10 +8313,11 @@ function getStickerLayoutParams(layoutStr, fontScaleStr) {
         cardHeight: '53.5mm',
         gridCols: '95mm 95mm',
         gridRows: 'repeat(5, 53.5mm)',
-        colGap: '6mm',
-        rowGap: '3.5mm',
-        sheetWidth: '198mm',
-        pageMargin: '7mm 6mm',
+        colGap: '10mm',
+        rowGap: '4.5mm',
+        sheetWidth: '210mm',
+        pageMargin: '0',
+        sheetPadding: '0.5cm',
         headerPadding: '1.2mm 2mm',
         logoSize: '11mm',
         titleFontSize: '6.2pt',
@@ -8372,7 +8377,7 @@ function sticker70Html(items, template, startSeq = 1) {
 * { box-sizing: border-box; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 @page {
   size: A4 portrait;
-  margin: ${lp.pageMargin};
+  margin: 0;
 }
 html, body {
   margin: 0;
@@ -8383,17 +8388,23 @@ html, body {
 }
 .stk-sheet {
   width: ${lp.sheetWidth};
-  min-height: 282mm;
-  margin: 0 auto 12mm;
+  min-height: 297mm;
+  margin: 0 auto;
   background: #fff;
   display: grid;
   grid-template-columns: ${lp.gridCols};
   grid-template-rows: ${lp.gridRows};
   column-gap: ${lp.colGap};
   row-gap: ${lp.rowGap};
+  justify-content: center;
+  align-content: start;
   page-break-after: always;
   break-after: page;
-  padding: 1mm 1mm;
+  padding-top: 0.5cm;
+  padding-bottom: 0.5cm;
+  padding-left: 0.5cm;
+  padding-right: 0.5cm;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
 }
 .stk-sheet:last-child {
   page-break-after: avoid;
@@ -8521,10 +8532,22 @@ html, body {
 @media print {
   html, body {
     background: #fff;
+    margin: 0;
+    padding: 0;
   }
   .stk-sheet {
     margin: 0;
     box-shadow: none;
+    padding-top: 0.5cm;
+    padding-bottom: 0.5cm;
+    padding-left: 0.5cm;
+    padding-right: 0.5cm;
+    page-break-after: always;
+    break-after: page;
+  }
+  .stk-sheet:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
   }
 }
 </style>
