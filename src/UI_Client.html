@@ -237,6 +237,23 @@ function applyBootstrapState_(fresh) {
   return true;
 }
 
+// Performance Optimization: Non-blocking UI shell skeleton loader while async fetching data
+function renderSkeletonLoader_() {
+  const content = $('content');
+  if (!content || (content.children && content.children.length > 0)) return;
+  content.innerHTML = `
+    <div class="skeleton-shell" style="padding:24px;display:flex;flex-direction:column;gap:18px;" aria-busy="true" aria-label="กำลังโหลดข้อมูล...">
+      <div style="height:34px;width:240px;border-radius:10px;background:rgba(128,128,128,0.18);"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;">
+        <div style="height:90px;border-radius:12px;background:rgba(128,128,128,0.12);"></div>
+        <div style="height:90px;border-radius:12px;background:rgba(128,128,128,0.12);"></div>
+        <div style="height:90px;border-radius:12px;background:rgba(128,128,128,0.12);"></div>
+      </div>
+      <div style="height:280px;border-radius:14px;background:rgba(128,128,128,0.08);"></div>
+    </div>
+  `;
+}
+
 async function refresh() {
   const cached = readBootCache_();
   let renderedFromCache = false;
@@ -244,7 +261,10 @@ async function refresh() {
     renderedFromCache = applyBootstrapState_(cached);
     if (renderedFromCache) render();
   }
-  if (!renderedFromCache) loading(true);
+  if (!renderedFromCache) {
+    loading(true);
+    renderSkeletonLoader_();
+  }
   try {
     const fresh = await call('getBootstrap', token);
     writeBootCache_(fresh);
