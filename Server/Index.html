@@ -1,45 +1,53 @@
 <!--
-  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
-  File: Index.html
- * Version: V1.2.08
- * Stage: production
- * Purpose: Web application shell and generated asset includes
- * Notes:
- * - No secrets in source code
- * - Preserve existing data and backward compatibility
- * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-17
- * Change History:
+ * ==============================================================================
+ * Project       : IT Service Desk (ITSD Enterprise Edition)
+ * Script ID     : 1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7
+ * Repository    : https://github.com/thakot-cloud/ITServiceDesk
+ * File          : Index.html
+ * Module/Layer  : Frontend / Web Application Shell & Main Layout
+ * Description   : โครงสร้างหน้าเว็บหลักของระบบ (Single Page Application Shell), ฟอร์มเข้าสู่ระบบ และการโหลด Asset
+ * Version       : 1.2.12
+ * Author        : ITSD Engineering Team / LongZe Design
+ * Created Date  : 2026-10-26
+ * Last Modified : 2026-11-19
+ * License       : Proprietary / Enterprise Internal Use
+ * Copyright (c) : 2026 IT Service Desk. All rights reserved.
+ * ------------------------------------------------------------------------------
+ * Revision History:
+ * - V1.2.12 (2026-11-19) : Standardized source code header to Corporate Enterprise Standard
+ * - V1.2.09: LINE Login OAuth 2.0 integration and popup/redirect flow support.
  * - V1.2.08: Add Thai official holidays auto-import tools and ITSUPPORT purple role pill badge.
  * - V1.2.07: Add Sticker Template tab and batch A4 sheet printing for equipment maintenance labels.
  * - V1.2.06: Version bump for step numbers bright green styling.
-  - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
-  - V1.2.04: Version bump for Google Sites iframe embedding support.
-  - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
-  - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
-  - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
-  - V1.2.00: Add forgot password modal for user email verification and password reset requests.
-  - V1.1.99: Replace social login buttons with circular LINE and Google popup login buttons.
-  - V1.1.73: Move #themeToggle immediately after the notification bell and soften active/primary UI chrome for Light/Dark legibility.
-  - V1.1.71: Restore Light/Dark mode switcher (ocpb_mode, Dark default) and synchronize LINE Inbox & Import Wizard with the unified theme tokens.
-  - V1.1.70: Adopt single Dark design system (JetBrains Mono + #000000/#04060f/#4d49fc/#00d4ff) and remove legacy theme/palette switcher to reduce asset load.
-  - V1.1.69: Publish the secured Inventory License tab assets and client workflow.
-  - V1.1.68: Finalize sequential inventory IDs and CM-Form_69, remove the 12-palette switcher and retain the confirmed project branding and binding.
-  - V1.1.64: Bump to V1.1.64 for Inventory search/pick & editable device details across Status Update and CM Service Report dialogs.
-  - V1.1.60: Bump to V1.1.60 for compact single-screen equipment edit dialog.
-  - V1.1.59: Rewrite project header & default branding to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที), editable by ADMIN via Settings.
-  - V1.1.58: Synchronized deployment across both Script IDs, modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
-  - V1.1.54: Modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
-  - V1.1.53: Complete Clay and Sea theme overhaul across entire ITSD Web App.
-  - V1.1.52: Bright blue circular base for inventory & modal close buttons; luminous white hover in dark mode, bright theme in light mode; sign out stays red.
-  - V1.1.51: Synchronize continuous horizontal dividing line across sidebar brand and topbar.
-  - V1.1.50: Bright luminous selection on hover/focus for all status and action icons.
-  - V1.1.43: Add accessible live-region semantics to save-result messages.
-  - V1.0.96: แสดงสถานะครุภัณฑ์เป็นภาษาไทยบน Web Application โดยคงค่าฐานข้อมูลเป็นรหัสภาษาอังกฤษ.
-  - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
-  - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
-  - V1.0.77: Inventory dropdowns and automatic asset-number formats.
-  - V1.0.74: Use a palette-cycle button for twelve built-in palettes.
+ * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
+ * - V1.2.04: Version bump for Google Sites iframe embedding support.
+ * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
+ * - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
+ * - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
+ * - V1.2.00: Add forgot password modal for user email verification and password reset requests.
+ * - V1.1.99: Replace social login buttons with circular LINE and Google popup login buttons.
+ * - V1.1.73: Move #themeToggle immediately after the notification bell and soften active/primary UI chrome for Light/Dark legibility.
+ * - V1.1.71: Restore Light/Dark mode switcher (ocpb_mode, Dark default) and synchronize LINE Inbox & Import Wizard with the unified theme tokens.
+ * - V1.1.70: Adopt single Dark design system (JetBrains Mono + #000000/#04060f/#4d49fc/#00d4ff) and remove legacy theme/palette switcher to reduce asset load.
+ * - V1.1.69: Publish the secured Inventory License tab assets and client workflow.
+ * - V1.1.68: Finalize sequential inventory IDs and CM-Form_69, remove the 12-palette switcher and retain the confirmed project branding and binding.
+ * - V1.1.64: Bump to V1.1.64 for Inventory search/pick & editable device details across Status Update and CM Service Report dialogs.
+ * - V1.1.60: Bump to V1.1.60 for compact single-screen equipment edit dialog.
+ * - V1.1.59: Rewrite project header & default branding to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที), editable by ADMIN via Settings.
+ * - V1.1.58: Synchronized deployment across both Script IDs, modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
+ * - V1.1.54: Modular equipment drawer & separate saving per tab (ข้อมูลทั่วไป, คุณลักษณะ, การสำรวจ, ประวัติแจ้งซ่อม).
+ * - V1.1.53: Complete Clay and Sea theme overhaul across entire ITSD Web App.
+ * - V1.1.52: Bright blue circular base for inventory & modal close buttons; luminous white hover in dark mode, bright theme in light mode; sign out stays red.
+ * - V1.1.51: Synchronize continuous horizontal dividing line across sidebar brand and topbar.
+ * - V1.1.50: Bright luminous selection on hover/focus for all status and action icons.
+ * - V1.1.43: Add accessible live-region semantics to save-result messages.
+ * - V1.0.96: แสดงสถานะครุภัณฑ์เป็นภาษาไทยบน Web Application โดยคงค่าฐานข้อมูลเป็นรหัสภาษาอังกฤษ.
+ * - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
+ * - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
+ * - V1.0.77: Inventory dropdowns and automatic asset-number formats.
+ * - V1.0.74: Use a palette-cycle button for twelve built-in palettes.
+ * - >
+ * ==============================================================================
 -->
 <!doctype html>
 <html lang="th" data-theme="dark" class="dark">

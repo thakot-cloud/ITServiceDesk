@@ -1,15 +1,20 @@
 /**
- * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
- * File: Server.js
- * Version: V1.2.12
- * Stage: production
- * Purpose: Private runtime, feature services and platform adapters
- * Notes:
- * - No secrets in source code
- * - Preserve existing data and backward compatibility
- * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-19
- * Change History:
+ * ==============================================================================
+ * Project       : IT Service Desk (ITSD Enterprise Edition)
+ * Script ID     : 1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7
+ * Repository    : https://github.com/thakot-cloud/ITServiceDesk
+ * File          : Server.js
+ * Module/Layer  : Backend / Core Services, Platform Adapters & Data Repository
+ * Description   : การทำงานระบบหลัก สิทธิ์ผู้ใช้ ฐานข้อมูลชีต บันทึกประวัติ และการจัดการตั๋วแจ้งซ่อมและครุภัณฑ์
+ * Version       : 1.2.12
+ * Author        : ITSD Engineering Team / LongZe Design
+ * Created Date  : 2026-10-26
+ * Last Modified : 2026-11-19
+ * License       : Proprietary / Enterprise Internal Use
+ * Copyright (c) : 2026 IT Service Desk. All rights reserved.
+ * ------------------------------------------------------------------------------
+ * Revision History:
+ * - V1.2.12 (2026-11-19) : Standardized source code header to Corporate Enterprise Standard
  * - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
  * - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
  * - V1.2.10: Add LINE and Google social account binding/unbinding services in profile, return social bind status in publicUser_.
@@ -68,6 +73,8 @@
  * - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
  * - V1.0.77: Inventory dropdowns and automatic asset-number formats.
  * - V1.0.76: Modular production structure with compatible public APIs.
+ * - /
+ * ==============================================================================
  */
 // apps/webapp/src/server/app/release.js
 const APP_VERSION = 'V1.2.12';

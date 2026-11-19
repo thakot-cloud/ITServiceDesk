@@ -1,47 +1,54 @@
 <!--
-  Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
-  File: UI_Client.html
-  Version: V1.2.12
-  Stage: production
-  Purpose: Client controllers and explicit initialization order
-  Notes:
-  - No secrets in source code
-  - Preserve existing data and backward compatibility
-  - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
-  Modified: 2026-11-19
-  Change History:
-  - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
-  - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
-  - V1.2.10: Add LINE and Google social account binding cards and action buttons in user profile modal.
-  - V1.2.09: Add loginWithLine OAuth 2.0 integration, popup postMessage listener, and session sync.
-  - V1.2.08: Add Thai official holidays import UI (2569-2573), PM calendar holiday integration, and ITSUPPORT role badge purple styling.
-  - V1.2.07: Add Sticker Template tab and batch A4 sheet printing for equipment maintenance labels.
-  - V1.2.06: Version bump for step numbers bright green styling.
-  - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
-  - V1.2.04: Version bump for Google Sites iframe embedding support.
-  - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
-  - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
-  - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
-  - V1.2.00: Add forgot password modal handler, email validation and server verification.
-  - V1.1.99: Add loginWithLine and loginWithGoogle popup window handlers.
-  - V1.1.77: Replace bell icon on .itsd65-help-trigger with info icon and make both help trigger and popover close buttons circular.
-  - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
-  - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
-  - V1.1.74: Make ticket reporter phone (#fPhone) optional (remove required/minlength and asterisk).
-  - V1.1.73: Anchor #themeToggle immediately after the notification bell wrap so topbar action order stays consistent across renders.
-  - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, ocpb_mode, Dark default) without the multi-palette overhead.
-  - V1.1.70: Migrate Web App to the unified # Dark design system, update chart/status palettes, and remove the theme switcher.
-  - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
-  - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
-  - V1.1.64: Add shared Inventory picker (by asset number or serial) in both อัปเดตสถานะ (statusForm) and สร้าง/แก้ไขข้อมูลใบงาน CM (service70Edit for job asset, sent equipment & replacement equipment) + fix horizontal grid columns in service70Edit.
-  - V1.1.60: Compact single-screen layout for Equipment General Edit, Specs Edit & Create dialogs via shared helpers.
-  - V1.1.59: Rewrite project header & client branding defaults to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที); retain ADMIN branding settings controls.
-  - V1.1.43: Show clear success/error messages and keep inventory save failures visible in the editor.
-  - V1.0.79: Inventory survey report with status filters, progress summaries and permission-checked exports.
-  - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
-  - V1.0.78: LINE review, assetless tickets, Thai PM controls and persistent inventory search pagination.
-  - V1.0.77: Inventory dropdowns and automatic asset-number formats.
-  - V1.0.76: Modular production structure with compatible public APIs.
+ * ==============================================================================
+ * Project       : IT Service Desk (ITSD Enterprise Edition)
+ * Script ID     : 1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7
+ * Repository    : https://github.com/thakot-cloud/ITServiceDesk
+ * File          : UI_Client.html
+ * Module/Layer  : Frontend / Client Controller & UI State Management
+ * Description   : ตัวควบคุมฝั่งผู้ใช้งาน (Client Controllers), การเรนเดอร์หน้าจอ, ระบบแคช SWR และการนำเข้า/ส่งออกข้อมูล
+ * Version       : 1.2.12
+ * Author        : ITSD Engineering Team / LongZe Design
+ * Created Date  : 2026-10-26
+ * Last Modified : 2026-11-19
+ * License       : Proprietary / Enterprise Internal Use
+ * Copyright (c) : 2026 IT Service Desk. All rights reserved.
+ * ------------------------------------------------------------------------------
+ * Revision History:
+ * - V1.2.12 (2026-11-19) : Standardized source code header to Corporate Enterprise Standard
+ * - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
+ * - V1.2.11: Add sticker font size scaling (80%, 90%, 100%, 110%, 120%, 130%) on equipment maintenance sticker template.
+ * - V1.2.10: Add LINE and Google social account binding cards and action buttons in user profile modal.
+ * - V1.2.09: Add loginWithLine OAuth 2.0 integration, popup postMessage listener, and session sync.
+ * - V1.2.08: Add Thai official holidays import UI (2569-2573), PM calendar holiday integration, and ITSUPPORT role badge purple styling.
+ * - V1.2.07: Add Sticker Template tab and batch A4 sheet printing for equipment maintenance labels.
+ * - V1.2.06: Version bump for step numbers bright green styling.
+ * - V1.2.05: Inline title and description on single line for แจ้งซ่อมใหม่ (แจ้งซ่อมใหม่ : กรอกข้อมูลเพื่อแจ้งปัญหาให้ทีมงานตรวจสอบและแก้ไข).
+ * - V1.2.04: Version bump for Google Sites iframe embedding support.
+ * - V1.2.03: Style Choose File button with blue pill capsule and align desktop file upload with action buttons.
+ * - V1.2.02: Compact ticket repair detail fields and file upload zone for single screen fit without scrolling.
+ * - V1.2.01: Update LINE inbox icon to official iOS rounded squircle and enable message scrolling with sticky new ticket form.
+ * - V1.2.00: Add forgot password modal handler, email validation and server verification.
+ * - V1.1.99: Add loginWithLine and loginWithGoogle popup window handlers.
+ * - V1.1.77: Replace bell icon on .itsd65-help-trigger with info icon and make both help trigger and popover close buttons circular.
+ * - V1.1.76: Align โทร. column start position on CM-Form_69 directly with หมายเลขเครื่อง and รุ่น via .r2 outer grid + .r4-right subgrid.
+ * - V1.1.75: Update CM-Form_69 service report layout (proportional 1.07fr:1fr org columns at standard 10.5pt, bold section headings ปัญหา/วิธีการแก้ไข/สถานะของงาน/หมายเหตุ, 3-line ปัญหา and 2-line หมายเหตุ).
+ * - V1.1.74: Make ticket reporter phone (#fPhone) optional (remove required/minlength and asterisk).
+ * - V1.1.73: Anchor #themeToggle immediately after the notification bell wrap so topbar action order stays consistent across renders.
+ * - V1.1.71: Restore Light/Dark mode toggle (#themeToggle, ocpb_mode, Dark default) without the multi-palette overhead.
+ * - V1.1.70: Migrate Web App to the unified # Dark design system, update chart/status palettes, and remove the theme switcher.
+ * - V1.1.69: Add the ADMIN/MANAGER-only License tab after Specifications with masked summaries and reauthenticated on-demand reveal.
+ * - V1.1.68: Preview sequential inventory IDs, remove the 12-palette switcher and finalize CM-Form_69 print layout and independent Save/Print actions.
+ * - V1.1.64: Add shared Inventory picker (by asset number or serial) in both อัปเดตสถานะ (statusForm) and สร้าง/แก้ไขข้อมูลใบงาน CM (service70Edit for job asset, sent equipment & replacement equipment) + fix horizontal grid columns in service70Edit.
+ * - V1.1.60: Compact single-screen layout for Equipment General Edit, Specs Edit & Create dialogs via shared helpers.
+ * - V1.1.59: Rewrite project header & client branding defaults to ITSD : ITServiceDesk (ระบบแจ้งซ่อมออนไลน์ และการจัดการครุภัณฑ์ไอที); retain ADMIN branding settings controls.
+ * - V1.1.43: Show clear success/error messages and keep inventory save failures visible in the editor.
+ * - V1.0.79: Inventory survey report with status filters, progress summaries and permission-checked exports.
+ * - V1.0.79: Purchase fiscal-year dropdown 2560-2580; retain all verified V1.0.78 fixes.
+ * - V1.0.78: LINE review, assetless tickets, Thai PM controls and persistent inventory search pagination.
+ * - V1.0.77: Inventory dropdowns and automatic asset-number formats.
+ * - V1.0.76: Modular production structure with compatible public APIs.
+ * - >
+ * ==============================================================================
 -->
 <script>
 // apps/webapp/src/client/features/branding/branding-controller.js

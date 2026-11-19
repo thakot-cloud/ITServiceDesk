@@ -1,15 +1,20 @@
 /**
- * Project: IT Service Desk : ระบบแจ้งซ่อม บริหารจัดการงานครุภัณฑ์
- * File: Api.js
- * Version: V1.2.12
- * Stage: production
- * Purpose: Compatibility facade for existing browser and maintenance callers
- * Notes:
- * - No secrets in source code
- * - Preserve existing data and backward compatibility
- * - Project name is customizable via Admin -> System Settings (APP_SETTINGS)
- * Modified: 2026-11-19
- * Change History:
+ * ==============================================================================
+ * Project       : IT Service Desk (ITSD Enterprise Edition)
+ * Script ID     : 1drKyOpXXRBkf9s9uFXZi6h3PoSy1Ud-SfqMkx8xPyDNNl1XWxcGiVUF7
+ * Repository    : https://github.com/thakot-cloud/ITServiceDesk
+ * File          : Api.js
+ * Module/Layer  : API / Facade & Public Entrypoint Compatibility Layer
+ * Description   : อินเทอร์เฟซสาธารณะและ Compatibility Facade สำหรับเรียกใช้งานฟังก์ชันของระบบผ่าน WebApp และไคลเอนต์
+ * Version       : 1.2.12
+ * Author        : ITSD Engineering Team / LongZe Design
+ * Created Date  : 2026-10-26
+ * Last Modified : 2026-11-19
+ * License       : Proprietary / Enterprise Internal Use
+ * Copyright (c) : 2026 IT Service Desk. All rights reserved.
+ * ------------------------------------------------------------------------------
+ * Revision History:
+ * - V1.2.12 (2026-11-19) : Standardized source code header to Corporate Enterprise Standard
  * - V1.2.12: Optimize GAS performance with CacheService on APP_LOOKUPS/APP_USER_PROFILE, batch array operations (setValues), O(1) indexed Map lookups, and client-side SWR caching.
  * - V1.2.11: Version bump for sticker font scale adjustment controls.
  * - V1.2.10: Expose bindGoogleAccount and unbindGoogleAccount for social profile account management.
@@ -31,6 +36,8 @@
  * - V1.0.78: LINE review editor, assetless tickets, themed messages and Thai PM period controls.
  * - V1.0.77: Inventory dropdowns and automatic asset-number formats.
  * - V1.0.76: Modular production structure with compatible public APIs.
+ * - /
+ * ==============================================================================
  */
 function getPublicSystemBranding() { return itsdImpl_getPublicSystemBranding_.apply(this, arguments); }
 function include(name) { return itsdImpl_include_.apply(this, arguments); }
