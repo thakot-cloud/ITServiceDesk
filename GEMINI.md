@@ -88,20 +88,70 @@ cp UI_Templates.html src/UI_Templates.html && cp UI_Templates.html Server/UI_Tem
 
 ---
 
-## 4. มาตรฐานประสิทธิภาพ Google Apps Script (Performance Best Practices)
+## 4. มาตรฐานประสิทธิภาพระดับองค์กรสำหรับ Web Application (Enterprise Performance Optimization Guidelines)
 
-1. **ห้ามเรียก Spreadsheet API ใน Loop**:
-   - แทนที่ `getValue()`/`setValue()` และ `appendRow()` ในลูปด้วยการสะสมข้อมูลลงใน JavaScript Array แล้วบันทึกแบบ Batch ครั้งเดียวด้วย `setValues()`
-2. **ใช้ CacheService อย่างถูกต้อง**:
-   - แคชข้อมูล Master Data และ Lookups ใน `SHEET_CACHEABLE_` (`APP_LOOKUPS`, `APP_SETTINGS`, `APP_USER_PROFILE`, `INVENTORY`, `INCIDENT`, `MST_ORG_UNITS`, `MST_DEVICE_MODELS`, `TICKET_SERVICE_REPORT`) โดยบีบอัดด้วย Gzip ก่อนเก็บเข้า `CacheService.getScriptCache()`
-3. **ลดขนาด Payload (Minimize Payload Size)**:
-   - แปลงฟิลด์สตริงว่าง `""` ให้เป็น `undefined` ใน Object สำหรับรายการจำนวนมาก เช่น `inventory` และ `tickets` เพื่อให้ `JSON.stringify` ข้ามฟิลด์ว่าง ช่วยลดขนาด Network Payload ได้มากกว่า 50%
-4. **ใช้ Data Structure $O(1)$ Hash Map**:
-   - จัดทำ Index ล่วงหน้าด้วย `Map` แทนการใช้ `for...in...for` หรือการเรียก `.find()` ซ้อนกันภายใน Loop
-5. **Frontend Non-blocking & Client Cache**:
-   - ใช้ SWR (Stale-While-Revalidate) ร่วมกับ `sessionStorage`
-   - ป้องกันการยิงซ้ำด้วย Inflight RPC Cache (`READ_ONLY_RPCS_`)
-   - แสดง Skeleton Loader ทันทีระหว่างรอข้อมูล
+### 4.1 ฝั่ง Backend (Google Apps Script / Server.js / Code.gs)
+
+#### 1. ห้ามเรียก Google Spreadsheet API ภายใน Loop โดยเด็ดขาด (Zero API Calls in Loops)
+- **ข้อห้าม**: ห้ามใช้ `getValue()`, `setValue()`, `getRange()`, หรือ `appendRow()` ภายในลูป (`for`, `forEach`, `while`)
+- **ผลกระทบ**: แต่ละรอบของ Spreadsheet API มี Network Latency 50–200 ms หากวน 50–100 รอบ จะทำให้คำขอกินเวลา 5–15 วินาที เสี่ยงติด Timeout 6 นาทีทันที
+- **แนวทางปฏิบัติ**:
+  1. ดึงข้อมูลทั้งตารางเข้าหน่วยความจำด้วย `getDataRange().getValues()` เพียงครั้งเดียว
+  2. จัดการค้นหา ปรับแต่ง และรวมข้อมูลใน JavaScript Array
+  3. บันทึกผลลัพธ์กลับด้วย `setValues()` เพียงรอบเดียว หรือแยก Batch แถวใหม่ด้วย `getRange(lastRow + 1, 1, newRows.length, colCount).setValues(newRows)`
+
+#### 2. สถาปัตยกรรมแคชหลายระดับ (Multi-Layer ScriptCache & Compression)
+- **ปัญหา**: การเปิด Google Spreadsheet ข้าม Request ทุกครั้งเป็นคอขวดที่ใหญ่ที่สุดใน GAS
+- **แนวทางปฏิบัติ**:
+  1. นำ `CacheService.getScriptCache()` มาใช้เก็บข้อมูลที่มีการอ่านบ่อยและไม่เปลี่ยนแปลงบ่อย (TTL 600 วินาที):
+     - `APP_LOOKUPS`: รายการ Dropdown (ประเภทอุปกรณ์, ยี่ห้อ, ปัญหา)
+     - `APP_SETTINGS`: การตั้งค่าระบบ โลโก้ และพารามิเตอร์ระบบ
+     - `APP_USER_PROFILE`: ข้อมูลรูปโปรไฟล์และอีเมลผู้ใช้
+     - `MST_ORG_UNITS`: โครงสร้างหน่วยงาน
+     - `MST_DEVICE_MODELS`: ทะเบียนรุ่นอุปกรณ์
+     - `TICKET_SERVICE_REPORT`: แม่แบบใบรายงานบริการ
+  2. **Gzip Chunking**: หากข้อมูลมีขนาดใหญ่เกินขีดจำกัด 100 KB ของ CacheService ให้บีบอัดด้วย `Utilities.gzip()` แปลงเป็น Base64 และแบ่งเก็บเป็น Chunks (`_c0`, `_c1`, ...)
+  3. **Instant Cache Invalidation**: เมื่อมีการ `CREATE`, `UPDATE` หรือ `DELETE` ต้องเรียก `sheetCacheInvalidate_(sheetName)` ทันทีเพื่อให้ Request ถัดไปเห็นข้อมูลล่าสุด
+
+#### 3. การลดขนาด JSON Payload (Minimize Payload Size)
+- **ปัญหา**: `google.script.run` ต้องแปลง JavaScript Object เป็น JSON String ผ่าน Network หากมีข้อมูล 2,000 แถว แถวละ 25 ฟิลด์ จะเกิด Overhead ในการ Serialize/Deserialize มหาศาล
+- **แนวทางปฏิบัติ**:
+  1. **Strip Empty Strings**: กำหนดค่าที่เป็นสตริงว่างให้เป็น `undefined` (เช่น `phone: x['เบอร์โทร'] || undefined`) ซึ่ง `JSON.stringify` จะข้ามคีย์ที่เป็น `undefined` โดยอัตโนมัติ ช่วยลดขนาด Network Payload ได้มากกว่า 50%
+  2. **Field Selection**: เลือกเฉพาะฟิลด์ที่จำเป็นต่อการแสดงผลในหน้าแรก ไม่ส่งฟิลด์ละเอียดสำหรับ Modal ลงมาในรายการตาราง
+  3. **Workflow Status Memoization**: ใน `ticketPayload_` ให้ทำ In-Memory Memoization สำหรับ `statusTargetsFor_` เพื่อคำนวณสิทธิ์การเปลี่ยนสถานะของแต่ละสถานะเพียงครั้งเดียว ไม่ต้องคำนวณซ้ำทุกแถวของตั๋วแจ้งซ่อม
+
+#### 4. โครงสร้างข้อมูล $O(1)$ Hash Map แทน $O(N \times M)$ Nested Loops
+- **ปัญหา**: การใช้ `.find()` หรือ `.filter()` ซ้อนในลูป ส่งผลให้ความซับซ้อนของขั้นตอนวิธีกลายเป็น $O(N \times M)$ หรือ $O(N^2)$
+- **แนวทางปฏิบัติ**:
+  1. จัดทำ Index ล่วงหน้าด้วย `Map` หรือ `Set` สำหรับข้อมูลความสัมพันธ์ เช่น `roleCode + ':' + moduleCode`
+  2. ดึงข้อมูลผ่าน `map.get(key)` ด้วยประสิทธิภาพ $O(1)$
+
+---
+
+### 4.2 ฝั่ง Frontend (HTML / JavaScript / UI_Client.html)
+
+#### 1. Non-blocking UI & Asynchronous Data Fetching
+- **Shell-First Rendering**: แสดงผลโครงสร้างหลักของหน้าเว็บ (Topbar, Sidebar, Breadcrumb) ทันทีตั้งแต่โหลดหน้า โดยไม่ต้องรอข้อมูลจากเซิร์ฟเวอร์
+- **Skeleton Loaders**: แสดง Animation Placeholder (`renderSkeletonLoader_()`) ทันทีระหว่างรอ `getBootstrap` หรือคำขอทางไกล เพื่อให้ผู้ใช้รับรู้ว่าระบบกำลังทำงาน ไม่เกิดอาการหน้าขาวค้าง
+- **SWR (Stale-While-Revalidate)**:
+  1. ดึงข้อมูลล่าสุดจาก `sessionStorage` มาเรนเดอร์หน้าจอทันทีใน 0 วินาที
+  2. ยิงคำขอเบื้องหลังเพื่อตรวจสอบข้อมูลใหม่
+  3. หากพบความเปลี่ยนแปลง จึงอัปเดตหน้าจอและเขียนทับแคช
+
+#### 2. Client-Side RPC Inflight Deduplication
+- ป้องกันปัญหาผู้ใช้คลิกแท็บหรือกดปุ่มซ้ำรัวๆ ด้วย Inflight Promise Cache (`INFLIGHT_RPC_`):
+  ```javascript
+  if (isRead && INFLIGHT_RPC_[rpcKey]) return INFLIGHT_RPC_[rpcKey];
+  ```
+- เพิ่มรายชื่อฟังก์ชันอ่านข้อมูลทั้งหมดลงใน `READ_ONLY_RPCS_` เพื่อป้องกันการส่งคำขอคู่ขนานซ้ำซ้อน
+
+#### 3. ป้องกัน Layout Thrashing และเรนเดอร์แบบ Batch DOM
+- **ห้าม**: ห้ามทำการสร้าง Element แล้วสั่ง `appendChild()` ทีละแถวในลูป เพราะบราวเซอร์จะต้อง Reflow/Repaint ใหม่ทุกครั้ง
+- **แนวทางปฏิบัติ**:
+  1. สะสมโครงสร้าง HTML เป็นสตริงก้อนเดียว หรือใช้ `DocumentFragment`
+  2. ทำการ Assign ลง DOM เพียงครั้งเดียวผ่าน `container.innerHTML = htmlString`
+  3. ใช้ Client-side Pagination (แบ่งหน้าละ 10, 25, 50 รายการ) แทนการวาด DOM พร้อมกันหลักพันรายการ
+  4. ใช้ Debounce Function (`debounceCall_`) สำหรับ Input Search เพื่อหน่วงเวลา 150–300 ms ก่อนเริ่มค้นหา
 
 ---
 
